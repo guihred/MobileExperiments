@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">GuihRed Games</string>
+    <string name="game_over">Você Ganhou</string>
+    <string name="you_win">Você Ganhou em %s </string>
+    <string name="you_lose">Você Perdeu</string>
+    <string name="time_format">"%dm e %02ds"</string>
+    <string name="ok">OK</string>
+    <string name="config">Configurações</string>
+    <string name="difficultyName">Dificuldade</string>
+    <string name="choose">Escolha a Dificuldade</string>
+    <string name="campo_minado">Campo Minado</string>
+    <string name="pacman">Pacman</string>
+    <string name="minesweeper">Campo Minado</string>
+    <string name="link_dots">Ligue os Pontos</string>
+    <string name="tag">GAMES Activity</string>
+    <string name="icon">Icon</string>
+    <string name="dificuldade">Dificuldade</string>
+    <string name="size">Tamanho</string>
+    <string-array name="difficulty" >
+        <item>Muito Fácil</item>
+        <item>Fácil</item>
+        <item>Médio</item>
+        <item>Difícil</item>
+        <item>Muito Difícil</item>
+    </string-array>
+    <string-array name="dots_difficulty" >
+        <item>Fácil</item>
+        <item>Médio</item>
+        <item>Difícil</item>
+    </string-array>
+
+</resources>

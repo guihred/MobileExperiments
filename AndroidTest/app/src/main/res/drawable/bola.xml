@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="64dp"
+    android:width="64dp"
+    android:viewportHeight="1200"
+    android:viewportWidth="1200" >
+    <group
+        android:name="rotationGroup">
+
+        <path
+            android:name="v"
+            android:strokeWidth="2"
+            android:strokeColor="#00FF00"
+            android:fillColor="#00FF00"
+            android:pathData="M300,300 l0,300 l600,-300 l0,300 z" />
+        <!-- !-->
+        <path
+            android:name="v2"
+            android:strokeWidth="6"
+
+            android:strokeColor="#0000FF"
+
+            android:pathData="m550,100 c00 00 50 100 100 00" />
+
+        <path
+            android:name="v3"
+            android:strokeWidth="2"
+            android:fillColor="#FF0000"
+            android:strokeColor="#FF0000"
+            android:pathData="M824,200 l100,0 q50,0 50,50 l 0,150 q0,50 -50,50 l-100,0 q-50,0 -50,-50 l0,-150 q0,-50 50,-50"
+            android:layout_height="match_parent" />
+
+        <path
+            android:name="v4"
+            android:strokeWidth="2"
+            android:strokeColor="#FFFF00"
+            android:fillColor="#FFFF00"
+            android:pathData="m800,300 l150,0 l-121,88 l46,-142, l46,142 l-121, -88" />
+    </group>
+</vector>
