@@ -12,13 +12,17 @@
         <activity android:name="red.guih.games.GamesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="red.guih.games.pacman.PacmanActivity"
             android:parentActivityName=".GamesActivity" />
+        <activity
+            android:name="red.guih.games.tetris.TetrisActivity"
+            android:parentActivityName=".GamesActivity" >
+
+        </activity>
         <activity
             android:name="red.guih.games.dots.DotsActivity"
             android:parentActivityName=".GamesActivity" />

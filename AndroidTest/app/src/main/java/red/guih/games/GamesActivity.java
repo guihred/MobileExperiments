@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import red.guih.games.dots.DotsActivity;
 import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
+import red.guih.games.tetris.TetrisActivity;
 
 /**
  * Main activity which will invoke other games.
@@ -30,6 +31,8 @@ public class GamesActivity extends AppCompatActivity {
         dotsButton.setOnClickListener((View v) -> startActivity(new Intent(this, DotsActivity.class)));
         ImageButton pacmanButton = findViewById(R.id.pacmanButton);
         pacmanButton.setOnClickListener((View v) -> startActivity(new Intent(this, PacmanActivity.class)));
+        ImageButton tetrisButton = findViewById(R.id.tetrisButton);
+        tetrisButton.setOnClickListener((View v) -> startActivity(new Intent(this, TetrisActivity.class)));
 
     }
 }
