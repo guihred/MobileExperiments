@@ -32,11 +32,6 @@ public class Pacman extends View {
         PacmanDirection(int angle) {
             this.angle = angle;
         }
-
-        public int getAngle() {
-            return angle;
-        }
-
     }
 
     private PacmanDirection direction = PacmanDirection.RIGHT;
@@ -45,8 +40,8 @@ public class Pacman extends View {
     public Pacman(Context c, PacmanView pacmanView) {
         super(c);
         paint.setColor(Color.YELLOW);
-        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("startAngle", Keyframe.ofFloat(0, 45), Keyframe.ofFloat(1, 0));
-        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("length", Keyframe.ofFloat(0, 270), Keyframe.ofFloat(1, 360));
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("startAngle", Keyframe.ofFloat(0, 0), Keyframe.ofFloat(1, 45));
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("length", Keyframe.ofFloat(0, 360), Keyframe.ofFloat(1, 270));
         eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(this, pvhRotation, pvhRotation2);
         eatingAnimation.setDuration(1000);
         eatingAnimation.addUpdateListener(animation -> pacmanView.invalidate());
@@ -112,17 +107,13 @@ public class Pacman extends View {
     }
 
     public void turn(PacmanDirection direction) {
-        if (eatingAnimation.isRunning()) {
-            this.direction = direction;
-        }
+        this.direction = direction;
     }
 
     public void die() {
         if (eatingAnimation.isRunning()) {
             turn(null);
-
         }
-
     }
 
     @Override

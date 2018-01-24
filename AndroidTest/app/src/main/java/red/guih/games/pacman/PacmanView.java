@@ -121,7 +121,9 @@ public class PacmanView extends View {
         reset();
     }
 
-    private void reset() {
+    Thread gameLoopThread;
+
+    public void reset() {
         MazeSquare.SQUARE_SIZE = getWidth() / MAZE_WIDTH / 2;
         MAZE_HEIGHT = getHeight() / MazeSquare.SQUARE_SIZE / 2;
         maze = initializeMaze(getContext());
@@ -158,20 +160,28 @@ public class PacmanView extends View {
             PacmanGhost ghost = ghosts.get(i);
             ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), i / 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
         }
-        new Thread(() -> {
-
-            while (gameLoop(System.currentTimeMillis())) {
-                try {
-                    Thread.sleep(50);
-                } catch (Exception e) {
-                    Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
-                }
-            }
-            gameOver = true;
-        }).start();
+        continueGame();
         gameOver = false;
 
     }
+
+    void continueGame() {
+        if (gameLoopThread == null || !gameLoopThread.isAlive()) {
+            gameLoopThread = new Thread(() -> {
+
+                while (gameLoop(System.currentTimeMillis())) {
+                    try {
+                        Thread.sleep(50);
+                    } catch (Exception e) {
+                        Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                    }
+                }
+                gameOver = true;
+            });
+            gameLoopThread.start();
+        }
+    }
+
 
     boolean gameOver = false;
 
@@ -180,10 +190,10 @@ public class PacmanView extends View {
         gameOver = false;
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(balls.isEmpty()?R.string.you_win:R.string.you_lose);
+        dialog.setTitle(balls.isEmpty() ? R.string.you_win : R.string.you_lose);
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(balls.isEmpty()?R.string.you_win:R.string.you_lose);
+        text.setText(balls.isEmpty() ? R.string.you_win : R.string.you_lose);
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener((View v) -> {
@@ -196,7 +206,8 @@ public class PacmanView extends View {
     }
 
     private boolean gameLoop(long now) {
-        if(balls.isEmpty()){
+        postInvalidate();
+        if (balls.isEmpty()) {
             return false;
         }
         ghosts.forEach(g -> g.move(now, walls, pacman));
@@ -225,17 +236,12 @@ public class PacmanView extends View {
 //
         if (time > 0) {
             time--;
-
-
-
-
-
             if (time == 0) {
                 ghosts.stream().filter(g -> g.getStatus() == PacmanGhost.GhostStatus.AFRAID)
                         .forEach(g -> g.setStatus(PacmanGhost.GhostStatus.ALIVE));
             }
         }
-        postInvalidate();
+
         return true;
     }
 
