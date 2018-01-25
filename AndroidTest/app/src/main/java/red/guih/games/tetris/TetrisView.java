@@ -1,8 +1,3 @@
-/*
-* To change this license header, choose License Headers in Project Properties.
-* To change this template file, choose Tools | Templates
-* and open the template in the editor.
-*/
 package red.guih.games.tetris;
 
 import android.app.Dialog;
@@ -26,25 +21,24 @@ import red.guih.games.R;
 
 public class TetrisView extends View {
 
-    public static int MAP_HEIGHT = 20;
-    public static int MAP_WIDTH = 10;
+    public  int mapHeight = 20;
+    public  int mapWidth = 10;
     private int currentI, currentJ;
     private TetrisDirection direction = TetrisDirection.UP;
-    private TetrisSquare[][] map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
+    private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
     private TetrisPiece piece = TetrisPiece.L;
-
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
-    Paint paint = new Paint();
+    private Paint paint = new Paint();
     private Random random = new Random();
     private float startX, startY;
-    private int SQUARE_SIZE;
+    private int squareSize;
     private Thread gameLoopThread;
     private boolean gameOver;
 
     public TetrisView(Context c, AttributeSet a) {
         super(c, a);
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
                 map[i][j] = new TetrisSquare();
             }
         }
@@ -85,17 +79,17 @@ public class TetrisView extends View {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        SQUARE_SIZE = getWidth() / MAP_WIDTH;
-        MAP_HEIGHT = getHeight() / SQUARE_SIZE;
-        map = new TetrisSquare[MAP_WIDTH][MAP_HEIGHT];
+        squareSize = getWidth() / mapWidth;
+        mapHeight = getHeight() / squareSize;
+        map = new TetrisSquare[mapWidth][mapHeight];
         reset();
     }
 
 
     @Override
     protected void onDraw(Canvas canvas) {
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
                 TetrisPieceState state = map[i][j].getState();
                 switch (state) {
 
@@ -109,7 +103,7 @@ public class TetrisView extends View {
                         paint.setColor(map[i][j].getColor());
                         break;
                 }
-                canvas.drawRect(i * SQUARE_SIZE, j * SQUARE_SIZE, (i + 1) * SQUARE_SIZE, (j + 1) * SQUARE_SIZE, paint);
+                canvas.drawRect(i * squareSize, j * squareSize, (i + 1) * squareSize, (j + 1) * squareSize, paint);
             }
         }
         if (gameOver) {
@@ -164,14 +158,14 @@ public class TetrisView extends View {
                 break;
             case MotionEvent.ACTION_MOVE:
                 TetrisDirection code = getDirection(e);
-                int dx = Math.abs((int) ((startX - e.getX()) / SQUARE_SIZE));
+                int dx = Math.abs((int) ((startX - e.getX()) / squareSize));
                 switch (code) {
                     case LEFT:
 
                         for (int i = 0; i < dx; i++)
                             if (!this.checkCollision(this.getCurrentI() - 1, this.getCurrentJ())) {
                                 this.setCurrentI(this.getCurrentI() - 1);
-                                startX -= SQUARE_SIZE;
+                                startX -= squareSize;
                                 this.clearMovingPiece();
                                 this.drawPiece();
                                 movedLeftRight = true;
@@ -183,7 +177,7 @@ public class TetrisView extends View {
                         for (int i = 0; i < dx; i++)
                             if (!this.checkCollision(this.getCurrentI() + 1, this.getCurrentJ())) {
                                 this.setCurrentI(this.getCurrentI() + 1);
-                                startX += SQUARE_SIZE;
+                                startX += squareSize;
                                 this.clearMovingPiece();
                                 this.drawPiece();
                                 movedLeftRight = true;
@@ -205,6 +199,7 @@ public class TetrisView extends View {
             clearMovingPiece();
             drawPiece();
         }
+        invalidate();
     }
 
     boolean checkCollision(int nextI, int nextJ) {
@@ -212,10 +207,10 @@ public class TetrisView extends View {
         for (int i = 0; i < get.length; i++) {
             for (int j = 0; j < get[i].length; j++) {
                 if (get[i][j] == 1) {
-                    if (nextI + i >= MAP_WIDTH || nextI < 0) {
+                    if (nextI + i >= mapWidth || nextI < 0) {
                         return true;
                     }
-                    if (nextJ + j >= MAP_HEIGHT) {
+                    if (nextJ + j >= mapHeight) {
                         return true;
                     }
                     if (map[nextI + i][nextJ + j].getState() == TetrisPieceState.SETTLED) {
@@ -246,8 +241,8 @@ public class TetrisView extends View {
     }
 
     void clearMovingPiece() {
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
                 if (map[i][j].getState() == TetrisPieceState.TRANSITION) {
                     map[i][j].setState(TetrisPieceState.EMPTY);
                 }
@@ -291,11 +286,11 @@ public class TetrisView extends View {
             final TetrisPiece[] values = TetrisPiece.values();
             piece = values[random.nextInt(values.length)];
             setCurrentJ(0);
-            setCurrentI(MAP_WIDTH / 2);
+            setCurrentI(mapWidth / 2);
             if (checkCollision(getCurrentI(), getCurrentJ())) {
                 return false;
             }
-            for (int i = 0; i < MAP_HEIGHT; i++) {
+            for (int i = 0; i < mapHeight; i++) {
                 boolean clearLine = isLineClear(i);
                 if (clearLine) {
                     removeLine(i);
@@ -309,7 +304,7 @@ public class TetrisView extends View {
 
     private boolean isLineClear(int i) {
         boolean clearLine = true;
-        for (int j = 0; j < MAP_WIDTH; j++) {
+        for (int j = 0; j < mapWidth; j++) {
             if (map[j][i].getState() != TetrisPieceState.SETTLED) {
                 clearLine = false;
             }
@@ -319,7 +314,7 @@ public class TetrisView extends View {
 
     private void removeLine(int i) {
         for (int k = i; k >= 0; k--) {
-            for (int j = 0; j < MAP_WIDTH; j++) {
+            for (int j = 0; j < mapWidth; j++) {
                 if (k == 0) {
                     map[j][k].setState(TetrisPieceState.EMPTY);
                 } else {
@@ -330,8 +325,8 @@ public class TetrisView extends View {
     }
 
     void reset() {
-        for (int i = 0; i < MAP_WIDTH; i++) {
-            for (int j = 0; j < MAP_HEIGHT; j++) {
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
                 if (map[i][j] == null)
                     map[i][j] = new TetrisSquare();
                 map[i][j].setState(TetrisPieceState.EMPTY);
