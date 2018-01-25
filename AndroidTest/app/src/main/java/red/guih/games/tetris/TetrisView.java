@@ -315,7 +315,7 @@ public class TetrisView extends View {
     private void removeLine(int i) {
         for (int k = i; k >= 0; k--) {
             for (int j = 0; j < mapWidth; j++) {
-                if (k == 0) {
+                if (k <= 0) {
                     map[j][k].setState(TetrisPieceState.EMPTY);
                 } else {
                     map[j][k].setState(map[j][k - 1].getState());

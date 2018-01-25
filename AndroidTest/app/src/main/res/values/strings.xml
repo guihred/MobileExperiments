@@ -17,6 +17,7 @@
     <string name="dificuldade">Dificuldade</string>
     <string name="size">Tamanho</string>
     <string name="tetris">Tetris</string>
+    <string name="records">Recordes</string>
     <string-array name="difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>

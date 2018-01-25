@@ -1,6 +1,7 @@
 package red.guih.games.minesweeper;
 
 import android.app.Dialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -18,12 +20,14 @@ import android.widget.TextView;
 import java.util.Random;
 
 import red.guih.games.R;
+import red.guih.games.minesweeper.db.UserRecord;
+import red.guih.games.minesweeper.db.UserRecordDatabase;
 
 import static java.lang.Math.abs;
 
 /**
- *  A view with the rules of minesweeper.
- *
+ * A view with the rules of minesweeper.
+ * <p>
  * Created by guilherme.hmedeiros on 16/01/2018.
  */
 
@@ -51,6 +55,8 @@ public class MinesweeperView extends View {
     private final Paint shownColor;
     private long startTime;
     private final Paint textPaint = new Paint(Color.BLACK);
+    UserRecordDatabase db = Room.databaseBuilder(getContext(),
+            UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
     public MinesweeperView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -197,7 +203,7 @@ public class MinesweeperView extends View {
                                 if (countHiddenAround(i, j) == num) {
                                     textPaint.setColor(Color.BLACK);
                                 } else {
-                                    textPaint.setColor(getResources().getColor(R.color.colorPrimary,null));
+                                    textPaint.setColor(getResources().getColor(R.color.colorPrimary, null));
                                 }
                                 canvas.drawText(Integer.toString(num), (0.5f + i) * boxWidth, (0.75f + j) * boxWidth, textPaint);
                                 break;
@@ -323,9 +329,25 @@ public class MinesweeperView extends View {
         TextView text = dialog.findViewById(R.id.textDialog);
         long emSegundos = (System.currentTimeMillis() - startTime) / 1000;
         String s = getResources().getString(R.string.time_format);
-        text.setText(String.format(getResources().getString(R.string.you_win), String.format(s, emSegundos / 60, emSegundos % 60)));
+        String format = String.format(s, emSegundos / 60, emSegundos % 60);
+
+        new Thread(() -> {
+            try {
+                UserRecord userRecord = new UserRecord();
+                userRecord.setDescription(format);
+                userRecord.setPoints(emSegundos);
+                db.userDao().insertAll(userRecord);
+            } catch (Exception e) {
+                Log.e("MINESWEEPER", "ERROR WHEN CREATING USER RECORD", e);
+            }
+        }).start();
+
+
+        text.setText(String.format(getResources().getString(R.string.you_win), format));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
+
+
         dialogButton.setOnClickListener(v -> {
             MinesweeperView.this.reset();
             dialog.dismiss();
