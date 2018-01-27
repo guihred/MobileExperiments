@@ -281,6 +281,8 @@ public class TetrisView extends View {
         clearMovingPiece();
         if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
             drawPiece();
+            setCurrentJ(getCurrentJ() + 1);
+            return true;
         } else {
             drawPiece(TetrisPieceState.SETTLED);
             final TetrisPiece[] values = TetrisPiece.values();
@@ -298,7 +300,7 @@ public class TetrisView extends View {
             }
 
         }
-        setCurrentJ(getCurrentJ() + 1);
+
         return true;
     }
 
