@@ -20,7 +20,7 @@
             android:parentActivityName=".GamesActivity" />
         <activity
             android:name="red.guih.games.tetris.TetrisActivity"
-            android:parentActivityName=".GamesActivity" >
+            android:parentActivityName=".GamesActivity">
 
         </activity>
         <activity
@@ -29,6 +29,11 @@
         <activity
             android:name="red.guih.games.minesweeper.MinesweeperActivity"
             android:parentActivityName=".GamesActivity" />
+        <activity
+            android:name="red.guih.games.labyrinth.LabyrinthActivity"
+            android:parentActivityName=".GamesActivity">
+
+        </activity>
 
     </application>
 

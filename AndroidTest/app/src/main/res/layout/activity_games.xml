@@ -5,15 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:baselineAligned="true"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:weightSum="3"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -29,7 +27,7 @@
                 android:contentDescription="@string/minesweeper"
                 android:src="@drawable/minesweeper_button"
                 tools:layout_editor_absoluteX="164dp"
-                tools:layout_editor_absoluteY="98dp"/>
+                tools:layout_editor_absoluteY="98dp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -91,8 +89,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -114,6 +113,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/pacman"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/labyrinthButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="@string/labyrinth"
+                android:src="@drawable/labyrinth_button"
+                tools:layout_editor_absoluteX="164dp"
+                tools:layout_editor_absoluteY="98dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/labyrinth"
                 android:textAlignment="center" />
 
         </LinearLayout>
