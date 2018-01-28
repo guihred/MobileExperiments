@@ -10,9 +10,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,11 +27,12 @@ public class LabyrinthView extends View implements SensorEventListener {
     public static final int MAZE_WIDTH = 15;
     public static int MAZE_HEIGHT = 5;
     private LabyrinthSquare[][] maze;
-    private List<RectF> walls = new ArrayList<>();
+    private List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
 
     Paint paint = new Paint();
     float speed = LabyrinthSquare.SQUARE_SIZE / 4;
     private float ballx, bally;
+    private Thread gameLoopThread;
 
 
     public LabyrinthView(Context context, @Nullable AttributeSet attrs) {
@@ -43,7 +46,7 @@ public class LabyrinthView extends View implements SensorEventListener {
         speed = LabyrinthSquare.SQUARE_SIZE / 20;
         ballx = LabyrinthSquare.SQUARE_SIZE / 2;
         bally = LabyrinthSquare.SQUARE_SIZE / 2;
-        ;
+
         CreateLabyrinth.createLabyrinth(maze);
         paint.setColor(Color.BLACK);
 
@@ -52,9 +55,26 @@ public class LabyrinthView extends View implements SensorEventListener {
                 walls.addAll(maze[i][j].updateWalls());
             }
         }
+
+        continueGame();
         invalidate();
     }
+    void continueGame() {
+        if (gameLoopThread == null || !gameLoopThread.isAlive()) {
+            gameLoopThread = new Thread(() -> {
 
+                while (updateBall()) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (Exception e) {
+                        Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                    }
+                }
+
+            });
+            gameLoopThread.start();
+        }
+    }
     private static LabyrinthSquare[][] initializeMaze(Context c) {
         LabyrinthSquare[][] maze = new LabyrinthSquare[MAZE_WIDTH][MAZE_HEIGHT];
         for (int i = 0; i < MAZE_WIDTH; i++) {
@@ -92,34 +112,41 @@ public class LabyrinthView extends View implements SensorEventListener {
             reset();
         }
     }
-
-    long lastUpdate;
-
-
+    float xSpeed, ySpeed;
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        Sensor mySensor = sensorEvent.sensor;
-
-        float x = sensorEvent.values[0];
-        float y = sensorEvent.values[1];
+         xSpeed = sensorEvent.values[0];
+         ySpeed = sensorEvent.values[1];
+    }
+    boolean updateBall(){
         for (int i = 0; i < 10; i++) {
-            ballx -= x * speed;
+            ballx -= xSpeed * speed;
             if (checkCollision(walls)) {
-                ballx += x * speed;
+                ballx += xSpeed * speed;
+                break;
             }
         }
         for (int i = 0; i < 10; i++) {
-            bally += y * speed;
+            bally += ySpeed * speed;
             if (checkCollision(walls)) {
-                bally -= y * speed;
+                bally -= ySpeed * speed;
+                break;
             }
         }
-        invalidate();
+        postInvalidate();
+        return true;
     }
 
+
+
     private boolean checkCollision(List<RectF> observableList) {
-        return observableList.parallelStream()
-                .anyMatch(p -> RectF.intersects(p, getBounds()));
+        RectF bounds = getBounds();
+        for (RectF p : observableList) {
+            if (RectF.intersects(p, bounds)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     RectF bounds = new RectF();
