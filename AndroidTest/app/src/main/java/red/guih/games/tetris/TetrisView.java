@@ -191,14 +191,26 @@ public class TetrisView extends View {
     }
 
     void changeDirection() {
-        TetrisDirection a = direction;
+        TetrisDirection previousDirection = direction;
         direction = direction.next();
-        if (checkCollision(getCurrentI(), getCurrentJ())) {
-            direction = a;
-        } else {
-            clearMovingPiece();
-            drawPiece();
+        int previous = getCurrentI();
+        boolean changed =false;
+        for (int i=0;i<3;i++){
+            int i1 = i == 2 ? -1 : i;
+            if(getCurrentI()+ i1 >=0&&getCurrentI()+ i1 <mapWidth)
+            setCurrentI(previous+ i1);
+            if (!checkCollision(getCurrentI(), getCurrentJ())) {
+                clearMovingPiece();
+                drawPiece();
+                changed=true;
+                break;
+            }
         }
+        if(!changed){
+            setCurrentI(previous);
+            direction=previousDirection;
+        }
+
         invalidate();
     }
 
@@ -228,13 +240,14 @@ public class TetrisView extends View {
 
                 while (movePiecesTimeline()) {
                     try {
-                        Thread.sleep(750);
                         postInvalidate();
+                        Thread.sleep(750);
                     } catch (Exception e) {
                         Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
                     }
                 }
                 gameOver = true;
+                postInvalidate();
             });
             gameLoopThread.start();
         }
@@ -287,6 +300,8 @@ public class TetrisView extends View {
             drawPiece(TetrisPieceState.SETTLED);
             final TetrisPiece[] values = TetrisPiece.values();
             piece = values[random.nextInt(values.length)];
+            TetrisDirection[] directions = TetrisDirection.values();
+            direction= directions[random.nextInt(directions.length)];
             setCurrentJ(0);
             setCurrentI(mapWidth / 2);
             if (checkCollision(getCurrentI(), getCurrentJ())) {

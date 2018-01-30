@@ -85,20 +85,21 @@ public class MadMazeView extends View implements SensorEventListener {
 
 
     boolean updateBall() {
-//        for (int i = 0; i < 10; i++) {
-        ballx -= xSpeed * speed;
-        if (checkCollision(allEdges)) {
-            ballx += xSpeed * speed;
-
+        for (int i = 0; i < 5; i++) {
+            ballx -= xSpeed * speed;
+            if (checkCollision(allEdges)) {
+                ballx += xSpeed * speed;
+                break;
+            }
         }
-//        }
-//        for (int i = 0; i < 10; i++) {
-        bally += ySpeed * speed;
-        if (checkCollision(allEdges)) {
-            bally -= ySpeed * speed;
+        for (int i = 0; i < 5; i++) {
+            bally += ySpeed * speed;
+            if (checkCollision(allEdges)) {
+                bally -= ySpeed * speed;
+                break;
 
+            }
         }
-//        }
         postInvalidate();
         return true;
     }
@@ -120,7 +121,7 @@ public class MadMazeView extends View implements SensorEventListener {
 
     private boolean checkCollision(List<MadEdge> observableList) {
         for (MadEdge p : observableList) {
-            if (p.checkCollisionBounds(ballx, bally) && distance(p) < triangleSide / 5 - 1)
+            if (p.checkCollisionBounds(ballx, bally) && distance(p) < triangleSide / 5)
                 return true;
         }
         return false;
