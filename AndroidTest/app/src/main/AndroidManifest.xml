@@ -34,6 +34,11 @@
             android:parentActivityName=".GamesActivity">
 
         </activity>
+        <activity
+            android:name="red.guih.games.madmaze.MadMazeActivity"
+            android:parentActivityName=".GamesActivity">
+
+        </activity>
 
     </application>
 

@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import red.guih.games.dots.DotsActivity;
-import red.guih.games.labyrinth.LabyrinthActivity;
+import red.guih.games.madmaze.MadMazeActivity;
 import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
 import red.guih.games.tetris.TetrisActivity;
@@ -35,7 +35,7 @@ public class GamesActivity extends AppCompatActivity {
         ImageButton tetrisButton = findViewById(R.id.tetrisButton);
         tetrisButton.setOnClickListener((View v) -> startActivity(new Intent(this, TetrisActivity.class)));
         ImageButton labyrinthButton = findViewById(R.id.labyrinthButton);
-        labyrinthButton.setOnClickListener((View v) -> startActivity(new Intent(this, LabyrinthActivity.class)));
+        labyrinthButton.setOnClickListener((View v) -> startActivity(new Intent(this, MadMazeActivity.class)));
 
     }
 }
