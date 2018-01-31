@@ -5,7 +5,7 @@ public class MadEdge implements Comparable<MadEdge> {
     private MadCell source;
     private MadCell target;
     float a, b, c, sqrt;
-//    float[] bounds;
+    //    float[] bounds;
     float[] xBounds;
     float[] yBounds;
 
@@ -29,8 +29,8 @@ public class MadEdge implements Comparable<MadEdge> {
             float right = (target.getX());
             float bottom = (target.getY());
             float frac = 2;
-            xBounds = new float[]{left + getA()/frac, left - getA()/frac, right - getA()/frac, right + getA()/frac};
-            yBounds = new float[]{top + getB()/frac, top - getB()/frac, bottom - getB()/frac, bottom + getB()/frac};
+            xBounds = new float[]{left + getA() / frac, left - getA() / frac, right - getA() / frac, right + getA() / frac};
+            yBounds = new float[]{top + getB() / frac, top - getB() / frac, bottom - getB() / frac, bottom + getB() / frac};
         }
 //        if (bounds != null)
 //            return bounds;

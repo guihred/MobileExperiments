@@ -27,23 +27,19 @@ public class PacmanView extends View {
 
     public static final int MAZE_WIDTH = 5;
     public static int MAZE_HEIGHT = 5;
-
-    private List<PacmanBall> balls = new ArrayList<>();
-
-    private List<PacmanGhost> ghosts;
     private final Pacman pacman;
-
+    float startX, startY;
+    List<RectF> walls;
+    Thread gameLoopThread;
+    boolean gameOver = false;
+    private List<PacmanBall> balls = new ArrayList<>();
+    private List<PacmanGhost> ghosts;
     private Integer points = (0);
-
     private long time;
     private MazeSquare[][] maze;
 
     public PacmanView(Context context, AttributeSet attrs) {
-        this(context);
-    }
-
-    public PacmanView(Context context) {
-        super(context);
+        super(context,attrs);
         pacman = new Pacman(context, this);
         ghosts =
                 of(PacmanGhost.GhostColor.RED, PacmanGhost.GhostColor.BLUE, PacmanGhost.GhostColor.ORANGE, PacmanGhost.GhostColor.GREEN)
@@ -51,7 +47,27 @@ public class PacmanView extends View {
                         .collect(Collectors.toList());
     }
 
-    float startX, startY;
+    private static MazeSquare[][] initializeMaze(Context c) {
+        MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            for (int j = 0; j < MAZE_HEIGHT; j++) {
+                maze[i][j] = new MazeSquare(c, i, j);
+                if (i == 0) {
+                    maze[0][j].setNorth(false);
+                }
+                if (j == 0) {
+                    maze[i][0].setWest(false);
+                }
+                if (MAZE_HEIGHT - 1 == j && i % 3 == 0) {
+                    maze[i][MAZE_HEIGHT - 1].setEast();
+                }
+                if (MAZE_WIDTH - 1 == i && j % 3 == 0) {
+                    maze[MAZE_WIDTH - 1][j].setSouth();
+                }
+            }
+        }
+        return maze;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -87,7 +103,6 @@ public class PacmanView extends View {
         return true;
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -113,15 +128,11 @@ public class PacmanView extends View {
 
     }
 
-    List<RectF> walls;
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         reset();
     }
-
-    Thread gameLoopThread;
 
     public void reset() {
         MazeSquare.SQUARE_SIZE = getWidth() / MAZE_WIDTH / 2;
@@ -151,7 +162,7 @@ public class PacmanView extends View {
         for (int i = 0; i < 5; i++) {
             int nextInt = random.nextInt(balls.size());
             PacmanBall pacmanBall = balls.get(nextInt);
-            pacmanBall.setSpecial(true);
+            pacmanBall.setSpecial();
         }
         pacman.turn(Pacman.PacmanDirection.RIGHT);
         pacman.setY(MazeSquare.SQUARE_SIZE / 4);
@@ -181,9 +192,6 @@ public class PacmanView extends View {
             gameLoopThread.start();
         }
     }
-
-
-    boolean gameOver = false;
 
     private void showDialog() {
 
@@ -243,28 +251,6 @@ public class PacmanView extends View {
         }
 
         return true;
-    }
-
-    private static MazeSquare[][] initializeMaze(Context c) {
-        MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
-                maze[i][j] = new MazeSquare(c, i, j);
-                if (i == 0) {
-                    maze[0][j].setNorth(false);
-                }
-                if (j == 0) {
-                    maze[i][0].setWest(false);
-                }
-                if (MAZE_HEIGHT - 1 == j && i % 3 == 0) {
-                    maze[i][MAZE_HEIGHT - 1].setEast(true);
-                }
-                if (MAZE_WIDTH - 1 == i && j % 3 == 0) {
-                    maze[MAZE_WIDTH - 1][j].setSouth(true);
-                }
-            }
-        }
-        return maze;
     }
 
     public Integer getPoints() {

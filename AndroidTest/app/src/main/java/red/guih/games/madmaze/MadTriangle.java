@@ -123,7 +123,7 @@ public class MadTriangle {
             t = 1.0f;
         }
 
-        return edge.a.add(ab.mult(t));
+        return edge.a.add(ab.multiply(t));
     }
 
     private static boolean hasSameSign(float a1, float b1) {
@@ -134,8 +134,8 @@ public class MadTriangle {
         return visited;
     }
 
-    public void setVisited(boolean visited) {
-        this.visited = visited;
+    public void setVisited() {
+        this.visited = true;
     }
 
 }

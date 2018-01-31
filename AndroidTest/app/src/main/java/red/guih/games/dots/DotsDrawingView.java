@@ -13,6 +13,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +48,8 @@ import static red.guih.games.dots.StreamHelp.mins;
 import static red.guih.games.dots.StreamHelp.toSet;
 
 public class DotsDrawingView extends View {
-    private static final String TAG ="DRAWING VIEW" ;
+    private static final String TAG = "DRAWING VIEW";
+    public static final int LINE_ANIMATION_DURATION = 500;
     public static int MAZE_WIDTH = 8;
     public static int DIFFICULTY = 2;
 
@@ -58,7 +61,7 @@ public class DotsDrawingView extends View {
     private List<Set<DotsSquare>> whites = Collections.synchronizedList(new ArrayList<>());
     private final Map<String, Set<Set<DotsSquare>>> points = new HashMap<>();
     private int currentPlayer = 1;
-    private String[] jogadores = {"EU", "TU"};
+    private String[] players = {"EU", "TU"};
 
     private Random random = new Random();
 
@@ -84,6 +87,56 @@ public class DotsDrawingView extends View {
 
     @Override
     protected void onDraw(final Canvas canvas) {
+        drawClosedSquares(canvas);
+        drawWhiteSquares(canvas);
+
+        drawCirclesAndConnectedLines(canvas);
+        points.get(players[currentPlayer]);
+//Draw current User line
+        canvas.drawLine(line.startX, line.startY, line.endX, line.endY, this.paint);
+//Draw computer player  lines
+        for (Line l : lines) {
+            canvas.drawLine(l.startX, l.startY, l.endX, l.endY, this.transparent);
+        }
+        paint.setStrokeWidth(2);
+        paint.setColor(Color.BLACK);
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            for (int j = 0; j < MAZE_HEIGHT; j++) {
+                DotsSquare dotsSquare = maze[i][j];
+                float[] center = dotsSquare.getCenter();
+                canvas.drawCircle(center[0], center[1], 5, paint);
+            }
+        }
+    }
+
+    private void drawCirclesAndConnectedLines(Canvas canvas) {
+        paint.setStrokeWidth(2);
+        paint.setColor(Color.BLACK);
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            for (int j = 0; j < MAZE_HEIGHT; j++) {
+                DotsSquare dotsSquare = maze[i][j];
+                float[] center = dotsSquare.getCenter();
+                canvas.drawCircle(center[0], center[1], 5, paint);
+                for (DotsSquare a : dotsSquare.getAdjacencies()) {
+                    float[] center1 = a.getCenter();
+                    canvas.drawLine(center[0], center[1], center1[0], center1[1], this.paint);
+                }
+            }
+        }
+    }
+
+    private void drawWhiteSquares(Canvas canvas) {
+        for (Set<DotsSquare> d : whites) {
+            DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * MAZE_WIDTH + e.j));
+            float[] center = min.getCenter();
+            float left = center[0], top = center[1]; // basically (X1, Y1)
+            float right = left + DotsSquare.SQUARE_SIZE; // width (distance from X1 to X2)
+            float bottom = top + DotsSquare.SQUARE_SIZE; // height (distance from Y1 to Y2)
+            canvas.drawRect(left, top, right, bottom, transparent);
+        }
+    }
+
+    private void drawClosedSquares(Canvas canvas) {
         for (Map.Entry<String, Set<Set<DotsSquare>>> entry : points.entrySet()) {
             Set<Set<DotsSquare>> value = entry.getValue();
             for (Set<DotsSquare> d : value) {
@@ -99,47 +152,6 @@ public class DotsDrawingView extends View {
                     paint.setColor(Color.BLUE);
                 }
                 canvas.drawRect(left, top, right, bottom, paint);
-
-            }
-
-        }
-        for (Set<DotsSquare> d : whites) {
-            DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * MAZE_WIDTH + e.j));
-            float[] center = min.getCenter();
-            float left = center[0], top = center[1]; // basically (X1, Y1)
-            float right = left + DotsSquare.SQUARE_SIZE; // width (distance from X1 to X2)
-            float bottom = top + DotsSquare.SQUARE_SIZE; // height (distance from Y1 to Y2)
-            canvas.drawRect(left, top, right, bottom, transparent);
-        }
-
-
-        paint.setStrokeWidth(2);
-        paint.setColor(Color.BLACK);
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
-                DotsSquare dotsSquare = maze[i][j];
-                float[] center = dotsSquare.getCenter();
-                canvas.drawCircle(center[0], center[1], 5, paint);
-                for (DotsSquare a : dotsSquare.getAdjacencies()) {
-                    float[] center1 = a.getCenter();
-                    canvas.drawLine(center[0], center[1], center1[0], center1[1], this.paint);
-                }
-            }
-        }
-        points.get(jogadores[currentPlayer]);
-        canvas.drawLine(line.startX, line.startY, line.endX, line.endY, this.paint);
-
-
-        for (Line l : lines) {
-            canvas.drawLine(l.startX, l.startY, l.endX, l.endY, this.transparent);
-        }
-        paint.setStrokeWidth(2);
-        paint.setColor(Color.BLACK);
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
-                DotsSquare dotsSquare = maze[i][j];
-                float[] center = dotsSquare.getCenter();
-                canvas.drawCircle(center[0], center[1], 5, paint);
             }
         }
     }
@@ -178,8 +190,8 @@ public class DotsDrawingView extends View {
         return possibilidades;
     }
 
-    private List<Pair> getBestPossibilities(List<Pair> possibilidades) {
-        Log.i(TAG,"Melhor Possibilidade 1");
+    private List<Pair> getBestPossibilities(Collection<Pair> possibilidades) {
+        Log.i(TAG, "Melhor Possibilidade 1");
         Set<Pair> best2 = new HashSet<>();
 
         for (int i = 0; i < MAZE_WIDTH; i++) {
@@ -283,7 +295,7 @@ public class DotsDrawingView extends View {
     }
 
     private List<Pair> getBestPossibilities2(final List<Pair> possibilidades) {
-        Log.i(TAG,"Melhor Possibilidade 2");
+        Log.i(TAG, "Melhor Possibilidade 2");
         return filter(possibilidades, entry -> {
             final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
             if (!checkMelhor) {
@@ -298,7 +310,7 @@ public class DotsDrawingView extends View {
             final boolean criou = hasAnyAlmostSquare();
             entry.getKey().removeAdj(entry.getValue());
             return !criou;
-        },5);
+        }, 5);
     }
 
     boolean hasAnyAlmostSquare() {
@@ -359,7 +371,7 @@ public class DotsDrawingView extends View {
                             if (!collect1.isEmpty()) {
                                 points.get("TU").addAll(collect1);
                             } else {
-                                currentPlayer = (currentPlayer + 1) % jogadores.length;
+                                currentPlayer = (currentPlayer + 1) % players.length;
 
                                 int nplayed = 0;
                                 while (currentPlayer == 0) {
@@ -372,7 +384,7 @@ public class DotsDrawingView extends View {
 
                                     // VERIFY AMONG THE OPTIONS WHICH GIVES LESS POINTS
                                     possibilities = possibilities.isEmpty() ? getBestPossibilities3(todas) : possibilities;
-                                    Log.i(TAG,"BEST POSSIBILITIES FOUND");
+                                    Log.i(TAG, "BEST POSSIBILITIES FOUND");
                                     possibilities = possibilities.isEmpty() ? todas : possibilities;
 
                                     if (possibilities.isEmpty()) {
@@ -406,38 +418,32 @@ public class DotsDrawingView extends View {
                                     PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("endY", kf2, kf3);
                                     Line line2 = new Line(center, center2);
                                     lines.add(line2);
-                                    ObjectAnimator rotationAnim = ObjectAnimator.ofPropertyValuesHolder(line2, pvhRotation, pvhRotation2);
-                                    rotationAnim.setDuration(500);
-                                    rotationAnim.setStartDelay(500 * nplayed);
-                                    rotationAnim.start();
+                                    ObjectAnimator lineAnim = ObjectAnimator.ofPropertyValuesHolder(line2, pvhRotation, pvhRotation2);
+                                    lineAnim.setDuration(LINE_ANIMATION_DURATION);
+                                    lineAnim.setStartDelay(LINE_ANIMATION_DURATION * nplayed);
+                                    lineAnim.start();
                                     nplayed++;
 
-                                    rotationAnim.addUpdateListener(a -> invalidate());
-                                    rotationAnim.addListener(new Animator.AnimatorListener() {
-                                                                 @Override
-                                                                 public void onAnimationStart(Animator animator) {
-
-                                                                 }
-
-                                                                 @Override
-                                                                 public void onAnimationEnd(Animator animator) {
-                                                                     lines.remove(line2);
-                                                                     whites.removeAll(collect3);
-                                                                     if (points.get("EU").size() + points.get("TU").size() == (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) && whites.isEmpty()) {
-                                                                         showDialog();// END OF GAME
-                                                                     }
-                                                                 }
-
-                                                                 @Override
-                                                                 public void onAnimationCancel(Animator animator) {
-
-                                                                 }
-
-                                                                 @Override
-                                                                 public void onAnimationRepeat(Animator animator) {
-
+                                    lineAnim.addUpdateListener(a -> invalidate());
+                                    lineAnim.addListener(new Animator.AnimatorListener() {
+                                                             @Override
+                                                             public void onAnimationStart(Animator animator) {
+                                                             }
+                                                             @Override
+                                                             public void onAnimationEnd(Animator animator) {
+                                                                 lines.remove(line2);
+                                                                 whites.removeAll(collect3);
+                                                                 if (points.get("EU").size() + points.get("TU").size() == (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) && whites.isEmpty()) {
+                                                                     showDialog();// END OF GAME
                                                                  }
                                                              }
+                                                             @Override
+                                                             public void onAnimationCancel(Animator animator) {
+                                                             }
+                                                             @Override
+                                                             public void onAnimationRepeat(Animator animator) {
+                                                             }
+                                                         }
                                     );
 
 
@@ -466,16 +472,19 @@ public class DotsDrawingView extends View {
 
     private DotsSquare getCloserDotsSquare(float x, float y) {
         List<DotsSquare> dotsSquares = flatMap(Arrays.asList(maze), Arrays::asList);
-        return min(dotsSquares, comparing(e -> {
-            float[] center = e.getCenter();
-            float abs = abs(center[0] - x);
-            float abs2 = abs(center[1] - y);
-            return abs * abs + abs2 * abs2;
-        }));
+        return min(dotsSquares, comparing((DotsSquare e) -> getDistance(e, x, y)));
     }
 
-    private List<Pair> getBestPossibilities3(final List<Pair> possibilidades) {
-        Log.i(TAG,"Melhor Possibilidade 3");
+    @NonNull
+    private Float getDistance(DotsSquare e, float x, float y) {
+        float[] center = e.getCenter();
+        float abs = abs(center[0] - x);
+        float abs2 = abs(center[1] - y);
+        return abs * abs + abs2 * abs2;
+    }
+
+    private List<Pair> getBestPossibilities3(final Iterable<Pair> possibilidades) {
+        Log.i(TAG, "Melhor Possibilidade 3");
         return mins(possibilidades, comparing(e -> getCountPair(e.getKey(), e.getValue())));
     }
 
@@ -501,7 +510,7 @@ public class DotsDrawingView extends View {
         DotsSquare a = a1.i < b1.i ? a1 : a1.j < b1.j ? a1 : b1;
         DotsSquare b = b1.i > a1.i ? b1 : b1.j > a1.j ? b1 : a1;
         if (a == b) {
-            Log.e("DOTS DRAWING VIEW","ERRRRRRRRRRRRRROO");
+            Log.e("DOTS DRAWING VIEW", "ERRRRRRRRRRRRRROO");
             return Collections.emptySet();
         }
 

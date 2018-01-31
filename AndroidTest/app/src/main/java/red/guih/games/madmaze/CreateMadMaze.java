@@ -1,6 +1,7 @@
 package red.guih.games.madmaze;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -8,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class CreateMadMaze {
 
-    public static List<MadEdge> createLabyrinth(List<MadCell> allCells) {
+    public static List<MadEdge> createLabyrinth(Collection<MadCell> allCells) {
         CreateMadMaze a = new CreateMadMaze();
         List<MadTriangle> triangulate = a.triangulate(allCells);
         a.handle(triangulate);
@@ -17,14 +18,15 @@ public class CreateMadMaze {
 
     int r = 0;
     List<MadEdge> allEdges;
-    void handle(List<MadTriangle> maze ) {
+
+    void handle(List<MadTriangle> maze) {
         final Random random = new Random();
         final List<MadTriangle> history = new ArrayList<>();
         final List<String> check = new ArrayList<>();
         history.add(maze.get(0));
         while (!history.isEmpty()) {
 
-            maze.get(r).setVisited(true);
+            maze.get(r).setVisited();
             check.clear();
             Optional<MadTriangle> openC = maze.stream().filter(t -> t.hasVertex(maze.get(r).getA())
                     && t.hasVertex(maze.get(r).getB()) && !t.hasVertex(maze.get(r).getC())).filter(e -> !e.isVisited())
@@ -81,7 +83,8 @@ public class CreateMadMaze {
         }
 
     }
-    private List<MadPonto> getPointSet(List<MadCell> all) {
+
+    private List<MadPonto> getPointSet(Collection<MadCell> all) {
         return all.stream().map(c -> new MadPonto(c.getX(), c.getY(), c)).collect(Collectors.toList());
     }
 
@@ -106,14 +109,14 @@ public class CreateMadMaze {
         }
     }
 
-    private List<MadTriangle> triangulate(List<MadCell> all) {
+    private List<MadTriangle> triangulate(Collection<MadCell> all) {
         List<MadTriangle> triangleSoup = new ArrayList<>();
         float maxOfAnyCoordinate = 0.0f;
         List<MadPonto> pointSet = getPointSet(all);
         for (MadPonto vector : pointSet) {
             maxOfAnyCoordinate = Math.max(Math.max(vector.x, vector.y), maxOfAnyCoordinate);
         }
-        // Creates a big traingle which surrounds all the others
+        // Creates a big triangle which surrounds all the others
         maxOfAnyCoordinate *= 16.0D;
         MadPonto p1 = new MadPonto(0.0f, 3.0f * maxOfAnyCoordinate, null);
         MadPonto p2 = new MadPonto(3.0f * maxOfAnyCoordinate, 0.0f, null);
@@ -123,7 +126,7 @@ public class CreateMadMaze {
         for (int i = 0; i < pointSet.size(); i++) {
             MadPonto point = pointSet.get(i);
             MadTriangle triangle = triangleSoup.stream().filter(t6 -> t6.contains(point)).findFirst().orElse(null);
-
+//NO TRIANGLES CONTAIN THE POINT
             if (triangle == null) {
                 MadPonto point2 = pointSet.get(i);
                 Optional<MadEdgeDistance> findFirst = triangleSoup.stream().map(t7 -> t7.findNearestEdge(point2))
@@ -158,6 +161,7 @@ public class CreateMadMaze {
                 legalizeEdge(triangleSoup, triangle3, new MadLinha(edge.a, secondNoneEdgeVertex), pointSet.get(i));
                 legalizeEdge(triangleSoup, triangle4, new MadLinha(edge.b, secondNoneEdgeVertex), pointSet.get(i));
             } else {
+//ONE TRIANGLE CONTAINS THE POINT
                 MadPonto a = triangle.getA();
                 MadPonto b = triangle.getB();
                 MadPonto c = triangle.getC();
@@ -193,6 +197,7 @@ public class CreateMadMaze {
 
         return triangleSoup;
     }
+
     private void getBackIn(List<MadTriangle> createdMaze, List<MadTriangle> history) {
         final MadTriangle remove = history.remove(history.size() - 1);
         r = createdMaze.indexOf(remove);

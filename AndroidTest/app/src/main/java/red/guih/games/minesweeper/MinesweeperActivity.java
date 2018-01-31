@@ -22,6 +22,7 @@ import red.guih.games.minesweeper.db.UserRecordDatabase;
 
 public class MinesweeperActivity extends AppCompatActivity {
 
+    public static final int BOMBS_STEP = 15;
     UserRecordDatabase db = Room.databaseBuilder(this,
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
@@ -66,14 +67,13 @@ public class MinesweeperActivity extends AppCompatActivity {
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
 
-        spinner.setSelection(MinesweeperView.NUMBER_OF_BOMBS / 15 - 1);
+        spinner.setSelection(MinesweeperView.NUMBER_OF_BOMBS / BOMBS_STEP - 1);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
-            MinesweeperView.NUMBER_OF_BOMBS = (spinner.getSelectedItemPosition() + 1) * 15;
+            MinesweeperView.NUMBER_OF_BOMBS = (spinner.getSelectedItemPosition() + 1) * BOMBS_STEP;
             recreate();
-
             dialog.dismiss();
         });
         dialog.setCanceledOnTouchOutside(false);
@@ -88,14 +88,7 @@ public class MinesweeperActivity extends AppCompatActivity {
 
         ArrayAdapter<UserRecord> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, all);
-        new Thread(() -> {
-            List<UserRecord> records = db.userDao().getAll();
-            for (int i = 0; i < records.size(); i++) {
-                records.get(i).setPosition(i + 1);
-            }
-            adapter.addAll(records);
-            recordListView.refreshDrawableState();
-        }).start();
+        new Thread(() -> retrieveRecords(recordListView, adapter)).start();
 
 
         recordListView.setAdapter(adapter);
@@ -104,12 +97,19 @@ public class MinesweeperActivity extends AppCompatActivity {
 
         Button dialogButton = dialog.findViewById(R.id.buttonOK);
         // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
+        dialogButton.setOnClickListener(v -> dialog.dismiss());
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
 
 
+    }
+
+    private void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter) {
+        List<UserRecord> records = db.userDao().getAll();
+        for (int i = 0; i < records.size(); i++) {
+            records.get(i).setPosition(i + 1);
+        }
+        adapter.addAll(records);
+        recordListView.refreshDrawableState();
     }
 }

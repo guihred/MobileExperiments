@@ -79,7 +79,7 @@ class StreamHelp {
         return (T) new ArrayList<>();
     }
 
-    static <E, X> Map<X, List<E>> groupBy(Collection<E> lista, Funct<E, X> function) {
+    static <E, X> Map<X, List<E>> groupBy(Iterable<E> lista, Funct<E, X> function) {
         Map<X, List<E>> hashMap = new HashMap<>();
         for (E e : lista) {
             X apply = function.apply(e);
@@ -89,14 +89,6 @@ class StreamHelp {
             hashMap.get(apply).add(e);
         }
         return hashMap;
-    }
-
-    public static <K, V> V getOrDefault(Map<K, V> map, K get, V orElse) {
-        if (!map.containsKey(get)) {
-            return orElse;
-        }
-
-        return map.get(get);
     }
 
 
@@ -126,7 +118,7 @@ class StreamHelp {
         return min == Float.MAX_VALUE ? orElse : min;
     }
 
-    static <E> E min(Collection<E> a, Comparator<E> func) {
+    static <E> E min(Iterable<E> a, Comparator<E> func) {
         E min = null;
         for (E e : a) {
             if (min == null) {
@@ -139,7 +131,7 @@ class StreamHelp {
         return min;
     }
 
-    static <E> List<E> mins(Collection<E> a, Comparator<E> func) {
+    static <E> List<E> mins(Iterable<E> a, Comparator<E> func) {
         List<E> mins = new ArrayList<>();
         for (E e : a) {
             if (mins.isEmpty()) {
@@ -158,7 +150,7 @@ class StreamHelp {
         return mins;
     }
 
-    static <E, Z> List<Z> flatMap(Collection<E> filter, Funct<? super E, ? extends Collection<? extends Z>> function) {
+    static <E, Z> List<Z> flatMap(Iterable<E> filter, Funct<? super E, ? extends Collection<? extends Z>> function) {
         List<Z> a = new ArrayList<>();
         for (E e : filter) {
             Collection<? extends Z> apply = function.apply(e);

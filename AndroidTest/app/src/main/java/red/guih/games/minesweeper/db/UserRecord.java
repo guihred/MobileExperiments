@@ -26,8 +26,6 @@ public class UserRecord {
     @Ignore
     private Integer position;
 
-
-
     public int getUid() {
         return uid;
     }
@@ -54,7 +52,7 @@ public class UserRecord {
 
     @Override
     public String toString() {
-        return position+" - "+description;
+        return getPosition() + " - " + description;
     }
 
     public Integer getPosition() {
@@ -65,10 +63,3 @@ public class UserRecord {
         this.position = position;
     }
 }
-
-
-/*UserRecordDatabase db = Room.databaseBuilder(getApplicationContext(),
-            UserRecordDatabase.class, "database-name").build();*/
-
-
-

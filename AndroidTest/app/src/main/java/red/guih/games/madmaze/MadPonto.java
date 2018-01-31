@@ -59,7 +59,7 @@ public class MadPonto {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-    public MadPonto mult(float scalar) {
+    public MadPonto multiply(float scalar) {
         return new MadPonto(x * scalar, y * scalar, cell);
     }
 

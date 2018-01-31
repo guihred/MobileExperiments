@@ -1,5 +1,6 @@
 package red.guih.games.pacman;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -8,69 +9,28 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import red.guih.games.R;
 
+@SuppressLint("ViewConstructor")
 public class PacmanGhost extends View {
-    private GhostColor color;
-
-    public enum GhostColor {
-        RED(R.drawable.red_ghost),
-        BLUE(R.drawable.blue_ghost),
-        ORANGE(R.drawable.orange_ghost),
-        GREEN(R.drawable.green_ghost);
-
-        private final int color;
-
-        GhostColor(int color) {
-            this.color = color;
-        }
-
-        public int getColor() {
-            return color;
-        }
-    }
-
-    public enum GhostDirection {
-        EAST(-1, 0),
-        NORTH(0, 2),
-        SOUTH(0, -2),
-        WEST(1, 0),
-        NORTHEAST(-1, 1),
-        SOUTHEAST(-1, -1),
-        NORTHWEST(1, 1),
-        SOUTHWEST(1, -1);
-        private final int x;
-        private final int y;
-
-        GhostDirection(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    class Eye {
-        float x, y;
-    }
-
-
-    public enum GhostStatus {
-        ALIVE,
-        AFRAID,
-        DEAD
-    }
-
+    final int speed = 5;
     int x, y;
+    Drawable drawable;
+    Paint black = new Paint(Color.BLACK);
+    GhostDirection[] ghostDirections = GhostDirection.values();
+    RectF bounds = new RectF(x, y, x + MazeSquare.SQUARE_SIZE * 3 / 4, y + MazeSquare.SQUARE_SIZE * 3 / 4);
+    private GhostColor color;
     private GhostStatus status = (GhostStatus.ALIVE);
     private GhostDirection direction = GhostDirection.NORTH;
     private Eye leftEye = new Eye();
     private Eye rightEye = new Eye();
     private double startX;
     private double startY;
-    Drawable drawable;
-    Paint black = new Paint(Color.BLACK);
+    private Random random = new Random();
 
     public PacmanGhost(GhostColor color, Context c) {
         super(c);
@@ -109,7 +69,7 @@ public class PacmanGhost extends View {
 //		getChildren().add(leftEye);
     }
 
-    boolean checkColision(RectF boundsInParent, List<RectF> walls) {
+    boolean checkColision(RectF boundsInParent, Collection<RectF> walls) {
 
         return walls.parallelStream().anyMatch(b -> RectF.intersects(b, boundsInParent));
 
@@ -119,7 +79,11 @@ public class PacmanGhost extends View {
         return direction;
     }
 
-    final int speed = 5;
+    public void setDirection(GhostDirection direction) {
+        adjustEyes(-1);
+        this.direction = direction;
+        adjustEyes(1);
+    }
 
     public void move(long now, List<RectF> observableList, Pacman pacman) {
         if (status == GhostStatus.ALIVE) {
@@ -227,9 +191,6 @@ public class PacmanGhost extends View {
         }
     }
 
-    GhostDirection[] ghostDirections = GhostDirection.values();
-    private Random random = new Random();
-
     private void randomMovement(long now,
                                 List<RectF> observableList) {
 
@@ -245,12 +206,6 @@ public class PacmanGhost extends View {
         }
     }
 
-    public void setDirection(GhostDirection direction) {
-        adjustEyes(-1);
-        this.direction = direction;
-        adjustEyes(1);
-    }
-
     private void adjustEyes(int mul) {
         rightEye.x += mul * direction.x;
         rightEye.y += mul * direction.y;
@@ -264,14 +219,11 @@ public class PacmanGhost extends View {
         drawable.draw(canvas);
     }
 
-    RectF bounds = new RectF(x, y, x + MazeSquare.SQUARE_SIZE * 3 / 4, y + MazeSquare.SQUARE_SIZE * 3 / 4);
-
     public RectF getBounds() {
         bounds.set(x, y, x + MazeSquare.SQUARE_SIZE * 3 / 4, y + MazeSquare.SQUARE_SIZE * 3 / 4);
 
         return bounds;
     }
-
 
     public final GhostStatus getStatus() {
         return status;
@@ -287,6 +239,52 @@ public class PacmanGhost extends View {
         }
 
         this.status = status;
+    }
+
+    public enum GhostColor {
+        RED(R.drawable.red_ghost),
+        BLUE(R.drawable.blue_ghost),
+        ORANGE(R.drawable.orange_ghost),
+        GREEN(R.drawable.green_ghost);
+
+        private final int color;
+
+        GhostColor(int color) {
+            this.color = color;
+        }
+
+        public int getColor() {
+            return color;
+        }
+    }
+
+    public enum GhostDirection {
+        EAST(-1, 0),
+        NORTH(0, 2),
+        SOUTH(0, -2),
+        WEST(1, 0),
+        NORTHEAST(-1, 1),
+        SOUTHEAST(-1, -1),
+        NORTHWEST(1, 1),
+        SOUTHWEST(1, -1);
+        private final int x;
+        private final int y;
+
+        GhostDirection(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+
+    public enum GhostStatus {
+        ALIVE,
+        AFRAID,
+        DEAD
+    }
+
+    class Eye {
+        float x, y;
     }
 
 }

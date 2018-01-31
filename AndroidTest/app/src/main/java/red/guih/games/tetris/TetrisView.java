@@ -21,8 +21,10 @@ import red.guih.games.R;
 
 public class TetrisView extends View {
 
-    public  int mapHeight = 20;
-    public  int mapWidth = 10;
+    public static final int UPDATE_DELAY_MILLIS = 750;
+    public int mapHeight = 20;
+    public int mapWidth = 10;
+    boolean movedLeftRight = false;
     private int currentI, currentJ;
     private TetrisDirection direction = TetrisDirection.UP;
     private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
@@ -81,10 +83,9 @@ public class TetrisView extends View {
 
         squareSize = getWidth() / mapWidth;
         mapHeight = getHeight() / squareSize;
-        map = new TetrisSquare[mapWidth][mapHeight];
+
         reset();
     }
-
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -131,32 +132,30 @@ public class TetrisView extends View {
         dialog.show();
     }
 
-    boolean movedLeftRight = false;
-
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         int action = e.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                startX = e.getX();
+//                User started to press the screen
+               startX = e.getX();
                 startY = e.getY();
                 movedLeftRight = false;
                 return true;
             case MotionEvent.ACTION_UP:
+//                User ceased to press the screen
                 TetrisDirection direction = getDirection(e);
-
                 if (direction == TetrisDirection.UP && !movedLeftRight)
                     this.changeDirection();
-
                 if (direction == TetrisDirection.DOWN && !movedLeftRight)
                     while (!this.checkCollision(this.getCurrentI(), this.getCurrentJ() + 1)) {
                         this.setCurrentJ(this.getCurrentJ() + 1);
                         this.clearMovingPiece();
                         this.drawPiece();
                     }
-
                 break;
             case MotionEvent.ACTION_MOVE:
+//                User moved to the left or right the screen
                 TetrisDirection code = getDirection(e);
                 int dx = Math.abs((int) ((startX - e.getX()) / squareSize));
                 switch (code) {
@@ -194,21 +193,21 @@ public class TetrisView extends View {
         TetrisDirection previousDirection = direction;
         direction = direction.next();
         int previous = getCurrentI();
-        boolean changed =false;
-        for (int i=0;i<3;i++){
+        boolean changed = false;
+        for (int i = 0; i < 3; i++) {
             int i1 = i == 2 ? -1 : i;
-            if(getCurrentI()+ i1 >=0&&getCurrentI()+ i1 <mapWidth)
-            setCurrentI(previous+ i1);
+            if (getCurrentI() + i1 >= 0 && getCurrentI() + i1 < mapWidth)
+                setCurrentI(previous + i1);
             if (!checkCollision(getCurrentI(), getCurrentJ())) {
                 clearMovingPiece();
                 drawPiece();
-                changed=true;
+                changed = true;
                 break;
             }
         }
-        if(!changed){
+        if (!changed) {
             setCurrentI(previous);
-            direction=previousDirection;
+            direction = previousDirection;
         }
 
         invalidate();
@@ -236,21 +235,22 @@ public class TetrisView extends View {
 
     void continueGame() {
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
-            gameLoopThread = new Thread(() -> {
-
-                while (movePiecesTimeline()) {
-                    try {
-                        postInvalidate();
-                        Thread.sleep(750);
-                    } catch (Exception e) {
-                        Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
-                    }
-                }
-                gameOver = true;
-                postInvalidate();
-            });
+            gameLoopThread = new Thread(this::gameLoop);
             gameLoopThread.start();
         }
+    }
+
+    private void gameLoop() {
+        while (movePiecesTimeline()) {
+            try {
+                postInvalidate();
+                Thread.sleep(UPDATE_DELAY_MILLIS);
+            } catch (Exception e) {
+                Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+            }
+        }
+        gameOver = true;
+        postInvalidate();
     }
 
     void clearMovingPiece() {
@@ -286,8 +286,16 @@ public class TetrisView extends View {
         return currentI;
     }
 
+    public void setCurrentI(int currentI) {
+        this.currentI = currentI;
+    }
+
     public int getCurrentJ() {
         return currentJ;
+    }
+
+    public void setCurrentJ(int currentJ) {
+        this.currentJ = currentJ;
     }
 
     public boolean movePiecesTimeline() {
@@ -301,7 +309,7 @@ public class TetrisView extends View {
             final TetrisPiece[] values = TetrisPiece.values();
             piece = values[random.nextInt(values.length)];
             TetrisDirection[] directions = TetrisDirection.values();
-            direction= directions[random.nextInt(directions.length)];
+            direction = directions[random.nextInt(directions.length)];
             setCurrentJ(0);
             setCurrentI(mapWidth / 2);
             if (checkCollision(getCurrentI(), getCurrentJ())) {
@@ -342,10 +350,10 @@ public class TetrisView extends View {
     }
 
     void reset() {
+        map = new TetrisSquare[mapWidth][mapHeight];
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
-                if (map[i][j] == null)
-                    map[i][j] = new TetrisSquare();
+                map[i][j] = new TetrisSquare();
                 map[i][j].setState(TetrisPieceState.EMPTY);
             }
         }
@@ -362,14 +370,6 @@ public class TetrisView extends View {
             }
         }
         return left;
-    }
-
-    public void setCurrentI(int currentI) {
-        this.currentI = currentI;
-    }
-
-    public void setCurrentJ(int currentJ) {
-        this.currentJ = currentJ;
     }
 
 }

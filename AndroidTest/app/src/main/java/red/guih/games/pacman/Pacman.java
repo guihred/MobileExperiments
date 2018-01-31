@@ -4,6 +4,7 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,31 +12,19 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 
-import java.util.List;
+import java.util.Collection;
 
+@SuppressLint("ViewConstructor")
 public class Pacman extends View {
 
-    float startAngle = 0;
-    float length = 0;
+    public static final float PACMAN_RATIO = 0.5f;
+    private float startAngle = 0;
+    private float length = 0;
+    private ObjectAnimator eatingAnimation;
     private Paint paint = new Paint(Color.YELLOW);
-
     private float x, y;
-
-    public enum PacmanDirection {
-        DOWN(90),
-        LEFT(180),
-        RIGHT(0),
-        UP(270);
-
-        private final int angle;
-
-        PacmanDirection(int angle) {
-            this.angle = angle;
-        }
-    }
-
     private PacmanDirection direction = PacmanDirection.RIGHT;
-    ObjectAnimator eatingAnimation;
+    private RectF bounds = new RectF();
 
     public Pacman(Context c, PacmanView pacmanView) {
         super(c);
@@ -52,23 +41,24 @@ public class Pacman extends View {
     }
 
     public void onDraw(Canvas canvas) {
-        canvas.drawArc(x, y, x + MazeSquare.SQUARE_SIZE * 0.5f, y + MazeSquare.SQUARE_SIZE * 0.5f, (direction == null ? 0 : direction.angle) + startAngle, length, true, paint);
+        canvas.drawArc(x, y, x + getPacmanWidth(), y + getPacmanWidth(), (direction == null ? 0 : direction.angle) + getStartAngle(), getLength(), true, paint);
     }
 
-    private RectF bounds = new RectF();
+    private float getPacmanWidth() {
+        return MazeSquare.SQUARE_SIZE * PACMAN_RATIO;
+    }
 
     public RectF getBounds() {
-        bounds.set(x, y, x + MazeSquare.SQUARE_SIZE * 0.5f, y + MazeSquare.SQUARE_SIZE * 0.5f);
+        bounds.set(x, y, x + getPacmanWidth(), y + getPacmanWidth());
         return bounds;
     }
 
-
-    private boolean checkCollision(List<RectF> observableList) {
+    private boolean checkCollision(Collection<RectF> observableList) {
         return observableList.parallelStream()
                 .anyMatch(p -> RectF.intersects(p, getBounds()));
     }
 
-    public void move(List<RectF> walls) {
+    public void move(Collection<RectF> walls) {
         if (direction == null) {
             return;
         }
@@ -150,5 +140,18 @@ public class Pacman extends View {
 
     public void setLength(float length) {
         this.length = length;
+    }
+
+    public enum PacmanDirection {
+        DOWN(90),
+        LEFT(180),
+        RIGHT(0),
+        UP(270);
+
+        private final int angle;
+
+        PacmanDirection(int angle) {
+            this.angle = angle;
+        }
     }
 }

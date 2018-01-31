@@ -6,7 +6,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.NumberPicker;
 
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)//For backward-compability
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)//For backward-compatibility
 public class MyNumberPicker extends NumberPicker {
 
     public MyNumberPicker(Context context) {

@@ -2,9 +2,11 @@ package red.guih.games.dots;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 class DotsSquare {
@@ -12,6 +14,7 @@ class DotsSquare {
 
     final int i, j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
+    float[] center;
 
     DotsSquare(int i, int j) {
         this.i = i;
@@ -21,7 +24,6 @@ class DotsSquare {
     static void setSquareSize(int squareSize) {
         SQUARE_SIZE = squareSize;
     }
-
 
     void clear() {
         adjacencies.clear();
@@ -37,16 +39,16 @@ class DotsSquare {
     }
 
     float[] getCenter() {
-        return new float[]{i * SQUARE_SIZE + ((float) SQUARE_SIZE) / 2, j * SQUARE_SIZE + ((float) (SQUARE_SIZE)) / 2};
+        if (center != null)
+            return center;
+
+        return center = new float[]{i * SQUARE_SIZE + ((float) SQUARE_SIZE) / 2, j * SQUARE_SIZE + ((float) (SQUARE_SIZE)) / 2};
     }
 
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash += i * 7;
-        hash += j * 11;
-        return hash;
+        return Objects.hash(i, j);
     }
 
     @Override
@@ -118,22 +120,21 @@ class DotsSquare {
 
 
     boolean checkMelhor(DotsSquare adj) {
-        final Set<DotsSquare> arrayList = new HashSet<>(adjacencies);
-        arrayList.add(adj);
-        List<DotsSquare> objects = new ArrayList<>();
-        for (DotsSquare a : arrayList) {
+        final Collection<DotsSquare> adjancenciesCopy = new HashSet<>(adjacencies);
+        adjancenciesCopy.add(adj);
+        for (DotsSquare a : adjancenciesCopy) {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
                         if (a != c && !c.contains(this) && Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
-                            objects.add(c);
+                            return false;
                         }
                     }
                 }
             }
         }
 
-        return objects.isEmpty();
+        return true;
     }
 
     void removeAdj(DotsSquare value) {

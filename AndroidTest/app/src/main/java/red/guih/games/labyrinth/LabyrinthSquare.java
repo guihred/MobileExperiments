@@ -1,5 +1,6 @@
 package red.guih.games.labyrinth;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressLint("ViewConstructor")
 public class LabyrinthSquare extends View {
     public static int SQUARE_SIZE = 20;
     private List<RectF> walls = new ArrayList<>();
@@ -27,21 +29,6 @@ public class LabyrinthSquare extends View {
         this.i = (i);
         this.j = (j);
         paint.setColor(Color.GREEN);
-//        setStyle("-fx-background-color:green;");
-//        styleProperty().bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
-//        setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
-//        final Line line = new Line(0, 0, 0, SQUARE_SIZE);
-//        line.visibleProperty().bind(east.not());
-//        setRight(line);
-//        final Line line2 = new Line(0, 0, SQUARE_SIZE, 0);
-//        line2.visibleProperty().bind(north.not());
-//        setTop(line2);
-//        final Line line3 = new Line(0, 0, 0, SQUARE_SIZE);
-//        line3.visibleProperty().bind(west.not());
-//        setLeft(line3);
-//        final Line line4 = new Line(0, 0, SQUARE_SIZE, 0);
-//        line4.visibleProperty().bind(south.not());
-//        setBottom(line4);
     }
 
     @Override
@@ -77,10 +64,6 @@ public class LabyrinthSquare extends View {
     }
 
 
-    public List<RectF> getBounds() {
-        return walls;
-    }
-
     private void drawWall(Canvas canvas, RectF rectF) {
         canvas.drawRect(rectF, paint);
     }
@@ -102,8 +85,8 @@ public class LabyrinthSquare extends View {
         return west;
     }
 
-    public final void setVisited(final boolean visited) {
-        this.visited = (visited);
+    public final void setVisited() {
+        this.visited = (true);
         updateWalls();
     }
 

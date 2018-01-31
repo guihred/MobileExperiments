@@ -68,18 +68,18 @@ public class MadMazeView extends View implements SensorEventListener {
 
     void continueGame() {
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
-            gameLoopThread = new Thread(() -> {
-
-                while (updateBall()) {
-                    try {
-                        Thread.sleep(10);
-                    } catch (Exception e) {
-                        Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
-                    }
-                }
-
-            });
+            gameLoopThread = new Thread(this::gameLoop);
             gameLoopThread.start();
+        }
+    }
+
+    private void gameLoop() {
+        while (updateBall()) {
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+            }
         }
     }
 
@@ -119,8 +119,8 @@ public class MadMazeView extends View implements SensorEventListener {
 
     }
 
-    private boolean checkCollision(List<MadEdge> observableList) {
-        for (MadEdge p : observableList) {
+    private boolean checkCollision(Iterable<MadEdge> edges) {
+        for (MadEdge p : edges) {
             if (p.checkCollisionBounds(ballx, bally) && distance(p) < triangleSide / 5)
                 return true;
         }

@@ -1,5 +1,6 @@
 package red.guih.games.pacman;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,6 +11,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressLint("ViewConstructor")
 public class MazeSquare extends View {
     public static int SQUARE_SIZE = 20;
     private List<RectF> walls = new ArrayList<>();
@@ -20,8 +22,6 @@ public class MazeSquare extends View {
     private boolean south = (false);
     private Paint paint = new Paint(Color.GREEN);
     final int i, j;
-
-
 
 
     public MazeSquare(Context c, int i, int j) {
@@ -52,7 +52,6 @@ public class MazeSquare extends View {
             drawWall(canvas, w);
         }
     }
-
 
     public List<RectF> updateWalls() {
         walls.clear();
@@ -88,17 +87,12 @@ public class MazeSquare extends View {
 
     }
 
-
-    public List<RectF> getBounds() {
-        return walls;
-    }
-
     private void drawWall(Canvas canvas, RectF rectF) {
         canvas.drawRect(rectF, paint);
     }
 
-    public void setSouth(boolean south) {
-        this.south = (south);
+    public void  setSouth() {
+        this.south = (true);
         updateWalls();
     }
 
@@ -114,8 +108,8 @@ public class MazeSquare extends View {
         return west;
     }
 
-    public final void setVisited(final boolean visited) {
-        this.visited = (visited);
+    public final void setVisited() {
+        this.visited = (true);
         updateWalls();
     }
 
@@ -129,8 +123,8 @@ public class MazeSquare extends View {
     }
 
 
-    public final void setEast(final boolean east) {
-        this.east = (east);
+    public final void setEast() {
+        this.east = (true);
         updateWalls();
     }
 

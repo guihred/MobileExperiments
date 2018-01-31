@@ -15,7 +15,7 @@ import red.guih.games.tetris.TetrisActivity;
 
 /**
  * Main activity which will invoke other games.
- *
+ * <p>
  * Created by guilherme.hmedeiros on 18/01/2018.
  */
 

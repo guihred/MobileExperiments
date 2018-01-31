@@ -60,18 +60,20 @@ public class DotsActivity extends AppCompatActivity {
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            NumberPicker seekBar = dialog.findViewById(R.id.number);
-            int progress = seekBar.getValue();
-            DotsDrawingView.DIFFICULTY = spinner.getSelectedItemPosition() % 3;
-            if (DotsDrawingView.MAZE_WIDTH != progress) {
-                DotsDrawingView.MAZE_WIDTH = progress;
-                recreate();
-            }
-
-            dialog.dismiss();
-        });
+        dialogButton.setOnClickListener(v -> onClickConfigButton(dialog, spinner));
 
         dialog.show();
+    }
+
+    private void onClickConfigButton(Dialog dialog, Spinner spinner) {
+        NumberPicker seekBar = dialog.findViewById(R.id.number);
+        int progress = seekBar.getValue();
+        DotsDrawingView.DIFFICULTY = spinner.getSelectedItemPosition() % 3;
+        if (DotsDrawingView.MAZE_WIDTH != progress) {
+            DotsDrawingView.MAZE_WIDTH = progress;
+            recreate();
+        }
+
+        dialog.dismiss();
     }
 }

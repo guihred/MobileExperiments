@@ -4,6 +4,7 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,15 +12,15 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.view.View;
 
+@SuppressLint("ViewConstructor")
 public class PacmanBall extends View {
-
-    private Boolean special = (false);
-
 
     float radius = 10;
     float x, y;
     ObjectAnimator objectAnimator = new ObjectAnimator();
     Paint paint = new Paint();
+    RectF bounds = new RectF(-radius + x, -radius + y, radius + x, radius + y);
+    private Boolean special = (false);
 
     public PacmanBall(Double x, Double y, Context c) {
         super(c);
@@ -38,11 +39,10 @@ public class PacmanBall extends View {
         return special;
     }
 
-    public final void setSpecial(final boolean special) {
+    public final void setSpecial() {
 
-        this.special = special;
-        if (special) {
-
+        this.special = true;
+        if (true) {
             objectAnimator.setDuration(250);
             objectAnimator.setValues(PropertyValuesHolder.ofKeyframe("radius", Keyframe.ofFloat(0, 10), Keyframe.ofFloat(1, MazeSquare.SQUARE_SIZE / 4)));
             objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
@@ -56,9 +56,9 @@ public class PacmanBall extends View {
 
 
     }
-    RectF bounds=new RectF(-radius + x, -radius + y, radius + x, radius + y);
+
     RectF getBounds() {
-        bounds.set(-radius +x, -radius + y, radius + x, radius + y);
+        bounds.set(-radius + x, -radius + y, radius + x, radius + y);
 
         return bounds;
     }
