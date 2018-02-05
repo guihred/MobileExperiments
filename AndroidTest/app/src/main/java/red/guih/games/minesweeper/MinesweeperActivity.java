@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import red.guih.games.R;
-import red.guih.games.minesweeper.db.UserRecord;
-import red.guih.games.minesweeper.db.UserRecordDatabase;
+import red.guih.games.db.UserRecord;
+import red.guih.games.db.UserRecordDatabase;
 
 public class MinesweeperActivity extends AppCompatActivity {
 

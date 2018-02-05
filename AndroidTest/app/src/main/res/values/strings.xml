@@ -29,7 +29,7 @@
     </string-array>
     <string-array name="maze_mode" >
         <item>Quadrado</item>
-        <item>Traingular</item>
+        <item>Triangular</item>
         <item>Loco</item>
     </string-array>
     <string-array name="dots_difficulty" >

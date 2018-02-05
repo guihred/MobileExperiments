@@ -1,4 +1,4 @@
-package red.guih.games.minesweeper.db;
+package red.guih.games.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

@@ -39,7 +39,7 @@ public class PacmanView extends View {
     private MazeSquare[][] maze;
 
     public PacmanView(Context context, AttributeSet attrs) {
-        super(context,attrs);
+        super(context, attrs);
         pacman = new Pacman(context, this);
         ghosts =
                 of(PacmanGhost.GhostColor.RED, PacmanGhost.GhostColor.BLUE, PacmanGhost.GhostColor.ORANGE, PacmanGhost.GhostColor.GREEN)
@@ -169,7 +169,13 @@ public class PacmanView extends View {
         pacman.setX(MazeSquare.SQUARE_SIZE / 4);
         for (int i = 0; i < ghosts.size(); i++) {
             PacmanGhost ghost = ghosts.get(i);
-            ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), i / 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
+            ghost.setStatus(PacmanGhost.GhostStatus.ALIVE);
+            if (i == 0) {
+                ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), i / 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
+            } else {
+                ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_WIDTH - 1),
+                        (i / 2) * MazeSquare.SQUARE_SIZE * (2 * MAZE_HEIGHT - 1));
+            }
         }
         continueGame();
         gameOver = false;

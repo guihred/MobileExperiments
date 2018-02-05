@@ -1,4 +1,4 @@
-package red.guih.games.minesweeper.db;
+package red.guih.games.db;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
