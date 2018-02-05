@@ -18,16 +18,16 @@ import java.util.List;
 
 public class MadMazeView extends View implements SensorEventListener {
     static final float SQR_ROOT_OF_3 = 1.7320508075688772f;
-    static int MAD_MAZE_OPTION = 2;
     List<MadCell> allCells = new ArrayList<>();
     List<MadEdge> allEdges = new ArrayList<>();
+    float ballx, bally;
+    float triangleSide;
+    float xSpeed, ySpeed;
+    private int madMazeOption = 2;
     private Paint paint = new Paint();
     private Thread gameLoopThread;
     private float speed;
-    float ballx, bally;
-    float triangleSide;
-
-    float xSpeed, ySpeed;
+    private float ballRadius;
 
     public MadMazeView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -43,11 +43,11 @@ public class MadMazeView extends View implements SensorEventListener {
 
 
     public void reset(float maxWidth, float maxHeight) {
-        if (MAD_MAZE_OPTION == 1) {
-            createTrianglesPoints(maxWidth, maxHeight);
-        } else if (MAD_MAZE_OPTION == 0){
+        if (madMazeOption == 0) {
             createSquarePoints(maxWidth, maxHeight);
-        }else{
+        } else if (madMazeOption == 1) {
+            createTrianglesPoints(maxWidth, maxHeight);
+        } else{
             createHexagonalPoints(maxWidth, maxHeight);
         }
         CreateMadMaze labyrinth = CreateMadMaze.createLabyrinth(allCells);
@@ -61,6 +61,7 @@ public class MadMazeView extends View implements SensorEventListener {
     private void createTrianglesPoints(float maxWidth, float maxHeight) {
         int sqrt = 10;
         triangleSide = maxWidth / sqrt;
+        ballRadius = triangleSide / 5;
         speed = triangleSide / 50;
         int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
@@ -78,14 +79,16 @@ public class MadMazeView extends View implements SensorEventListener {
             }
         }
     }
+
     private void createHexagonalPoints(float maxWidth, float maxHeight) {
         int sqrt = 10;
         triangleSide = maxWidth / sqrt;
         speed = triangleSide / 50;
+        ballRadius = triangleSide / 5;
         int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
-            if(i%3==0){
+            if (i % 3 == 0) {
                 continue;
             }
             MadCell cell = new MadCell(i);
@@ -106,18 +109,19 @@ public class MadMazeView extends View implements SensorEventListener {
         int sqrt = 10;
         triangleSide = maxWidth / sqrt;
         speed = triangleSide / 50;
+        ballRadius = triangleSide / 5;
         int m = (int) (maxHeight / triangleSide);
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
             float x = i % sqrt * triangleSide + triangleSide * 1 / 2;
             int j = i / sqrt;
-            float y = j * triangleSide+ triangleSide * 1 / 2;
+            float y = j * triangleSide + triangleSide * 1 / 2;
             cell.relocate(x, y);
             allCells.add(cell);
             if (i == 0) {
-                ballx = x+ triangleSide * 1 / 2;
-                bally = y+ triangleSide * 1 / 2;
+                ballx = x + triangleSide * 1 / 2;
+                bally = y + triangleSide * 1 / 2;
             }
         }
     }
@@ -140,6 +144,13 @@ public class MadMazeView extends View implements SensorEventListener {
         }
     }
 
+    public int getMadMazeOption() {
+        return madMazeOption;
+    }
+
+    public void setMadMazeOption(int madMazeOption) {
+        this.madMazeOption = madMazeOption;
+    }
 
     boolean updateBall() {
         for (int i = 0; i < 5; i++) {
@@ -165,10 +176,10 @@ public class MadMazeView extends View implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         xSpeed = sensorEvent.values[0];
-        xSpeed = Math.abs(xSpeed) > 10 ? Math.signum(xSpeed) * 10 : xSpeed;
+        xSpeed = Math.signum(xSpeed) * Math.min(Math.abs(xSpeed),10) ;
 
         ySpeed = sensorEvent.values[1];
-        ySpeed = Math.abs(ySpeed) > 10 ? Math.signum(ySpeed) * 10 : ySpeed;
+        ySpeed = Math.signum(ySpeed) * Math.min(Math.abs(ySpeed),10);
     }
 
     @Override
@@ -178,7 +189,7 @@ public class MadMazeView extends View implements SensorEventListener {
 
     private boolean checkCollision(Iterable<MadEdge> edges) {
         for (MadEdge p : edges) {
-            if (p.checkCollisionBounds(ballx, bally) && distance(p) < triangleSide / 5)
+            if (p.checkCollisionBounds(ballx, bally) && distance(p) < ballRadius)
                 return true;
         }
         return false;
@@ -194,7 +205,8 @@ public class MadMazeView extends View implements SensorEventListener {
         for (MadEdge c : allEdges) {
             gc.drawLine(c.getSource().x, c.getSource().y, c.getTarget().x, c.getTarget().y, paint);
         }
-        gc.drawCircle(ballx, bally, triangleSide / 5, paint);
+
+        gc.drawCircle(ballx, bally, ballRadius, paint);
     }
 
 

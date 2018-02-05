@@ -22,7 +22,7 @@ import red.guih.games.minesweeper.db.UserRecordDatabase;
 
 public class MinesweeperActivity extends AppCompatActivity {
 
-    public static final int BOMBS_STEP = 15;
+
     UserRecordDatabase db = Room.databaseBuilder(this,
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
@@ -67,12 +67,12 @@ public class MinesweeperActivity extends AppCompatActivity {
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
 
-        spinner.setSelection(MinesweeperView.NUMBER_OF_BOMBS / BOMBS_STEP - 1);
+        spinner.setSelection(MinesweeperView.NUMBER_OF_BOMBS /MinesweeperView.BOMBS_STEP - 1);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
-            MinesweeperView.NUMBER_OF_BOMBS = (spinner.getSelectedItemPosition() + 1) * BOMBS_STEP;
+            MinesweeperView.NUMBER_OF_BOMBS = (spinner.getSelectedItemPosition() + 1) * MinesweeperView.BOMBS_STEP;
             recreate();
             dialog.dismiss();
         });
@@ -105,7 +105,7 @@ public class MinesweeperActivity extends AppCompatActivity {
     }
 
     private void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter) {
-        List<UserRecord> records = db.userDao().getAll();
+        List<UserRecord> records = db.userDao().getAll(MinesweeperView.NUMBER_OF_BOMBS,UserRecord.MINESWEEPER);
         for (int i = 0; i < records.size(); i++) {
             records.get(i).setPosition(i + 1);
         }

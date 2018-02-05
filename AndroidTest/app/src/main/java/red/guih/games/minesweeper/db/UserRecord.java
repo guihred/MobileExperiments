@@ -14,15 +14,21 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class UserRecord {
     public static final String DATABASE_NAME = "USER_RECORDS";
+    public static final String MINESWEEPER = "Minesweeper";
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     private int uid;
 
     @ColumnInfo(name = "first_name")
     private String description;
 
+    @ColumnInfo(name = "gameName")
+    private String gameName;
+
     @ColumnInfo(name = "points")
     private Long points;
+    @ColumnInfo(name = "difficulty")
+    private Integer difficulty;
     @Ignore
     private Integer position;
 
@@ -61,5 +67,21 @@ public class UserRecord {
 
     public void setPosition(Integer position) {
         this.position = position;
+    }
+
+    public Integer getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(Integer difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public String getGameName() {
+        return gameName;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
     }
 }

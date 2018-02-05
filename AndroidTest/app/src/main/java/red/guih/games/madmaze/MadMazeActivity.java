@@ -69,12 +69,12 @@ public class MadMazeActivity extends AppCompatActivity {
             // set the custom minesweeper_dialog components - text, image and button
             Spinner spinner = dialog.findViewById(R.id.mazeMode);
 
-            spinner.setSelection(labyrinthView.MAD_MAZE_OPTION);
+            spinner.setSelection(labyrinthView.getMadMazeOption());
 
             Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom minesweeper_dialog
             dialogButton.setOnClickListener(v -> {
-                labyrinthView.MAD_MAZE_OPTION = spinner.getSelectedItemPosition();
+                labyrinthView.setMadMazeOption(spinner.getSelectedItemPosition());
                 recreate();
                 dialog.dismiss();
             });

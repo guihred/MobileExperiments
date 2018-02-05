@@ -32,11 +32,11 @@ import static java.lang.Math.abs;
  */
 
 public class MinesweeperView extends View {
-
+    public static final int BOMBS_STEP = 15;
     public static final int DELAY_LONG_PRESS = 500;
     public int mapHeight = 30;
     public int mapWidth = 16;
-    public static int NUMBER_OF_BOMBS = 50;
+    public static int NUMBER_OF_BOMBS = 45;
     private int boxWidth = 50;
     private boolean goneFlag;
     private final Handler handler = new Handler();
@@ -370,6 +370,9 @@ public class MinesweeperView extends View {
             UserRecord userRecord = new UserRecord();
             userRecord.setDescription(format);
             userRecord.setPoints(emSegundos);
+            userRecord.setGameName(UserRecord.MINESWEEPER);
+
+            userRecord.setDifficulty(NUMBER_OF_BOMBS);
             db.userDao().insertAll(userRecord);
         } catch (Exception e) {
             Log.e("MINESWEEPER", "ERROR WHEN CREATING USER RECORD", e);
