@@ -89,8 +89,8 @@ public class DotsDrawingView extends View {
     protected void onDraw(final Canvas canvas) {
         drawClosedSquares(canvas);
         drawWhiteSquares(canvas);
-
         drawCirclesAndConnectedLines(canvas);
+
         points.get(players[currentPlayer]);
 //Draw current User line
         canvas.drawLine(line.startX, line.startY, line.endX, line.endY, this.paint);
@@ -186,7 +186,6 @@ public class DotsDrawingView extends View {
             }
         }
         Collections.shuffle(possibilidades);
-
         return possibilidades;
     }
 
@@ -429,6 +428,7 @@ public class DotsDrawingView extends View {
                                                              @Override
                                                              public void onAnimationStart(Animator animator) {
                                                              }
+
                                                              @Override
                                                              public void onAnimationEnd(Animator animator) {
                                                                  lines.remove(line2);
@@ -437,9 +437,11 @@ public class DotsDrawingView extends View {
                                                                      showDialog();// END OF GAME
                                                                  }
                                                              }
+
                                                              @Override
                                                              public void onAnimationCancel(Animator animator) {
                                                              }
+
                                                              @Override
                                                              public void onAnimationRepeat(Animator animator) {
                                                              }

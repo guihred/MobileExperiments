@@ -43,6 +43,11 @@ public class MadPonto {
     public float dot(MadPonto vector) {
         return x * vector.x + y * vector.y;
     }
+    public float distance(MadPonto vector) {
+        float dx = x - vector.x;
+        float dy = y * vector.y;
+        return dx*dx + dy*dy;
+    }
 
     @Override
     public boolean equals(Object obj) {

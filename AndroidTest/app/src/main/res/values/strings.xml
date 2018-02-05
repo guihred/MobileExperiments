@@ -18,13 +18,19 @@
     <string name="size">Tamanho</string>
     <string name="tetris">Tetris</string>
     <string name="records">Recordes</string>
-    <string name="labyrinth">Labyrinth</string>
+    <string name="labyrinth">Labirinto</string>
+    <string name="mode">Modo</string>
     <string-array name="difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>
         <item>Médio</item>
         <item>Difícil</item>
         <item>Muito Difícil</item>
+    </string-array>
+    <string-array name="maze_mode" >
+        <item>Quadrado</item>
+        <item>Traingular</item>
+        <item>Loco</item>
     </string-array>
     <string-array name="dots_difficulty" >
         <item>Fácil</item>

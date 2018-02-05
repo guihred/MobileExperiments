@@ -77,7 +77,7 @@ public class MinesweeperView extends View {
     private void clickEvent(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
-        MinesweeperSquare mem = (getBestSquareMatch(x, y));
+        MinesweeperSquare mem = getBestSquareMatch(x, y);
         if (mem == null)
             return;
 
@@ -236,7 +236,7 @@ public class MinesweeperView extends View {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int width = this.getWidth();
-        boxWidth = (width / mapWidth);
+        boxWidth = width / mapWidth;
         mapHeight = this.getHeight() / boxWidth;
         textPaint.setTextSize(boxWidth - 5);
         textPaint.setTextAlign(Paint.Align.CENTER);
@@ -269,7 +269,7 @@ public class MinesweeperView extends View {
     }
 
     private void reset() {
-        nPlayed = (0);
+        nPlayed = 0;
         initializeMines();
         addRandomBombs();
         setNumbersAroundBombs();

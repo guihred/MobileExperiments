@@ -10,6 +10,7 @@ public class MadTriangle {
 
     private MadPonto c;
     private boolean visited;
+    private MadPonto center;
 
     public MadTriangle(MadPonto a, MadPonto b, MadPonto c) {
         this.a = a;
@@ -53,6 +54,14 @@ public class MadTriangle {
     public String toString() {
         return "MadTriangle [a=" + a + ", b=" + b + ", c=" + c + ", visited=" + visited + "]";
     }
+
+    public MadPonto getCenter() {
+        if (center == null) {
+            center = a.add(b).add(c).multiply(1.0f / 3);
+        }
+        return center;
+    }
+
 
     public MadPonto getC() {
         return c;

@@ -9,15 +9,16 @@ import java.util.stream.Collectors;
 
 public class CreateMadMaze {
 
-    public static List<MadEdge> createLabyrinth(Collection<MadCell> allCells) {
+    int r = 0;
+    List<MadEdge> allEdges;
+    List<MadTriangle> triangles;
+
+    public static CreateMadMaze createLabyrinth(Collection<MadCell> allCells) {
         CreateMadMaze a = new CreateMadMaze();
         List<MadTriangle> triangulate = a.triangulate(allCells);
         a.handle(triangulate);
-        return a.allEdges;
+        return a;
     }
-
-    int r = 0;
-    List<MadEdge> allEdges;
 
     void handle(List<MadTriangle> maze) {
         final Random random = new Random();
@@ -57,31 +58,22 @@ public class CreateMadMaze {
             history.add(maze.get(r));
             final String direction = check.get(random.nextInt(check.size()));
             if ("A".equals(direction) && openA.isPresent()) {
-                MadTriangle madTriangle = openA.get();
-                MadCell cellB = maze.get(r).getB().getCell();
-                MadCell cellC = maze.get(r).getC().getCell();
-                allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellB)
-                        || e.getSource().equals(cellB) && e.getTarget().equals(cellC));
-                r = maze.indexOf(madTriangle);
+                linkNeighborTriangles(maze, openA.get(), maze.get(r).getB().getCell(), maze.get(r).getC().getCell());
             }
             if ("B".equals(direction) && openB.isPresent()) {
-                MadTriangle madTriangle = openB.get();
-                MadCell cellA = maze.get(r).getA().getCell();
-                MadCell cellC = maze.get(r).getC().getCell();
-                allEdges.removeIf(e -> e.getSource().equals(cellC) && e.getTarget().equals(cellA)
-                        || e.getSource().equals(cellA) && e.getTarget().equals(cellC));
-                r = maze.indexOf(madTriangle);
+                linkNeighborTriangles(maze, openB.get(), maze.get(r).getC().getCell(), maze.get(r).getA().getCell());
             }
             if ("C".equals(direction) && openC.isPresent()) {
-                MadTriangle madTriangle = openC.get();
-                MadCell cellA = maze.get(r).getA().getCell();
-                MadCell cellB = maze.get(r).getB().getCell();
-                allEdges.removeIf(e -> e.getSource().equals(cellB) && e.getTarget().equals(cellA)
-                        || e.getSource().equals(cellA) && e.getTarget().equals(cellB));
-                r = maze.indexOf(madTriangle);
+                linkNeighborTriangles(maze, openC.get(), maze.get(r).getA().getCell(), maze.get(r).getB().getCell());
             }
         }
 
+    }
+
+    private void linkNeighborTriangles(List<MadTriangle> maze, MadTriangle open1, MadCell cell2, MadCell cell3) {
+        allEdges.removeIf(e -> e.getSource().equals(cell3) && e.getTarget().equals(cell2)
+                || e.getSource().equals(cell2) && e.getTarget().equals(cell3));
+        r = maze.indexOf(open1);
     }
 
     private List<MadPonto> getPointSet(Collection<MadCell> all) {
@@ -116,7 +108,7 @@ public class CreateMadMaze {
         for (MadPonto vector : pointSet) {
             maxOfAnyCoordinate = Math.max(Math.max(vector.x, vector.y), maxOfAnyCoordinate);
         }
-        // Creates a big triangle which surrounds all the others
+        // Creates a big triangles which surrounds all the others
         maxOfAnyCoordinate *= 16.0D;
         MadPonto p1 = new MadPonto(0.0f, 3.0f * maxOfAnyCoordinate, null);
         MadPonto p2 = new MadPonto(3.0f * maxOfAnyCoordinate, 0.0f, null);
@@ -194,7 +186,7 @@ public class CreateMadMaze {
             allEdges.add(new MadEdge(cellb, cellc));
             allEdges.add(new MadEdge(cellc, cella));
         }
-
+        triangles = triangleSoup;
         return triangleSoup;
     }
 

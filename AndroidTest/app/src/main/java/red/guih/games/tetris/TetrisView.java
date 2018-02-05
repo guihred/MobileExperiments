@@ -63,18 +63,17 @@ public class TetrisView extends View {
         float x = e.getX();
         float y = e.getY();
         if (Math.abs(startX - x) > Math.abs(startY - y)) {
-            if ((startX - x) > 0) {
-                return (TetrisDirection.LEFT);
-            } else {
-                return (TetrisDirection.RIGHT);
+            if (startX - x > 0) {
+                return TetrisDirection.LEFT;
             }
-        } else {
-            if ((startY - y) > 0) {
-                return (TetrisDirection.UP);
-            } else {
-                return TetrisDirection.DOWN;
-            }
+            return TetrisDirection.RIGHT;
         }
+
+        if (startY - y >= 0) {
+            return TetrisDirection.UP;
+        }
+        return TetrisDirection.DOWN;
+
     }
 
     @Override
@@ -138,7 +137,7 @@ public class TetrisView extends View {
         switch (action) {
             case MotionEvent.ACTION_DOWN:
 //                User started to press the screen
-               startX = e.getX();
+                startX = e.getX();
                 startY = e.getY();
                 movedLeftRight = false;
                 return true;

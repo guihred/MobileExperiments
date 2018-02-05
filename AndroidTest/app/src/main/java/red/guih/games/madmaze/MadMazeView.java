@@ -18,6 +18,7 @@ import java.util.List;
 
 public class MadMazeView extends View implements SensorEventListener {
     static final float SQR_ROOT_OF_3 = 1.7320508075688772f;
+    static int MAD_MAZE_OPTION = 2;
     List<MadCell> allCells = new ArrayList<>();
     List<MadEdge> allEdges = new ArrayList<>();
     private Paint paint = new Paint();
@@ -37,15 +38,31 @@ public class MadMazeView extends View implements SensorEventListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        execute(getWidth(), getHeight());
+        reset(getWidth(), getHeight());
     }
 
 
-    public void execute(float maxWidth, float maxHeight) {
+    public void reset(float maxWidth, float maxHeight) {
+        if (MAD_MAZE_OPTION == 1) {
+            createTrianglesPoints(maxWidth, maxHeight);
+        } else if (MAD_MAZE_OPTION == 0){
+            createSquarePoints(maxWidth, maxHeight);
+        }else{
+            createHexagonalPoints(maxWidth, maxHeight);
+        }
+        CreateMadMaze labyrinth = CreateMadMaze.createLabyrinth(allCells);
+        allEdges = labyrinth.allEdges;
+        MadPonto center = labyrinth.triangles.get(0).getCenter();
+        ballx = center.getX();
+        bally = center.getY();
+        continueGame();
+    }
+
+    private void createTrianglesPoints(float maxWidth, float maxHeight) {
         int sqrt = 10;
         triangleSide = maxWidth / sqrt;
-        int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         speed = triangleSide / 50;
+        int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
@@ -59,12 +76,52 @@ public class MadMazeView extends View implements SensorEventListener {
                 ballx = x;
                 bally = y + triangleSide * 3 / 4;
             }
-
-
         }
-        allEdges = CreateMadMaze.createLabyrinth(allCells);
-        continueGame();
     }
+    private void createHexagonalPoints(float maxWidth, float maxHeight) {
+        int sqrt = 10;
+        triangleSide = maxWidth / sqrt;
+        speed = triangleSide / 50;
+        int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
+        int size = sqrt * m;
+        for (int i = 0; i < size; i++) {
+            if(i%3==0){
+                continue;
+            }
+            MadCell cell = new MadCell(i);
+            float x = i % sqrt * triangleSide + (i / sqrt % 2 == 0 ? 0 : -triangleSide / 2) + triangleSide * 3 / 4;
+            int j = i / sqrt;
+            float k = j * triangleSide;
+            float y = k * SQR_ROOT_OF_3 / 2 + triangleSide / 2;
+            cell.relocate(x, y);
+            allCells.add(cell);
+            if (i == 0) {
+                ballx = x;
+                bally = y + triangleSide * 3 / 4;
+            }
+        }
+    }
+
+    private void createSquarePoints(float maxWidth, float maxHeight) {
+        int sqrt = 10;
+        triangleSide = maxWidth / sqrt;
+        speed = triangleSide / 50;
+        int m = (int) (maxHeight / triangleSide);
+        int size = sqrt * m;
+        for (int i = 0; i < size; i++) {
+            MadCell cell = new MadCell(i);
+            float x = i % sqrt * triangleSide + triangleSide * 1 / 2;
+            int j = i / sqrt;
+            float y = j * triangleSide+ triangleSide * 1 / 2;
+            cell.relocate(x, y);
+            allCells.add(cell);
+            if (i == 0) {
+                ballx = x+ triangleSide * 1 / 2;
+                bally = y+ triangleSide * 1 / 2;
+            }
+        }
+    }
+
 
     void continueGame() {
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
