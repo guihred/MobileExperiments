@@ -39,6 +39,11 @@
             android:parentActivityName=".GamesActivity">
 
         </activity>
+        <activity
+            android:name="red.guih.games.puzzle.PuzzleActivity"
+            android:parentActivityName=".GamesActivity">
+
+        </activity>
 
     </application>
 

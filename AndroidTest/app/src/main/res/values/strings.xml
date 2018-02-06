@@ -20,6 +20,7 @@
     <string name="records">Recordes</string>
     <string name="labyrinth">Labirinto</string>
     <string name="mode">Modo</string>
+    <string name="puzzle">Quebra-Cabeça</string>
     <string-array name="difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>
