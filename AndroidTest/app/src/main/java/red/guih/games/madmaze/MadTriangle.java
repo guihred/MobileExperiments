@@ -4,21 +4,21 @@ import java.util.Arrays;
 
 public class MadTriangle {
 
-    private MadPonto a;
+    private MadPoint a;
 
-    private MadPonto b;
+    private MadPoint b;
 
-    private MadPonto c;
+    private MadPoint c;
     private boolean visited;
-    private MadPonto center;
+    private MadPoint center;
 
-    public MadTriangle(MadPonto a, MadPonto b, MadPonto c) {
+    public MadTriangle(MadPoint a, MadPoint b, MadPoint c) {
         this.a = a;
         this.b = b;
         this.c = c;
     }
 
-    public boolean contains(MadPonto point) {
+    public boolean contains(MadPoint point) {
         float pab = point.sub(a).cross(b.sub(a));
         float pbc = point.sub(b).cross(c.sub(b));
         if (!hasSameSign(pab, pbc)) {
@@ -28,25 +28,25 @@ public class MadTriangle {
         return hasSameSign(pab, pca);
     }
 
-    public MadEdgeDistance findNearestEdge(MadPonto point) {
+    public MadEdgeDistance findNearestEdge(MadPoint point) {
         MadEdgeDistance[] edges = new MadEdgeDistance[3];
 
-        edges[0] = new MadEdgeDistance(new MadLinha(a, b),
-                computeClosestPoint(new MadLinha(a, b), point).sub(point).mag());
-        edges[1] = new MadEdgeDistance(new MadLinha(b, c),
-                computeClosestPoint(new MadLinha(b, c), point).sub(point).mag());
-        edges[2] = new MadEdgeDistance(new MadLinha(c, a),
-                computeClosestPoint(new MadLinha(c, a), point).sub(point).mag());
+        edges[0] = new MadEdgeDistance(new MadLine(a, b),
+                computeClosestPoint(new MadLine(a, b), point).sub(point).mag());
+        edges[1] = new MadEdgeDistance(new MadLine(b, c),
+                computeClosestPoint(new MadLine(b, c), point).sub(point).mag());
+        edges[2] = new MadEdgeDistance(new MadLine(c, a),
+                computeClosestPoint(new MadLine(c, a), point).sub(point).mag());
 
         Arrays.sort(edges);
         return edges[0];
     }
 
-    public MadPonto getA() {
+    public MadPoint getA() {
         return a;
     }
 
-    public MadPonto getB() {
+    public MadPoint getB() {
         return b;
     }
 
@@ -55,7 +55,7 @@ public class MadTriangle {
         return "MadTriangle [a=" + a + ", b=" + b + ", c=" + c + ", visited=" + visited + "]";
     }
 
-    public MadPonto getCenter() {
+    public MadPoint getCenter() {
         if (center == null) {
             center = a.add(b).add(c).multiply(1.0f / 3);
         }
@@ -63,11 +63,11 @@ public class MadTriangle {
     }
 
 
-    public MadPonto getC() {
+    public MadPoint getC() {
         return c;
     }
 
-    public MadPonto getNoneEdgeVertex(MadLinha edge) {
+    public MadPoint getNoneEdgeVertex(MadLine edge) {
         if (a != edge.a && a != edge.b) {
             return a;
         } else if (b != edge.a && b != edge.b) {
@@ -78,11 +78,11 @@ public class MadTriangle {
         return null;
     }
 
-    public boolean hasVertex(MadPonto vertex) {
+    public boolean hasVertex(MadPoint vertex) {
         return a == vertex || b == vertex || c == vertex;
     }
 
-    public boolean isNeighbour(MadLinha edge) {
+    public boolean isNeighbour(MadLine edge) {
 
         return (a == edge.a || b == edge.a || c == edge.a) && (a == edge.b || b == edge.b || c == edge.b);
     }
@@ -99,7 +99,7 @@ public class MadTriangle {
         return det > 0.0D;
     }
 
-    public boolean isPointInCircumcircle(MadPonto point) {
+    public boolean isPointInCircumcircle(MadPoint point) {
         float a11 = a.x - point.x;
         float a21 = b.x - point.x;
         float a31 = c.x - point.x;
@@ -122,8 +122,8 @@ public class MadTriangle {
         return det < 0.0D;
     }
 
-    private static MadPonto computeClosestPoint(MadLinha edge, MadPonto point) {
-        MadPonto ab = edge.b.sub(edge.a);
+    private static MadPoint computeClosestPoint(MadLine edge, MadPoint point) {
+        MadPoint ab = edge.b.sub(edge.a);
         float t = point.sub(edge.a).dot(ab) / ab.dot(ab);
 
         if (t < 0.0f) {

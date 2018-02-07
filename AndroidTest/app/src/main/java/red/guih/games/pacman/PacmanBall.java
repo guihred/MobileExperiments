@@ -20,7 +20,7 @@ public class PacmanBall extends View {
     ObjectAnimator objectAnimator = new ObjectAnimator();
     Paint paint = new Paint();
     RectF bounds = new RectF(-radius + x, -radius + y, radius + x, radius + y);
-    private Boolean special = (false);
+    private Boolean special = false;
 
     public PacmanBall(Double x, Double y, Context c) {
         super(c);
@@ -42,17 +42,12 @@ public class PacmanBall extends View {
     public final void setSpecial() {
 
         this.special = true;
-        if (true) {
-            objectAnimator.setDuration(250);
-            objectAnimator.setValues(PropertyValuesHolder.ofKeyframe("radius", Keyframe.ofFloat(0, 10), Keyframe.ofFloat(1, MazeSquare.SQUARE_SIZE / 4)));
-            objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
-            objectAnimator.setRepeatMode(ValueAnimator.REVERSE);
-            objectAnimator.setTarget(this);
-            objectAnimator.start();
-        } else {
-            radius = 10;
-            objectAnimator.pause();
-        }
+        objectAnimator.setDuration(250);
+        objectAnimator.setValues(PropertyValuesHolder.ofKeyframe("radius", Keyframe.ofFloat(0, 10), Keyframe.ofFloat(1, MazeSquare.SQUARE_SIZE / 4)));
+        objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
+        objectAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        objectAnimator.setTarget(this);
+        objectAnimator.start();
 
 
     }
@@ -74,10 +69,12 @@ public class PacmanBall extends View {
                 '}';
     }
 
+    @SuppressWarnings("unused")
     public float getRadius() {
         return radius;
     }
 
+    @SuppressWarnings("unused")
     public void setRadius(float radius) {
         this.radius = radius;
     }

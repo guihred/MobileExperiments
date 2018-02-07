@@ -21,6 +21,7 @@
     <string name="labyrinth">Labirinto</string>
     <string name="mode">Modo</string>
     <string name="puzzle">Quebra-Cabeça</string>
+    <string name="image">Imagem</string>
     <string-array name="difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>
@@ -37,6 +38,10 @@
         <item>Fácil</item>
         <item>Médio</item>
         <item>Difícil</item>
+    </string-array>
+    <string-array name="puzzle_images" >
+        <item>Mona Lisa</item>
+        <item>Cavalo</item>
     </string-array>
 
 </resources>

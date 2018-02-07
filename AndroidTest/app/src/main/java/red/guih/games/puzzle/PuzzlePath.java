@@ -16,8 +16,8 @@ public enum PuzzlePath {
     ZIGZAGGED((x, y) -> p -> {
         float i = Math.signum(x + y);
 
-        p.rLineTo(nonZero(i * y * PuzzlePiece.SQRT_2, x / 2f), nonZero(i * x * PuzzlePiece.SQRT_2, y / 2f));
-        p.rLineTo(nonZero(i * -y * PuzzlePiece.SQRT_2, x / 2f), nonZero(i * -x * PuzzlePiece.SQRT_2, y / 2f));
+        p.rLineTo(nonZero(i * y * PuzzlePiece.SQRT_0_5, x / 2f), nonZero(i * x * PuzzlePiece.SQRT_0_5, y / 2f));
+        p.rLineTo(nonZero(i * -y * PuzzlePiece.SQRT_0_5, x / 2f), nonZero(i * -x * PuzzlePiece.SQRT_0_5, y / 2f));
 
     }),
     SQUARE((x, y) -> p -> {

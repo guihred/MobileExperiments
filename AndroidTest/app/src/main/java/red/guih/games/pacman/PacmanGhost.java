@@ -24,7 +24,7 @@ public class PacmanGhost extends View {
     GhostDirection[] ghostDirections = GhostDirection.values();
     RectF bounds = new RectF(x, y, x + MazeSquare.SQUARE_SIZE * 3 / 4, y + MazeSquare.SQUARE_SIZE * 3 / 4);
     private GhostColor color;
-    private GhostStatus status = (GhostStatus.ALIVE);
+    private GhostStatus status = GhostStatus.ALIVE;
     private GhostDirection direction = GhostDirection.NORTH;
     private Eye leftEye = new Eye();
     private Eye rightEye = new Eye();
@@ -91,14 +91,14 @@ public class PacmanGhost extends View {
         } else if (status == GhostStatus.DEAD) {
 
             if (startX > x) {
-                x += (speed);
+                x += speed;
             } else if (startX < x) {
-                x -= (speed);
+                x -= speed;
             }
             if (startY > y) {
-                y += (speed);
+                y += speed;
             } else if (startY < y) {
-                y -= (speed);
+                y -= speed;
             }
             if (Math.abs(startX - x) < 3 && Math.abs(startY - y) < 3) {
                 setStatus(GhostStatus.ALIVE);
@@ -153,8 +153,8 @@ public class PacmanGhost extends View {
     }
 
     public void setStartPosition(int startX, int startY) {
-        x = (startX);
-        y = (startY);
+        x = startX;
+        y = startY;
         this.startX = startX;
         this.startY = startY;
     }
@@ -171,31 +171,19 @@ public class PacmanGhost extends View {
         }
         return hy < 0 ? GhostDirection.SOUTH : GhostDirection.NORTH;
     }
-    private GhostDirection changeDirection2(double hx, double hy) {
-        if (Math.abs(Math.abs(hx) - Math.abs(hy)) < 30) {
-            if (hx > 0) {
-                return hy < 0 ? GhostDirection.NORTHWEST : GhostDirection.SOUTHWEST;
-            }
-            return hy > 0 ? GhostDirection.SOUTHEAST : GhostDirection.NORTHEAST;
-        }
-        if (Math.abs(hx) < Math.abs(hy)) {
-            return hy < 0 ? GhostDirection.SOUTH : GhostDirection.NORTH;
-        }
-        return hx > 0 ? GhostDirection.EAST : GhostDirection.WEST;
-    }
 
     private void addTranslate(final int step) {
         if (getDirection() != null) {
-            y += (getDirection().y * step);
-            x += (getDirection().x * step);
+            y += getDirection().y * step;
+            x += getDirection().x * step;
         }
     }
 
     private void randomMovement(long now,
-                                List<RectF> observableList) {
+                                List<RectF> walls) {
 
         addTranslate(speed);
-        if (checkColision(getBounds(), observableList)) {
+        if (checkColision(getBounds(), walls)) {
             addTranslate(-speed);
             setDirection(ghostDirections[random.nextInt(ghostDirections.length)]);
         }
@@ -209,8 +197,8 @@ public class PacmanGhost extends View {
     private void adjustEyes(int mul) {
         rightEye.x += mul * direction.x;
         rightEye.y += mul * direction.y;
-        leftEye.y += (mul * direction.y);
-        leftEye.x += (mul * direction.x);
+        leftEye.y += mul * direction.y;
+        leftEye.x += mul * direction.x;
     }
 
     @Override

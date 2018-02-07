@@ -76,19 +76,19 @@ public class CreateMadMaze {
         r = maze.indexOf(open1);
     }
 
-    private List<MadPonto> getPointSet(Collection<MadCell> all) {
-        return all.stream().map(c -> new MadPonto(c.getX(), c.getY(), c)).collect(Collectors.toList());
+    private List<MadPoint> getPointSet(Collection<MadCell> all) {
+        return all.stream().map(c -> new MadPoint(c.getX(), c.getY(), c)).collect(Collectors.toList());
     }
 
-    private void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLinha edge,
-                              MadPonto newVertex) {
+    private void legalizeEdge(List<MadTriangle> triangleSoup1, MadTriangle triangle, MadLine edge,
+                              MadPoint newVertex) {
         MadTriangle neighbourMadTriangle = triangleSoup1.stream().filter(t -> t.isNeighbour(edge) && t != triangle)
                 .findFirst().orElse(null);
         if (neighbourMadTriangle != null && neighbourMadTriangle.isPointInCircumcircle(newVertex)) {
             triangleSoup1.remove(triangle);
             triangleSoup1.remove(neighbourMadTriangle);
 
-            MadPonto noneEdgeVertex = neighbourMadTriangle.getNoneEdgeVertex(edge);
+            MadPoint noneEdgeVertex = neighbourMadTriangle.getNoneEdgeVertex(edge);
 
             MadTriangle firstMadTriangle = new MadTriangle(noneEdgeVertex, edge.a, newVertex);
             MadTriangle secondMadTriangle = new MadTriangle(noneEdgeVertex, edge.b, newVertex);
@@ -96,44 +96,44 @@ public class CreateMadMaze {
             triangleSoup1.add(firstMadTriangle);
             triangleSoup1.add(secondMadTriangle);
 
-            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLinha(noneEdgeVertex, edge.a), newVertex);
-            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLinha(noneEdgeVertex, edge.b), newVertex);
+            legalizeEdge(triangleSoup1, firstMadTriangle, new MadLine(noneEdgeVertex, edge.a), newVertex);
+            legalizeEdge(triangleSoup1, secondMadTriangle, new MadLine(noneEdgeVertex, edge.b), newVertex);
         }
     }
 
     private List<MadTriangle> triangulate(Collection<MadCell> all) {
         List<MadTriangle> triangleSoup = new ArrayList<>();
         float maxOfAnyCoordinate = 0.0f;
-        List<MadPonto> pointSet = getPointSet(all);
-        for (MadPonto vector : pointSet) {
+        List<MadPoint> pointSet = getPointSet(all);
+        for (MadPoint vector : pointSet) {
             maxOfAnyCoordinate = Math.max(Math.max(vector.x, vector.y), maxOfAnyCoordinate);
         }
         // Creates a big triangles which surrounds all the others
         maxOfAnyCoordinate *= 16.0D;
-        MadPonto p1 = new MadPonto(0.0f, 3.0f * maxOfAnyCoordinate, null);
-        MadPonto p2 = new MadPonto(3.0f * maxOfAnyCoordinate, 0.0f, null);
-        MadPonto p3 = new MadPonto(-3.0f * maxOfAnyCoordinate, -3.0f * maxOfAnyCoordinate, null);
+        MadPoint p1 = new MadPoint(0.0f, 3 * maxOfAnyCoordinate, null);
+        MadPoint p2 = new MadPoint(3 * maxOfAnyCoordinate, 0.0f, null);
+        MadPoint p3 = new MadPoint(-3 * maxOfAnyCoordinate, -3 * maxOfAnyCoordinate, null);
         MadTriangle superMadTriangle = new MadTriangle(p1, p2, p3);
         triangleSoup.add(superMadTriangle);
         for (int i = 0; i < pointSet.size(); i++) {
-            MadPonto point = pointSet.get(i);
+            MadPoint point = pointSet.get(i);
             MadTriangle triangle = triangleSoup.stream().filter(t6 -> t6.contains(point)).findFirst().orElse(null);
 //NO TRIANGLES CONTAIN THE POINT
             if (triangle == null) {
-                MadPonto point2 = pointSet.get(i);
+                MadPoint point2 = pointSet.get(i);
                 Optional<MadEdgeDistance> findFirst = triangleSoup.stream().map(t7 -> t7.findNearestEdge(point2))
                         .sorted().findFirst();
                 if (!findFirst.isPresent()) {
                     continue;
                 }
-                MadLinha edge = findFirst.get().edge;
+                MadLine edge = findFirst.get().edge;
 
                 MadTriangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst().orElse(null);
                 MadTriangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst()
                         .orElse(null);
 
-                MadPonto firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
-                MadPonto secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);
+                MadPoint firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
+                MadPoint secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);
 
                 triangleSoup.remove(first);
                 triangleSoup.remove(second);
@@ -148,15 +148,15 @@ public class CreateMadMaze {
                 triangleSoup.add(triangle3);
                 triangleSoup.add(triangle4);
 
-                legalizeEdge(triangleSoup, triangle1, new MadLinha(edge.a, firstNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle2, new MadLinha(edge.b, firstNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle3, new MadLinha(edge.a, secondNoneEdgeVertex), pointSet.get(i));
-                legalizeEdge(triangleSoup, triangle4, new MadLinha(edge.b, secondNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle1, new MadLine(edge.a, firstNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle2, new MadLine(edge.b, firstNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle3, new MadLine(edge.a, secondNoneEdgeVertex), pointSet.get(i));
+                legalizeEdge(triangleSoup, triangle4, new MadLine(edge.b, secondNoneEdgeVertex), pointSet.get(i));
             } else {
 //ONE TRIANGLE CONTAINS THE POINT
-                MadPonto a = triangle.getA();
-                MadPonto b = triangle.getB();
-                MadPonto c = triangle.getC();
+                MadPoint a = triangle.getA();
+                MadPoint b = triangle.getB();
+                MadPoint c = triangle.getC();
 
                 triangleSoup.remove(triangle);
 
@@ -168,9 +168,9 @@ public class CreateMadMaze {
                 triangleSoup.add(second);
                 triangleSoup.add(third);
 
-                legalizeEdge(triangleSoup, first, new MadLinha(a, b), pointSet.get(i));
-                legalizeEdge(triangleSoup, second, new MadLinha(b, c), pointSet.get(i));
-                legalizeEdge(triangleSoup, third, new MadLinha(c, a), pointSet.get(i));
+                legalizeEdge(triangleSoup, first, new MadLine(a, b), pointSet.get(i));
+                legalizeEdge(triangleSoup, second, new MadLine(b, c), pointSet.get(i));
+                legalizeEdge(triangleSoup, third, new MadLine(c, a), pointSet.get(i));
             }
         }
 

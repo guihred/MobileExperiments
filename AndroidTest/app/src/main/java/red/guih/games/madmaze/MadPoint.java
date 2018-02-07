@@ -2,11 +2,11 @@ package red.guih.games.madmaze;
 
 import java.util.Objects;
 
-public class MadPonto {
+public class MadPoint {
     float x, y;
     MadCell cell;
 
-    public MadPonto(float x, float y, MadCell c) {
+    public MadPoint(float x, float y, MadCell c) {
         this.x = x;
         this.y = y;
         cell = c;
@@ -32,21 +32,16 @@ public class MadPonto {
         return cell;
     }
 
-    public MadPonto add(MadPonto vector) {
-        return new MadPonto(x + vector.x, y + vector.y, cell);
+    public MadPoint add(MadPoint vector) {
+        return new MadPoint(x + vector.x, y + vector.y, cell);
     }
 
-    public float cross(MadPonto vector) {
+    public float cross(MadPoint vector) {
         return y * vector.x - x * vector.y;
     }
 
-    public float dot(MadPonto vector) {
+    public float dot(MadPoint vector) {
         return x * vector.x + y * vector.y;
-    }
-    public float distance(MadPonto vector) {
-        float dx = x - vector.x;
-        float dy = y * vector.y;
-        return dx*dx + dy*dy;
     }
 
     @Override
@@ -64,12 +59,12 @@ public class MadPonto {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-    public MadPonto multiply(float scalar) {
-        return new MadPonto(x * scalar, y * scalar, cell);
+    public MadPoint multiply(float scalar) {
+        return new MadPoint(x * scalar, y * scalar, cell);
     }
 
-    public MadPonto sub(MadPonto vector) {
-        return new MadPonto(x - vector.x, y - vector.y, cell);
+    public MadPoint sub(MadPoint vector) {
+        return new MadPoint(x - vector.x, y - vector.y, cell);
     }
 
     @Override

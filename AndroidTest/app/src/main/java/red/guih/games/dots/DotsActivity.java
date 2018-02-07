@@ -22,7 +22,7 @@ public class DotsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dots);
         ActionBar a = getSupportActionBar();
-        if(a!=null){
+        if (a != null) {
             a.setTitle(R.string.link_dots);
             a.setDisplayHomeAsUpEnabled(true);
         }

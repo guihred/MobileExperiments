@@ -15,19 +15,19 @@ import java.util.List;
 public class MazeSquare extends View {
     public static int SQUARE_SIZE = 20;
     private List<RectF> walls = new ArrayList<>();
-    private boolean visited = (false);
-    private boolean west = (false);
-    private boolean east = (false);
-    private boolean north = (false);
-    private boolean south = (false);
+    private boolean visited = false;
+    private boolean west = false;
+    private boolean east = false;
+    private boolean north = false;
+    private boolean south = false;
     private Paint paint = new Paint(Color.GREEN);
     final int i, j;
 
 
     public MazeSquare(Context c, int i, int j) {
         super(c);
-        this.i = (i);
-        this.j = (j);
+        this.i = i;
+        this.j = j;
         paint.setColor(Color.GREEN);
 //        setStyle("-fx-background-color:green;");
 //        styleProperty().bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
@@ -92,7 +92,7 @@ public class MazeSquare extends View {
     }
 
     public void  setSouth() {
-        this.south = (true);
+        this.south = true;
         updateWalls();
     }
 
@@ -109,12 +109,12 @@ public class MazeSquare extends View {
     }
 
     public final void setVisited() {
-        this.visited = (true);
+        this.visited = true;
         updateWalls();
     }
 
     public final void setWest(final boolean west) {
-        this.west = (west);
+        this.west = west;
         updateWalls();
     }
 
@@ -124,7 +124,7 @@ public class MazeSquare extends View {
 
 
     public final void setEast() {
-        this.east = (true);
+        this.east = true;
         updateWalls();
     }
 
@@ -134,7 +134,7 @@ public class MazeSquare extends View {
 
 
     public final void setNorth(final boolean north) {
-        this.north = (north);
+        this.north = north;
         updateWalls();
     }
 

@@ -42,7 +42,7 @@ class DotsSquare {
         if (center != null)
             return center;
 
-        return center = new float[]{i * SQUARE_SIZE + ((float) SQUARE_SIZE) / 2, j * SQUARE_SIZE + ((float) (SQUARE_SIZE)) / 2};
+        return center = new float[]{i * SQUARE_SIZE + SQUARE_SIZE / 2f, j * SQUARE_SIZE + SQUARE_SIZE / 2f};
     }
 
 
@@ -75,7 +75,7 @@ class DotsSquare {
         for (DotsSquare a : adjacencies) {
 
             for (DotsSquare b : a.adjacencies) {
-                if ((b != DotsSquare.this)) {
+                if (b != DotsSquare.this) {
                     for (DotsSquare c : b.adjacencies) {
                         if (a != c && c.contains(DotsSquare.this))
                             pontos.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));

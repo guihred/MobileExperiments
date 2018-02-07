@@ -1,10 +1,12 @@
 package red.guih.games.puzzle;
 
 /**
+ * Class for keeping 2d coordinates
+ *
  * Created by guilherme.hmedeiros on 06/02/2018.
  */
 
-public class Point3D {
+public class Point2D {
      float x,y;
 
     public float getX() {
@@ -23,14 +25,11 @@ public class Point3D {
         this.y = y;
     }
 
-    public Point3D subtract(Point3D intersectedPoint) {
-        x=x-intersectedPoint.x;
-        y=y-intersectedPoint.y;
+    public Point2D subtract(Point2D intersectedPoint) {
+        x -= intersectedPoint.x;
+        y -= intersectedPoint.y;
         return this;
 
     }
 
-    public float magnitude() {
-        return (float) Math.sqrt(x*x+y*y);
-    }
 }

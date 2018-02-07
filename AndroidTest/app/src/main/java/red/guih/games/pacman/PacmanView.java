@@ -26,6 +26,7 @@ import static java.util.stream.Stream.of;
 public class PacmanView extends View {
 
     public static final int MAZE_WIDTH = 5;
+    public static final int GHOST_AFRAID_TIME = 200;
     public static int MAZE_HEIGHT = 5;
     private final Pacman pacman;
     float startX, startY;
@@ -34,7 +35,7 @@ public class PacmanView extends View {
     boolean gameOver = false;
     private List<PacmanBall> balls = new ArrayList<>();
     private List<PacmanGhost> ghosts;
-    private Integer points = (0);
+    private Integer points = 0;
     private long time;
     private MazeSquare[][] maze;
 
@@ -82,13 +83,13 @@ public class PacmanView extends View {
                 float x = event.getX();
                 float y = event.getY();
                 if (Math.abs(startX - x) > Math.abs(startY - y)) {
-                    if ((startX - x) > 0) {
+                    if (startX - x > 0) {
                         pacman.turn(Pacman.PacmanDirection.LEFT);
                     } else {
                         pacman.turn(Pacman.PacmanDirection.RIGHT);
                     }
                 } else {
-                    if ((startY - y) > 0) {
+                    if (startY - y > 0) {
                         pacman.turn(Pacman.PacmanDirection.UP);
                     } else {
                         pacman.turn(Pacman.PacmanDirection.DOWN);
@@ -171,10 +172,10 @@ public class PacmanView extends View {
             PacmanGhost ghost = ghosts.get(i);
             ghost.setStatus(PacmanGhost.GhostStatus.ALIVE);
             if (i == 0) {
-                ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), i / 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
+                ghost.setStartPosition(MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
             } else {
                 ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_WIDTH - 1),
-                        (i / 2) * MazeSquare.SQUARE_SIZE * (2 * MAZE_HEIGHT - 1));
+                        i / 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_HEIGHT - 1));
             }
         }
         continueGame();
@@ -185,7 +186,6 @@ public class PacmanView extends View {
     void continueGame() {
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
             gameLoopThread = new Thread(() -> {
-
                 while (gameLoop(System.currentTimeMillis())) {
                     try {
                         Thread.sleep(50);
@@ -234,7 +234,7 @@ public class PacmanView extends View {
             if (bal.stream().anyMatch(PacmanBall::isSpecial)) {
                 ghosts.stream().filter(g -> g.getStatus() == PacmanGhost.GhostStatus.ALIVE)
                         .forEach(g -> g.setStatus(PacmanGhost.GhostStatus.AFRAID));
-                time = 200;
+                time = GHOST_AFRAID_TIME;
             }
         }
         List<PacmanGhost> gh = ghosts.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds()))

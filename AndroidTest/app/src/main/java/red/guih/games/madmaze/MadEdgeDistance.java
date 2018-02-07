@@ -1,5 +1,7 @@
 package red.guih.games.madmaze;
 
+import android.support.annotation.NonNull;
+
 /**
  * Class made to keep track of distance
  *
@@ -9,15 +11,15 @@ package red.guih.games.madmaze;
 public class MadEdgeDistance implements Comparable<MadEdgeDistance> {
 
     protected float distance;
-    protected MadLinha edge;
+    protected MadLine edge;
 
-    public MadEdgeDistance(MadLinha edge, float distance) {
+    public MadEdgeDistance(MadLine edge, float distance) {
         this.edge = edge;
         this.distance = distance;
     }
 
     @Override
-    public int compareTo(MadEdgeDistance o) {
+    public int compareTo(@NonNull MadEdgeDistance o) {
         return Double.compare(distance, o.distance);
     }
 

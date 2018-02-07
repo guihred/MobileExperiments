@@ -27,17 +27,16 @@ import static java.util.stream.Collectors.toList;
 
 public class PuzzleView extends View {
 
-    public static final int PUZZLE_WIDTH = 4;
-    public static final int PUZZLE_HEIGHT = 6;
+    public static int PUZZLE_WIDTH = 4;
+    public static int PUZZLE_HEIGHT = 6;
 
     PuzzlePiece[][] puzzle;
     private int width;
     private int height;
-    private Point3D intersectedPoint;
+    private Point2D intersectedPoint;
     private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
     private List<PuzzlePiece> chosenPuzzleGroup;
     private long startTime;
-
 
     final UserRecordDatabase db = Room.databaseBuilder(getContext(),
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
@@ -84,8 +83,8 @@ public class PuzzleView extends View {
                 if (intersectedPoint == null || chosenPuzzleGroup == null) {
                     return true;
                 }
-                Point3D intersectedPoint2 = getIntersectedPoint(e);
-                Point3D subtract = intersectedPoint2.subtract(intersectedPoint);
+                Point2D intersectedPoint2 = getIntersectedPoint(e);
+                Point2D subtract = intersectedPoint2.subtract(intersectedPoint);
 
 
                 chosenPuzzleGroup.forEach(i -> i.move(subtract));
@@ -195,8 +194,8 @@ public class PuzzleView extends View {
         linkedPieces.add(containsPuzzle);
     }
 
-    private Point3D getIntersectedPoint(MotionEvent e) {
-        Point3D point3D = new Point3D();
+    private Point2D getIntersectedPoint(MotionEvent e) {
+        Point2D point3D = new Point2D();
         point3D.x = e.getX();
         point3D.y = e.getY();
         return point3D;
@@ -278,6 +277,11 @@ public class PuzzleView extends View {
             }
         }
         return puzzlePieces;
+    }
+
+    public static void setPuzzleDimensions(int progress) {
+        PuzzleView.PUZZLE_WIDTH = progress;
+        PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
     }
 
 }

@@ -1,5 +1,7 @@
 package red.guih.games.madmaze;
 
+import android.support.annotation.NonNull;
+
 public class MadEdge implements Comparable<MadEdge> {
 
     private MadCell source;
@@ -24,18 +26,14 @@ public class MadEdge implements Comparable<MadEdge> {
 
     public void getBounds() {
         if (xBounds == null || yBounds == null) {
-            float left = (source.getX());
-            float top = (source.getY());
-            float right = (target.getX());
-            float bottom = (target.getY());
+            float left = source.getX();
+            float top = source.getY();
+            float right = target.getX();
+            float bottom = target.getY();
             float frac = 2;
             xBounds = new float[]{left + getA() / frac, left - getA() / frac, right - getA() / frac, right + getA() / frac};
             yBounds = new float[]{top + getB() / frac, top - getB() / frac, bottom - getB() / frac, bottom + getB() / frac};
         }
-//        if (bounds != null)
-//            return bounds;
-//
-//        return bounds = new float[]{xBounds[0], yBounds[0], xBounds[1], yBounds[1], xBounds[1], yBounds[1], xBounds[2], yBounds[2], xBounds[2], yBounds[2], xBounds[3], yBounds[3], xBounds[3], yBounds[3], xBounds[0], yBounds[0]};
 
     }
 
@@ -49,8 +47,8 @@ public class MadEdge implements Comparable<MadEdge> {
         int i, j;
         boolean c = false;
         for (i = 0, j = 3; i < 4; j = i++) {
-            if (((verty[i] > testy) != (verty[j] > testy)) &&
-                    (testx < (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i]))
+            if (verty[i] > testy != verty[j] > testy &&
+                    testx < (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i])
                 c = !c;
         }
         return c;
@@ -58,12 +56,12 @@ public class MadEdge implements Comparable<MadEdge> {
 
 
     @Override
-    public int compareTo(MadEdge o) {
+    public int compareTo(@NonNull MadEdge o) {
         return 0;
     }
 
-    public float distance(float ballx, float bally) {
-        return Math.abs(getA() * ballx + getB() * bally + getC()) / getSqrt();
+    public float distance(float ballX, float ballY) {
+        return Math.abs(getA() * ballX + getB() * ballY + getC()) / getSqrt();
     }
 
     private float getSqrt() {

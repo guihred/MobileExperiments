@@ -52,7 +52,7 @@ public class MadMazeView extends View implements SensorEventListener {
         }
         CreateMadMaze labyrinth = CreateMadMaze.createLabyrinth(allCells);
         allEdges = labyrinth.allEdges;
-        MadPonto center = labyrinth.triangles.get(0).getCenter();
+        MadPoint center = labyrinth.triangles.get(0).getCenter();
         ballx = center.getX();
         bally = center.getY();
         continueGame();

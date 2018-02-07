@@ -6,7 +6,6 @@
 package red.guih.games.minesweeper;
 
 /**
- *
  * @author Note
  */
 public class MinesweeperSquare {
@@ -17,12 +16,12 @@ public class MinesweeperSquare {
         FLAGGED
     }
 
-	private final int i, j;
-	private MinesweeperImage minesweeperImage = (MinesweeperImage.BLANK);
-	private int num;
-    private State state = (State.HIDDEN);
+    private final int i, j;
+    private MinesweeperImage minesweeperImage = MinesweeperImage.BLANK;
+    private int num;
+    private State state = State.HIDDEN;
 
-	public MinesweeperSquare(int i, int j) {
+    public MinesweeperSquare(int i, int j) {
         this.i = i;
         this.j = j;
     }
@@ -34,36 +33,36 @@ public class MinesweeperSquare {
     }
 
     public final MinesweeperImage getMinesweeperImage() {
-		return minesweeperImage;
-	}
+        return minesweeperImage;
+    }
 
-	public int getNum() {
-		return num;
-	}
+    public int getNum() {
+        return num;
+    }
 
-	public final State getState() {
-		return state;
-	}
+    public final State getState() {
+        return state;
+    }
 
-	public final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
-		this.minesweeperImage=(minesweeperImage);
-	}
+    public final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
+        this.minesweeperImage = minesweeperImage;
+    }
 
-	public void setNum(int num) {
-		this.num = num;
-	}
+    public void setNum(int num) {
+        this.num = num;
+    }
 
 
-	public final void setState(final State state) {
-		this.state=(state);
-	}
+    public final void setState(final State state) {
+        this.state = state;
+    }
 
-	public int getJ() {
-		return j;
-	}
+    public int getJ() {
+        return j;
+    }
 
-	public int getI() {
-		return i;
-	}
+    public int getI() {
+        return i;
+    }
 
 }
