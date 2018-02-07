@@ -131,6 +131,7 @@ public class PuzzlePiece {
 
     public void setImage(Bitmap image) {
         this.image = image;
+        getPaint().setShader(getImagePattern());
     }
 
     public void setLeft(PuzzlePath left) {
@@ -161,9 +162,6 @@ public class PuzzlePiece {
         this.layoutX = layoutX;
     }
 
-    public void setScale(float scalex) {
-        getPaint().setShader(getImagePattern());
-    }
 
 
     public void draw(Canvas canvas) {

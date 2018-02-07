@@ -1,5 +1,7 @@
 package red.guih.games.puzzle;
 
+import android.app.Dialog;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,18 +11,21 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 import red.guih.games.R;
+import red.guih.games.db.UserRecord;
+import red.guih.games.db.UserRecordDatabase;
 
 import static java.util.stream.Collectors.toList;
 
 
-public class PuzzleModel extends View {
+public class PuzzleView extends View {
 
     public static final int PUZZLE_WIDTH = 4;
     public static final int PUZZLE_HEIGHT = 6;
@@ -31,9 +36,12 @@ public class PuzzleModel extends View {
     private Point3D intersectedPoint;
     private List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
     private List<PuzzlePiece> chosenPuzzleGroup;
+    private long startTime;
 
 
-    public PuzzleModel(Context c, AttributeSet v) {
+    UserRecordDatabase db = Room.databaseBuilder(getContext(),
+            UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
+    public PuzzleView(Context c, AttributeSet v) {
         super(c, v);
 
     }
@@ -55,6 +63,7 @@ public class PuzzleModel extends View {
 
     private void reset() {
         puzzle = initializePieces();
+        linkedPieces.clear();
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
                 List<PuzzlePiece> e = new ArrayList<>();
@@ -62,6 +71,8 @@ public class PuzzleModel extends View {
                 linkedPieces.add(e);
             }
         }
+        startTime=System.currentTimeMillis();
+        invalidate();
     }
 
     @Override
@@ -94,21 +105,25 @@ public class PuzzleModel extends View {
                                 if (checkNeighbours(piece, puzzlePiece)) {
                                     if (distance(puzzlePiece, piece) < width * width / 16) {
 
-                                        Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
-                                        if (containsPuzzle.isPresent()
-                                                && !containsP.equals(containsPuzzle.get())) {
-                                            containsPuzzle.get().addAll(containsP);
+                                        List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
+                                        if (containsPuzzle!=null
+                                                && !containsP.equals(containsPuzzle)) {
+                                            containsPuzzle.addAll(containsP);
                                             linkedPieces.remove(containsP);
                                             float a = xDistance(puzzlePiece, piece);
                                             float b = yDistance(puzzlePiece, piece);
 //                                          containsPuzzle.get().forEach(PuzzlePiece::toFront);
-                                            toFront(containsPuzzle.get());
+                                            toFront(containsPuzzle);
                                             containsP.forEach(z -> z.move(a, b));
-                                            List<?> puzzlePieces1 = linkedPieces;
-                                            Log.i("PUZZLE", puzzlePieces1.size() + " " + puzzlePieces1);
+                                            Log.i("PUZZLE", linkedPieces.size() + " " + linkedPieces);
                                             invalidate();
                                             chosenPuzzleGroup = null;
                                             intersectedPoint = null;
+                                            if(linkedPieces.size()==1){
+                                                showDialogWinning();
+                                            }
+
+
                                             return true;
                                         }
                                     }
@@ -123,10 +138,9 @@ public class PuzzleModel extends View {
             case MotionEvent.ACTION_DOWN:
                 if (intersectedPoint == null) {
                     intersectedPoint = getIntersectedPoint(e);
-                    Optional<List<PuzzlePiece>> contains = groupWhichContains();
-                    if (contains.isPresent()) {
-
-                        chosenPuzzleGroup = contains.get();
+                    List<PuzzlePiece> contains = groupWhichContains();
+                    if (contains!=null) {
+                        chosenPuzzleGroup = contains;
                         toFront(chosenPuzzleGroup);
                     }
                 }
@@ -137,7 +151,44 @@ public class PuzzleModel extends View {
         invalidate();
         return true;
     }
+    private void showDialogWinning() {
+        invalidate();
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.minesweeper_dialog);
+        dialog.setTitle(R.string.game_over);
 
+        // set the custom minesweeper_dialog components - text, image and button
+        TextView text = dialog.findViewById(R.id.textDialog);
+        long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
+        String s = getResources().getString(R.string.time_format);
+        String format = String.format(s, inSeconds / 60, inSeconds % 60);
+
+        new Thread(() -> createUserRecord(inSeconds, format)).start();
+
+        text.setText(String.format(getResources().getString(R.string.you_win), format));
+        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        // if button is clicked, close the custom minesweeper_dialog
+
+
+        dialogButton.setOnClickListener(v -> {
+            PuzzleView.this.reset();
+            dialog.dismiss();
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+    private void createUserRecord(long emSegundos, String format) {
+        try {
+            UserRecord userRecord = new UserRecord();
+            userRecord.setDescription(format);
+            userRecord.setPoints(emSegundos);
+            userRecord.setGameName(UserRecord.PUZZLE);
+            userRecord.setDifficulty(PUZZLE_WIDTH);
+            db.userDao().insertAll(userRecord);
+        } catch (Exception e) {
+            Log.e("PUZZLE", "ERROR WHEN CREATING USER RECORD", e);
+        }
+    }
     private void toFront(List<PuzzlePiece> containsPuzzle) {
         linkedPieces.remove(containsPuzzle);
         linkedPieces.add(containsPuzzle);
@@ -151,22 +202,22 @@ public class PuzzleModel extends View {
     }
 
 
-    private Optional<List<PuzzlePiece>> groupWhichContains() {
+    private List<PuzzlePiece> groupWhichContains() {
 
         for (int i = linkedPieces.size() - 1; i >= 0; i--) {
             List<PuzzlePiece> group = linkedPieces.get(i);
             if (group.stream().anyMatch(this::containsPoint)) {
-                return Optional.of(group);
+                return group;
             }
         }
 
 
-        return Optional.empty();
+        return null;
     }
 
-    private Optional<List<PuzzlePiece>> groupWhichContains(PuzzlePiece p1) {
+    private List<PuzzlePiece> groupWhichContains(PuzzlePiece p1) {
         return linkedPieces.stream().filter(l -> l.contains(p1))
-                .findAny();
+                .findAny().orElse(null);
     }
 
     private boolean containsPoint(PuzzlePiece p1) {
@@ -199,8 +250,8 @@ public class PuzzleModel extends View {
         Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.mona_lisa);
         width = getWidth() / PUZZLE_WIDTH;
         height = getHeight() / PUZZLE_HEIGHT;
-        float scaleX = image.getWidth() / getWidth();
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, (int) (width * PuzzleModel.PUZZLE_WIDTH), (int) (height * PuzzleModel.PUZZLE_HEIGHT), false);
+
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.PUZZLE_WIDTH, height * PuzzleView.PUZZLE_HEIGHT, false);
         Random random = new Random();
         PuzzlePiece[][] puzzlePieces = new PuzzlePiece[PUZZLE_WIDTH][PUZZLE_HEIGHT];
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
@@ -209,7 +260,6 @@ public class PuzzleModel extends View {
                 puzzlePieces[i][j].setLayoutX(random.nextFloat() * (getWidth() - width));
                 puzzlePieces[i][j].setLayoutY(random.nextFloat() * (getHeight() - height));
                 puzzlePieces[i][j].setImage(scaledBitmap);
-
             }
         }
         PuzzlePath[] values = {PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE, PuzzlePath.ROUND};
@@ -224,12 +274,6 @@ public class PuzzleModel extends View {
                     puzzlePieces[i][j].setDown(puzzlePath2);
                     puzzlePieces[i][j + 1].setUp(puzzlePath2);
                 }
-            }
-        }
-        for (int i = 0; i < PUZZLE_WIDTH; i++) {
-            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
-                puzzlePieces[i][j].setScale(scaleX);
-
             }
         }
         return puzzlePieces;
