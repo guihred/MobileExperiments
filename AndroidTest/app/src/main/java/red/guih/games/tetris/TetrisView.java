@@ -356,6 +356,8 @@ public class TetrisView extends View {
                 map[i][j].setState(TetrisPieceState.EMPTY);
             }
         }
+        TetrisPiece[] values = TetrisPiece.values();
+        piece = values[random.nextInt(values.length)];
         continueGame();
     }
 

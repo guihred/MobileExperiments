@@ -23,7 +23,7 @@ public class MadMazeView extends View implements SensorEventListener {
     float ballx, bally;
     float triangleSide;
     float xSpeed, ySpeed;
-    private int madMazeOption = 2;
+    private static int madMazeOption = 0;
     private Paint paint = new Paint();
     private Thread gameLoopThread;
     private float speed;
@@ -148,8 +148,8 @@ public class MadMazeView extends View implements SensorEventListener {
         return madMazeOption;
     }
 
-    public void setMadMazeOption(int madMazeOption) {
-        this.madMazeOption = madMazeOption;
+    public static  void setMadMazeOption(int madMazeOption) {
+        MadMazeView.madMazeOption = madMazeOption;
     }
 
     boolean updateBall() {

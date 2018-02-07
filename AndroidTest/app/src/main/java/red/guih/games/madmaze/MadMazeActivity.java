@@ -74,7 +74,7 @@ public class MadMazeActivity extends AppCompatActivity {
             Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
             // if button is clicked, close the custom minesweeper_dialog
             dialogButton.setOnClickListener(v -> {
-                labyrinthView.setMadMazeOption(spinner.getSelectedItemPosition());
+                MadMazeView.setMadMazeOption(spinner.getSelectedItemPosition());
                 recreate();
                 dialog.dismiss();
             });

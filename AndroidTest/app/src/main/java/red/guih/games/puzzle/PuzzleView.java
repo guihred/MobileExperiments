@@ -34,16 +34,16 @@ public class PuzzleView extends View {
     private int width;
     private int height;
     private Point3D intersectedPoint;
-    private List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
+    private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
     private List<PuzzlePiece> chosenPuzzleGroup;
     private long startTime;
 
 
-    UserRecordDatabase db = Room.databaseBuilder(getContext(),
+    final UserRecordDatabase db = Room.databaseBuilder(getContext(),
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
+
     public PuzzleView(Context c, AttributeSet v) {
         super(c, v);
-
     }
 
     @Override
@@ -71,7 +71,7 @@ public class PuzzleView extends View {
                 linkedPieces.add(e);
             }
         }
-        startTime=System.currentTimeMillis();
+        startTime = System.currentTimeMillis();
         invalidate();
     }
 
@@ -106,22 +106,20 @@ public class PuzzleView extends View {
                                     if (distance(puzzlePiece, piece) < width * width / 16) {
 
                                         List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
-                                        if (containsPuzzle!=null
+                                        if (containsPuzzle != null
                                                 && !containsP.equals(containsPuzzle)) {
                                             containsPuzzle.addAll(containsP);
                                             linkedPieces.remove(containsP);
                                             float a = xDistance(puzzlePiece, piece);
                                             float b = yDistance(puzzlePiece, piece);
-//                                          containsPuzzle.get().forEach(PuzzlePiece::toFront);
                                             toFront(containsPuzzle);
                                             containsP.forEach(z -> z.move(a, b));
-                                            Log.i("PUZZLE", linkedPieces.size() + " " + linkedPieces);
-                                            invalidate();
                                             chosenPuzzleGroup = null;
                                             intersectedPoint = null;
-                                            if(linkedPieces.size()==1){
+                                            if (linkedPieces.size() == 1) {
                                                 showDialogWinning();
                                             }
+                                            invalidate();
 
 
                                             return true;
@@ -139,7 +137,7 @@ public class PuzzleView extends View {
                 if (intersectedPoint == null) {
                     intersectedPoint = getIntersectedPoint(e);
                     List<PuzzlePiece> contains = groupWhichContains();
-                    if (contains!=null) {
+                    if (contains != null) {
                         chosenPuzzleGroup = contains;
                         toFront(chosenPuzzleGroup);
                     }
@@ -151,6 +149,7 @@ public class PuzzleView extends View {
         invalidate();
         return true;
     }
+
     private void showDialogWinning() {
         invalidate();
         final Dialog dialog = new Dialog(getContext());
@@ -177,6 +176,7 @@ public class PuzzleView extends View {
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
+
     private void createUserRecord(long emSegundos, String format) {
         try {
             UserRecord userRecord = new UserRecord();
@@ -189,6 +189,7 @@ public class PuzzleView extends View {
             Log.e("PUZZLE", "ERROR WHEN CREATING USER RECORD", e);
         }
     }
+
     private void toFront(List<PuzzlePiece> containsPuzzle) {
         linkedPieces.remove(containsPuzzle);
         linkedPieces.add(containsPuzzle);
