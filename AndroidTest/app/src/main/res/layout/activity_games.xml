@@ -140,6 +140,29 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/puzzleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="@string/labyrinth"
+                android:src="@drawable/puzzle_button"
+                tools:layout_editor_absoluteX="164dp"
+                tools:layout_editor_absoluteY="98dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/puzzle"
+                android:textAlignment="center" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

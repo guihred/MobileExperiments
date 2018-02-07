@@ -64,10 +64,10 @@ public class PuzzlePiece {
     }
 
 
-    public BitmapShader getImagePattern(float scalex, float scaley) {
+    public BitmapShader getImagePattern() {
         if (imagePattern == null) {
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, (int) (width*PuzzleModel.PUZZLE_WIDTH), (int) (height*PuzzleModel.PUZZLE_HEIGHT), false);
-            imagePattern = new BitmapShader(scaledBitmap, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+
+            imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
 
             imagePattern.setLocalMatrix(mTranslationMatrix);
         }
@@ -161,8 +161,8 @@ public class PuzzlePiece {
         this.layoutX = layoutX;
     }
 
-    public void setScale(float scalex, float scaley) {
-        getPaint().setShader(getImagePattern(scalex, scaley));
+    public void setScale(float scalex) {
+        getPaint().setShader(getImagePattern());
     }
 
 

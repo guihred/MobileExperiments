@@ -22,8 +22,8 @@ import static java.util.stream.Collectors.toList;
 
 public class PuzzleModel extends View {
 
-    public static final int PUZZLE_WIDTH = 2;
-    public static final int PUZZLE_HEIGHT = 4;
+    public static final int PUZZLE_WIDTH = 4;
+    public static final int PUZZLE_HEIGHT = 6;
 
     PuzzlePiece[][] puzzle;
     private int width;
@@ -50,6 +50,10 @@ public class PuzzleModel extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        reset();
+    }
+
+    private void reset() {
         puzzle = initializePieces();
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
@@ -82,14 +86,13 @@ public class PuzzleModel extends View {
 
                 List<PuzzlePiece> containsP = chosenPuzzleGroup;
                 if (containsP != null) {
-                    List<PuzzlePiece> puzzlePieces = containsP;
-                    List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> l != puzzlePieces).collect(toList());
-                    for (PuzzlePiece piece : puzzlePieces) {
+                    List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> l != containsP).collect(toList());
+                    for (PuzzlePiece piece : containsP) {
                         for (int i = 0; i < collect.size(); i++) {
                             for (int j = 0; j < collect.get(i).size(); j++) {
                                 PuzzlePiece puzzlePiece = collect.get(i).get(j);
                                 if (checkNeighbours(piece, puzzlePiece)) {
-                                    if (distance(puzzlePiece, piece) < width * width) {
+                                    if (distance(puzzlePiece, piece) < width * width / 16) {
 
                                         Optional<List<PuzzlePiece>> containsPuzzle = groupWhichContains(puzzlePiece);
                                         if (containsPuzzle.isPresent()
@@ -152,7 +155,7 @@ public class PuzzleModel extends View {
 
         for (int i = linkedPieces.size() - 1; i >= 0; i--) {
             List<PuzzlePiece> group = linkedPieces.get(i);
-            if (group.stream().anyMatch(p1 -> containsPoint(p1))) {
+            if (group.stream().anyMatch(this::containsPoint)) {
                 return Optional.of(group);
             }
         }
@@ -169,10 +172,8 @@ public class PuzzleModel extends View {
     private boolean containsPoint(PuzzlePiece p1) {
         RectF rectF = new RectF();
         p1.getTranslatedPath().computeBounds(rectF, true);
-        if (intersectedPoint == null)
-            return false;
+        return intersectedPoint != null && rectF.contains(intersectedPoint.x, intersectedPoint.y);
 
-        return rectF.contains(intersectedPoint.x, intersectedPoint.y);
     }
 
     private float yDistance(PuzzlePiece puzzlePiece, PuzzlePiece p) {
@@ -195,26 +196,23 @@ public class PuzzleModel extends View {
     }
 
     private PuzzlePiece[][] initializePieces() {
-
-
         Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.mona_lisa);
-        width = (int) (getWidth() / PUZZLE_WIDTH);
-        height = (int) (getHeight() / PUZZLE_HEIGHT);
+        width = getWidth() / PUZZLE_WIDTH;
+        height = getHeight() / PUZZLE_HEIGHT;
         float scaleX = image.getWidth() / getWidth();
-        float scaleY = image.getHeight() / getHeight();
-
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, (int) (width * PuzzleModel.PUZZLE_WIDTH), (int) (height * PuzzleModel.PUZZLE_HEIGHT), false);
         Random random = new Random();
         PuzzlePiece[][] puzzlePieces = new PuzzlePiece[PUZZLE_WIDTH][PUZZLE_HEIGHT];
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
                 puzzlePieces[i][j] = new PuzzlePiece(i, j, width, height);
-                puzzlePieces[i][j].setLayoutX(i * width);
-                puzzlePieces[i][j].setLayoutY(j * height);
-                puzzlePieces[i][j].setImage(image);
+                puzzlePieces[i][j].setLayoutX(random.nextFloat() * (getWidth() - width));
+                puzzlePieces[i][j].setLayoutY(random.nextFloat() * (getHeight() - height));
+                puzzlePieces[i][j].setImage(scaledBitmap);
 
             }
         }
-        PuzzlePath[] values = {PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE,};
+        PuzzlePath[] values = {PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE, PuzzlePath.ROUND};
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
                 PuzzlePath puzzlePath2 = values[random.nextInt(values.length)];
@@ -226,13 +224,11 @@ public class PuzzleModel extends View {
                     puzzlePieces[i][j].setDown(puzzlePath2);
                     puzzlePieces[i][j + 1].setUp(puzzlePath2);
                 }
-                puzzlePieces[i][j].getPath();
-
             }
         }
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
-                puzzlePieces[i][j].setScale(scaleX,scaleY);
+                puzzlePieces[i][j].setScale(scaleX);
 
             }
         }

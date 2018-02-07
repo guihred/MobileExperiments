@@ -1,0 +1,54 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="250"
+    android:viewportWidth="250">
+    <group
+        android:translateX="10"
+        android:translateY="10">
+
+        <path
+            android:pathData="h239v239h-239z"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M60,40 v60 h20 l10,16 l10,-16 h20 v-60 h-20 l-10,-16 l-10,16 h-20z"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M140,40 h60 v20 l16,10 l-16,10 v20 h-60 v-20 l-16,-10 l16,-10 v-20z"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M140,140 v60 h20 l0,10 l20,0 l0,-10 h20 v-60 h-20 l0,10 l-20,0 l0,-10 h-20z"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M60,140 v20 c -15 -5 , -15 25, 0 20 v20 h20 c -5 15, 25 15, 20 0 h20 v-20 c -15 5 , -15 -25, 0 -20 v-20 h-20 c 5 15, -25 15, -20 0 h-20"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M10,120  v20 c 15 -05 , 15 25, 0 20 v20"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+        <path
+            android:pathData="M40,120  v20 c -15 -05 , -15 25, 0 20 v20"
+            android:strokeColor="#000000"
+            android:strokeWidth="2" />
+
+<!--p.rLineTo(i * y / 2, i * x / 2);
+        p.rLineTo(x, y);
+        p.rLineTo(i * -y / 2, i * -x / 2);
+
+        (x + y) / 2, (x + y) / 2, 0, x, y, false, x + y > 0
+
+        c -10 30, 50 30, 40 0
+
+        M130 110 c -10 30, 50 30, 40 0
+
+
+        c(x + y), -(x + y), (x + y) 2*(x + y), y, x
+        -->
+
+    </group>
+</vector>
