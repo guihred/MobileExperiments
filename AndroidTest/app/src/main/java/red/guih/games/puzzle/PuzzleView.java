@@ -83,14 +83,14 @@ public class PuzzleView extends View {
                 if (intersectedPoint == null || chosenPuzzleGroup == null) {
                     return true;
                 }
-                Point2D intersectedPoint2 = getIntersectedPoint(e);
-                Point2D subtract = intersectedPoint2.subtract(intersectedPoint);
+
+                Point2D subtract = intersectedPoint.subtract(e);
 
 
                 chosenPuzzleGroup.forEach(i -> i.move(subtract));
 
 
-                intersectedPoint = getIntersectedPoint(e);
+                intersectedPoint = Point2D.getIntersectedPoint(e);
                 break;
             case MotionEvent.ACTION_UP:
 
@@ -134,7 +134,7 @@ public class PuzzleView extends View {
                 break;
             case MotionEvent.ACTION_DOWN:
                 if (intersectedPoint == null) {
-                    intersectedPoint = getIntersectedPoint(e);
+                    intersectedPoint = Point2D.getIntersectedPoint(e);
                     List<PuzzlePiece> contains = groupWhichContains();
                     if (contains != null) {
                         chosenPuzzleGroup = contains;
@@ -192,13 +192,6 @@ public class PuzzleView extends View {
     private void toFront(List<PuzzlePiece> containsPuzzle) {
         linkedPieces.remove(containsPuzzle);
         linkedPieces.add(containsPuzzle);
-    }
-
-    private Point2D getIntersectedPoint(MotionEvent e) {
-        Point2D point3D = new Point2D();
-        point3D.x = e.getX();
-        point3D.y = e.getY();
-        return point3D;
     }
 
 
