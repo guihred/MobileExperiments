@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 
 public class PuzzleView extends View {
 
-    public static  int PUZZLE_IMAGE = R.drawable.mona_lisa;
+    public static int PUZZLE_IMAGE = R.drawable.mona_lisa;
     public static int PUZZLE_WIDTH = 4;
     public static int PUZZLE_HEIGHT = 6;
 
@@ -244,7 +244,7 @@ public class PuzzleView extends View {
 
     private PuzzlePiece[][] initializePieces() {
         Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
-        if (image.getWidth() > image.getHeight()) {
+        if (image.getWidth() > image.getHeight() ) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);

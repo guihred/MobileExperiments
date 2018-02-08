@@ -9,7 +9,9 @@
         android:roundIcon="@drawable/game"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="red.guih.games.GamesActivity">
+        <activity
+            android:name="red.guih.games.GamesActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,31 +19,38 @@
         </activity>
         <activity
             android:name="red.guih.games.pacman.PacmanActivity"
-            android:parentActivityName=".GamesActivity" />
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="red.guih.games.tetris.TetrisActivity"
-            android:parentActivityName=".GamesActivity">
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name="red.guih.games.dots.DotsActivity"
-            android:parentActivityName=".GamesActivity" />
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="red.guih.games.minesweeper.MinesweeperActivity"
-            android:parentActivityName=".GamesActivity" />
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name="red.guih.games.labyrinth.LabyrinthActivity"
-            android:parentActivityName=".GamesActivity">
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name="red.guih.games.madmaze.MadMazeActivity"
-            android:parentActivityName=".GamesActivity">
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
 
         </activity>
         <activity
             android:name="red.guih.games.puzzle.PuzzleActivity"
-            android:parentActivityName=".GamesActivity">
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
 
         </activity>
 
