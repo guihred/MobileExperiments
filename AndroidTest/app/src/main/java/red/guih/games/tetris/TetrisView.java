@@ -22,8 +22,8 @@ import red.guih.games.R;
 public class TetrisView extends View {
 
     public static final int UPDATE_DELAY_MILLIS = 750;
-    public int mapHeight = 20;
-    public int mapWidth = 10;
+    public int mapHeight = 24;
+    public int mapWidth = 12;
     boolean movedLeftRight = false;
     private int currentI, currentJ;
     private TetrisDirection direction = TetrisDirection.UP;
@@ -193,8 +193,8 @@ public class TetrisView extends View {
         direction = direction.next();
         int previous = getCurrentI();
         boolean changed = false;
-        for (int i = 0; i < 3; i++) {
-            int i1 = i == 2 ? -1 : i;
+        for (int i = 0; i < 7; i++) {
+            int i1 = i > 3 ? 3-i : i;
             if (getCurrentI() + i1 >= 0 && getCurrentI() + i1 < mapWidth)
                 setCurrentI(previous + i1);
             if (!checkCollision(getCurrentI(), getCurrentJ())) {
@@ -243,7 +243,8 @@ public class TetrisView extends View {
         while (movePiecesTimeline()) {
             try {
                 postInvalidate();
-                Thread.sleep(UPDATE_DELAY_MILLIS);
+                long a = startTime - System.currentTimeMillis();
+                Thread.sleep(UPDATE_DELAY_MILLIS-a/1000);
             } catch (Exception e) {
                 Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
             }
@@ -327,13 +328,12 @@ public class TetrisView extends View {
     }
 
     private boolean isLineClear(int i) {
-        boolean clearLine = true;
         for (int j = 0; j < mapWidth; j++) {
             if (map[j][i].getState() != TetrisPieceState.SETTLED) {
-                clearLine = false;
+                return false;
             }
         }
-        return clearLine;
+        return true;
     }
 
     private void removeLine(int i) {
@@ -343,12 +343,14 @@ public class TetrisView extends View {
                     map[j][k].setState(TetrisPieceState.EMPTY);
                 } else {
                     map[j][k].setState(map[j][k - 1].getState());
+                    map[j][k].setColor(map[j][k - 1].getColor());
                 }
             }
         }
     }
-
+    long startTime;
     void reset() {
+        startTime=System.currentTimeMillis();
         map = new TetrisSquare[mapWidth][mapHeight];
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
