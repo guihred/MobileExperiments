@@ -26,6 +26,7 @@ public class PuzzleActivity extends AppCompatActivity {
 
     UserRecordDatabase db = Room.databaseBuilder(this,
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,12 +115,10 @@ public class PuzzleActivity extends AppCompatActivity {
     private void onClickConfigButton(Dialog dialog, Spinner spinner) {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
-//        PuzzleView.PUZZLE_WIDTH = spinner.getSelectedItemPosition() * 2;
-        if (PuzzleView.PUZZLE_WIDTH != progress * 2) {
-            PuzzleView.setPuzzleDimensions(progress);
-            recreate();
-        }
-
+        int selectedItemPosition = spinner.getSelectedItemPosition();
+        PuzzleView.PUZZLE_IMAGE = selectedItemPosition == 0 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion;
+        PuzzleView.setPuzzleDimensions(progress);
+        recreate();
         dialog.dismiss();
     }
 

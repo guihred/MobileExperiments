@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -27,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 
 public class PuzzleView extends View {
 
+    public static  int PUZZLE_IMAGE = R.drawable.mona_lisa;
     public static int PUZZLE_WIDTH = 4;
     public static int PUZZLE_HEIGHT = 6;
 
@@ -116,11 +118,12 @@ public class PuzzleView extends View {
                                             chosenPuzzleGroup = null;
                                             intersectedPoint = null;
                                             if (linkedPieces.size() == 1) {
+                                                float x = -puzzle[0][0].getLayoutX();
+                                                float y = -puzzle[0][0].getLayoutY();
+                                                containsPuzzle.forEach(z -> z.move(x, y));
                                                 showDialogWinning();
                                             }
                                             invalidate();
-
-
                                             return true;
                                         }
                                     }
@@ -240,10 +243,14 @@ public class PuzzleView extends View {
     }
 
     private PuzzlePiece[][] initializePieces() {
-        Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.mona_lisa);
+        Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if (image.getWidth() > image.getHeight()) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+        }
         width = getWidth() / PUZZLE_WIDTH;
         height = getHeight() / PUZZLE_HEIGHT;
-
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.PUZZLE_WIDTH, height * PuzzleView.PUZZLE_HEIGHT, false);
         Random random = new Random();
         PuzzlePiece[][] puzzlePieces = new PuzzlePiece[PUZZLE_WIDTH][PUZZLE_HEIGHT];
