@@ -34,7 +34,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import red.guih.games.BaseView;
 import red.guih.games.R;
+import red.guih.games.db.UserRecord;
 
 import static java.lang.Math.abs;
 import static red.guih.games.dots.StreamHelp.comparing;
@@ -47,8 +49,8 @@ import static red.guih.games.dots.StreamHelp.min;
 import static red.guih.games.dots.StreamHelp.mins;
 import static red.guih.games.dots.StreamHelp.toSet;
 
-public class DotsDrawingView extends View {
-    private static final String TAG = "DRAWING VIEW";
+public class DotsDrawingView extends BaseView {
+    private static final String TAG = "DOTS";
     public static final int LINE_ANIMATION_DURATION = 500;
     public static int MAZE_WIDTH = 8;
     public static int DIFFICULTY = 2;
@@ -189,7 +191,7 @@ public class DotsDrawingView extends View {
         return possibilidades;
     }
 
-    private List<Pair> getBestPossibilities(Collection<Pair> possibilidades) {
+    private List<Pair> getBestPossibilities(Collection<Pair> possibilities) {
         Log.i(TAG, "Melhor Possibilidade 1");
         Set<Pair> best2 = new HashSet<>();
 
@@ -216,7 +218,7 @@ public class DotsDrawingView extends View {
                 }
                 if (DIFFICULTY > 1)
                     if (countPair == 3 && pairs1.equals(pairs2)) {
-                        List<Pair> distinct = distinct(possibilidades);
+                        List<Pair> distinct = distinct(possibilities);
                         distinct.removeAll(pairs1);
                         final Map<Integer, List<Pair>> collect = groupBy(distinct, e -> getCountPair(e.getKey(), e.getValue()));
                         final int minimum = min(collect.keySet(), 0);
@@ -229,7 +231,7 @@ public class DotsDrawingView extends View {
             if (best.size() == 1) {
                 Set<Pair> pairs = getPairs(best.get(0).getKey(), best.get(0).getValue());
                 int countPair = pairs.size();
-                List<Pair> distinct = distinct(possibilidades);
+                List<Pair> distinct = distinct(possibilities);
                 distinct.removeAll(pairs);
                 final Map<Integer, List<Pair>> collect = groupBy(distinct, e -> getCountPair(e.getKey(), e.getValue()));
                 final int minimum = min(collect.keySet(), 0);
@@ -267,18 +269,21 @@ public class DotsDrawingView extends View {
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.text);
         if (points.get("TU").size() > points.get("EU").size()) {
-            text.setText(R.string.you_win);
+            String string = getResources().getString(R.string.you_win);
+            float userPoints = this.points.get("TU").size();
+            int percentage = (int)(userPoints / (MAZE_WIDTH - 1) / (MAZE_HEIGHT - 1) * 100);
+            text.setText(String.format(string, percentage + "%"));
             ImageView image = dialog.findViewById(R.id.image);
             image.setImageResource(R.drawable.smile);
-            if (points.get("TU").size() >= (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) * 0.6) {
+            if (percentage >= 60) {
                 ImageView image2 = dialog.findViewById(R.id.image2);
                 image2.setImageResource(R.drawable.smile);
             }
-            if (points.get("TU").size() >= (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) * 0.7) {
+            if (percentage >= 70) {
                 ImageView image2 = dialog.findViewById(R.id.image3);
                 image2.setImageResource(R.drawable.smile);
             }
-
+            createUserRecordThread((int) percentage, percentage + "%", UserRecord.DOTS, DIFFICULTY);
         } else {
             text.setText(R.string.you_lose);
         }
@@ -396,13 +401,13 @@ public class DotsDrawingView extends View {
 
                                     Set<Set<DotsSquare>> check2 = get.getKey().check();
                                     final Set<Set<DotsSquare>> collect2 = toSet(flatMap(points.values(), a -> a));
-                                    final Set<Set<DotsSquare>> collect3 = Collections.synchronizedSet(filter(check2, s -> !collect2.contains(s)));
-                                    final boolean empty = collect3.isEmpty();
+                                    final Set<Set<DotsSquare>> squaresWon = Collections.synchronizedSet(filter(check2, s -> !collect2.contains(s)));
+                                    final boolean empty = squaresWon.isEmpty();
                                     if (empty) {
                                         currentPlayer = 1;
                                     } else {
-                                        points.get("EU").addAll(collect3);
-                                        whites.addAll(collect3);
+                                        points.get("EU").addAll(squaresWon);
+                                        whites.addAll(squaresWon);
                                     }
 
                                     final float[] center = get.getKey().getCenter();
@@ -424,28 +429,7 @@ public class DotsDrawingView extends View {
                                     nplayed++;
 
                                     lineAnim.addUpdateListener(a -> invalidate());
-                                    lineAnim.addListener(new Animator.AnimatorListener() {
-                                                             @Override
-                                                             public void onAnimationStart(Animator animator) {
-                                                             }
-
-                                                             @Override
-                                                             public void onAnimationEnd(Animator animator) {
-                                                                 lines.remove(line2);
-                                                                 whites.removeAll(collect3);
-                                                                 if (points.get("EU").size() + points.get("TU").size() == (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) && whites.isEmpty()) {
-                                                                     showDialog();// END OF GAME
-                                                                 }
-                                                             }
-
-                                                             @Override
-                                                             public void onAnimationCancel(Animator animator) {
-                                                             }
-
-                                                             @Override
-                                                             public void onAnimationRepeat(Animator animator) {
-                                                             }
-                                                         }
+                                    lineAnim.addListener(new LineAnimatorListener(line2, squaresWon)
                                     );
 
 
@@ -512,7 +496,7 @@ public class DotsDrawingView extends View {
         DotsSquare a = a1.i < b1.i ? a1 : a1.j < b1.j ? a1 : b1;
         DotsSquare b = b1.i > a1.i ? b1 : b1.j > a1.j ? b1 : a1;
         if (a == b) {
-            Log.e("DOTS DRAWING VIEW", "ERRRRRRRRRRRRRROO");
+            Log.e("DOTS DRAWING VIEW", "ERROR THIS SHOULD NOT HAPPEN");
             return Collections.emptySet();
         }
 
@@ -576,5 +560,36 @@ public class DotsDrawingView extends View {
         return Collections.emptySet();
     }
 
+    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+    private class LineAnimatorListener implements Animator.AnimatorListener {
+        private final Line line2;
+        private final Set<Set<DotsSquare>> squaresWon;
+
+        public LineAnimatorListener(Line line2, Set<Set<DotsSquare>> collect3) {
+            this.line2 = line2;
+            this.squaresWon = collect3;
+        }
+
+        @Override
+        public void onAnimationStart(Animator animator) {
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animator) {
+            lines.remove(line2);
+            whites.removeAll(squaresWon);
+            if (points.get("EU").size() + points.get("TU").size() == (MAZE_WIDTH - 1) * (MAZE_HEIGHT - 1) && whites.isEmpty()) {
+                showDialog();// END OF GAME
+            }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animator) {
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animator) {
+        }
+    }
 }
 

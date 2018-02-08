@@ -9,9 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
 import red.guih.games.db.UserRecordDatabase;
@@ -26,7 +25,7 @@ import red.guih.games.db.UserRecordDatabase;
 import static java.util.stream.Collectors.toList;
 
 
-public class PuzzleView extends View {
+public class PuzzleView extends BaseView {
 
     public static int PUZZLE_IMAGE = R.drawable.mona_lisa;
     public static int PUZZLE_WIDTH = 4;
@@ -157,20 +156,15 @@ public class PuzzleView extends View {
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.game_over);
-
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.textDialog);
         long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, inSeconds / 60, inSeconds % 60);
-
-        new Thread(() -> createUserRecord(inSeconds, format)).start();
-
+        createUserRecordThread(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH);
         text.setText(String.format(getResources().getString(R.string.you_win), format));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
-
-
         dialogButton.setOnClickListener(v -> {
             PuzzleView.this.reset();
             dialog.dismiss();
@@ -179,18 +173,7 @@ public class PuzzleView extends View {
         dialog.show();
     }
 
-    private void createUserRecord(long emSegundos, String format) {
-        try {
-            UserRecord userRecord = new UserRecord();
-            userRecord.setDescription(format);
-            userRecord.setPoints(emSegundos);
-            userRecord.setGameName(UserRecord.PUZZLE);
-            userRecord.setDifficulty(PUZZLE_WIDTH);
-            db.userDao().insertAll(userRecord);
-        } catch (Exception e) {
-            Log.e("PUZZLE", "ERROR WHEN CREATING USER RECORD", e);
-        }
-    }
+
 
     private void toFront(List<PuzzlePiece> containsPuzzle) {
         linkedPieces.remove(containsPuzzle);

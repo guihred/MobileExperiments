@@ -16,6 +16,8 @@ public interface UserDao {
 
     @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points")
     List<UserRecord> getAll(Integer difficulty,String gameName);
+    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points desc")
+    List<UserRecord> getAllDesc(Integer difficulty,String gameName);
 
     @Insert
     void insertAll(UserRecord... userRecords);

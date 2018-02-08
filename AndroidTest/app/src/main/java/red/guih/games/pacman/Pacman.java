@@ -4,18 +4,14 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.view.View;
 
 import java.util.Collection;
 
-@SuppressLint("ViewConstructor")
-public class Pacman extends View {
+public class Pacman  {
 
     public static final float PACMAN_RATIO = 0.5f;
     private float startAngle = 0;
@@ -26,8 +22,7 @@ public class Pacman extends View {
     private PacmanDirection direction = PacmanDirection.RIGHT;
     private RectF bounds = new RectF();
 
-    public Pacman(Context c, PacmanView pacmanView) {
-        super(c);
+    public Pacman(PacmanView pacmanView) {
         paint.setColor(Color.YELLOW);
         PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("startAngle", Keyframe.ofFloat(0, 0), Keyframe.ofFloat(1, 45));
         PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("length", Keyframe.ofFloat(0, 360), Keyframe.ofFloat(1, 270));
@@ -40,7 +35,7 @@ public class Pacman extends View {
 
     }
 
-    public void onDraw(Canvas canvas) {
+    public void draw(Canvas canvas) {
         canvas.drawArc(x, y, x + getPacmanWidth(), y + getPacmanWidth(), (direction == null ? 0 : direction.angle) + getStartAngle(), getLength(), true, paint);
     }
 
@@ -106,22 +101,18 @@ public class Pacman extends View {
         }
     }
 
-    @Override
     public float getX() {
         return x;
     }
 
-    @Override
     public void setX(float x) {
         this.x = x;
     }
 
-    @Override
     public float getY() {
         return y;
     }
 
-    @Override
     public void setY(float y) {
         this.y = y;
     }

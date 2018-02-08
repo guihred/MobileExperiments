@@ -19,11 +19,12 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
+import red.guih.games.BaseView;
 import red.guih.games.R;
 
 import static java.util.stream.Stream.of;
 
-public class PacmanView extends View {
+public class PacmanView extends BaseView {
 
     public static final int MAZE_WIDTH = 5;
     public static final int GHOST_AFRAID_TIME = 200;
@@ -41,7 +42,7 @@ public class PacmanView extends View {
 
     public PacmanView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        pacman = new Pacman(context, this);
+        pacman = new Pacman(this);
         ghosts =
                 of(PacmanGhost.GhostColor.RED, PacmanGhost.GhostColor.BLUE, PacmanGhost.GhostColor.ORANGE, PacmanGhost.GhostColor.GREEN)
                         .map((PacmanGhost.GhostColor color) -> new PacmanGhost(color, context))
@@ -52,7 +53,7 @@ public class PacmanView extends View {
         MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
-                maze[i][j] = new MazeSquare(c, i, j);
+                maze[i][j] = new MazeSquare(i, j);
                 if (i == 0) {
                     maze[0][j].setNorth(false);
                 }
@@ -108,7 +109,6 @@ public class PacmanView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(Color.BLACK);
-
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
                 maze[i][j].draw(canvas);
@@ -125,8 +125,6 @@ public class PacmanView extends View {
         if (gameOver) {
             showDialog();
         }
-
-
     }
 
     @Override
@@ -156,7 +154,7 @@ public class PacmanView extends View {
                 .flatMap(
                         d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2, e -> e + MazeSquare.SQUARE_SIZE)
                                 .limit(MAZE_HEIGHT * 2)
-                                .mapToObj((double e) -> new PacmanBall(d, e, context)))
+                                .mapToObj((double e) -> new PacmanBall(d, e)))
                 .collect(Collectors.toList());
 
         Random random = new Random();

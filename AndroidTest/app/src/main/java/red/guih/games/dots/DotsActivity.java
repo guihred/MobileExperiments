@@ -3,7 +3,6 @@ package red.guih.games.dots;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -11,10 +10,14 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import java.util.List;
+
+import red.guih.games.BaseActivity;
 import red.guih.games.R;
+import red.guih.games.db.UserRecord;
 
 
-public class DotsActivity extends AppCompatActivity {
+public class DotsActivity extends BaseActivity {
 
 
     @Override
@@ -27,14 +30,9 @@ public class DotsActivity extends AppCompatActivity {
             a.setDisplayHomeAsUpEnabled(true);
         }
     }
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater
-                inflater = getMenuInflater();
-
-        inflater.inflate(R.menu.menu, menu);
-        return true;
+    protected List<UserRecord> getAll(int difficulty, String gameName) {
+        return db.userDao().getAllDesc(difficulty, gameName);
     }
 
     @Override
@@ -44,10 +42,24 @@ public class DotsActivity extends AppCompatActivity {
             case R.id.config:
                 showConfig();
                 return true;
+            case R.id.records:
+                showRecords(DotsDrawingView.DIFFICULTY, UserRecord.DOTS);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater
+                inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.menu_records, menu);
+        return true;
+    }
+
 
     private void showConfig() {
         final Dialog dialog = new Dialog(this);

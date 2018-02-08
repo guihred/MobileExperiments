@@ -15,6 +15,7 @@ import android.arch.persistence.room.PrimaryKey;
 public class UserRecord {
     public static final String DATABASE_NAME = "USER_RECORDS";
     public static final String MINESWEEPER = "Minesweeper";
+    public static final String DOTS = "Dots";
     public static final String PUZZLE = "Puzzle";
 
     @PrimaryKey(autoGenerate = true)

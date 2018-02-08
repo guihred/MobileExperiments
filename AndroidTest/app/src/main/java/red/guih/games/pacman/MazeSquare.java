@@ -1,18 +1,14 @@
 package red.guih.games.pacman;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressLint("ViewConstructor")
-public class MazeSquare extends View {
+public class MazeSquare  {
     public static int SQUARE_SIZE = 20;
     private List<RectF> walls = new ArrayList<>();
     private boolean visited = false;
@@ -24,8 +20,7 @@ public class MazeSquare extends View {
     final int i, j;
 
 
-    public MazeSquare(Context c, int i, int j) {
-        super(c);
+    public MazeSquare(int i, int j) {
         this.i = i;
         this.j = j;
         paint.setColor(Color.GREEN);
@@ -46,8 +41,7 @@ public class MazeSquare extends View {
 //        setBottom(line4);
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
+    protected void draw(Canvas canvas) {
         for (RectF w : walls) {
             drawWall(canvas, w);
         }

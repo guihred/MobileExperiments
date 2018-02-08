@@ -4,16 +4,12 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.view.View;
 
-@SuppressLint("ViewConstructor")
-public class PacmanBall extends View {
+public class PacmanBall {
 
     float radius = 10;
     float x, y;
@@ -22,16 +18,14 @@ public class PacmanBall extends View {
     RectF bounds = new RectF(-radius + x, -radius + y, radius + x, radius + y);
     private Boolean special = false;
 
-    public PacmanBall(Double x, Double y, Context c) {
-        super(c);
+    public PacmanBall(Double x, Double y) {
         this.x = x.floatValue();
         this.y = y.floatValue();
         paint.setColor(Color.BLUE);
 
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
+    protected void draw(Canvas canvas) {
         canvas.drawCircle(x, y, radius, paint);
     }
 

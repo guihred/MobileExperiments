@@ -6,11 +6,8 @@
 package red.guih.games.minesweeper;
 
 public enum MinesweeperImage {
-
     BLANK,
     BOMB,
     NUMBER
-
-
 }
 

@@ -33,7 +33,7 @@ public class MinesweeperActivity extends AppCompatActivity {
 
         ActionBar a = getSupportActionBar();
         if (a != null) {
-            a.setTitle(R.string.campo_minado);
+            a.setTitle(R.string.minesweeper);
             a.setDisplayHomeAsUpEnabled(true);
         }
     }

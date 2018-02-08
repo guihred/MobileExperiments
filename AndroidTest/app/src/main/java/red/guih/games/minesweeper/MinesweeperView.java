@@ -1,7 +1,6 @@
 package red.guih.games.minesweeper;
 
 import android.app.Dialog;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,9 +17,9 @@ import android.widget.TextView;
 
 import java.util.Random;
 
+import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
-import red.guih.games.db.UserRecordDatabase;
 
 import static java.lang.Math.abs;
 
@@ -31,7 +29,7 @@ import static java.lang.Math.abs;
  * Created by guilherme.hmedeiros on 16/01/2018.
  */
 
-public class MinesweeperView extends View {
+public class MinesweeperView extends BaseView {
     public static final int BOMBS_STEP = 15;
     public static final int DELAY_LONG_PRESS = 500;
     public int mapHeight = 30;
@@ -56,8 +54,6 @@ public class MinesweeperView extends View {
     private final Paint shownColor;
     private long startTime;
     private final Paint textPaint = new Paint(Color.BLACK);
-    UserRecordDatabase db = Room.databaseBuilder(getContext(),
-            UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
     public MinesweeperView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -349,7 +345,7 @@ public class MinesweeperView extends View {
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, emSegundos / 60, emSegundos % 60);
 
-        new Thread(() -> createUserRecord(emSegundos, format)).start();
+        createUserRecordThread(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS);
 
 
         text.setText(String.format(getResources().getString(R.string.you_win), format));
@@ -365,19 +361,6 @@ public class MinesweeperView extends View {
         dialog.show();
     }
 
-    private void createUserRecord(long emSegundos, String format) {
-        try {
-            UserRecord userRecord = new UserRecord();
-            userRecord.setDescription(format);
-            userRecord.setPoints(emSegundos);
-            userRecord.setGameName(UserRecord.MINESWEEPER);
-
-            userRecord.setDifficulty(NUMBER_OF_BOMBS);
-            db.userDao().insertAll(userRecord);
-        } catch (Exception e) {
-            Log.e("MINESWEEPER", "ERROR WHEN CREATING USER RECORD", e);
-        }
-    }
 
     private void showNeighbours(int i, int j) {
         map[i][j].setState(MinesweeperSquare.State.SHOWN);

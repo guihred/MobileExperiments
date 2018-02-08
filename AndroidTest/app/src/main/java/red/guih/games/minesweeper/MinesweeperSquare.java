@@ -52,7 +52,6 @@ public class MinesweeperSquare {
         this.num = num;
     }
 
-
     public final void setState(final State state) {
         this.state = state;
     }

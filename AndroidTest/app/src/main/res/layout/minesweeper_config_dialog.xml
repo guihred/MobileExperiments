@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.5"
-            android:text="@string/difficultyName"
+            android:text="@string/difficulty"
             android:textAlignment="center"
             android:textColor="#000" />
 
@@ -23,7 +23,7 @@
             android:id="@+id/spinner1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/difficulty"
+            android:entries="@array/minesweeper_difficulty"
             android:prompt="@string/choose" />
 
     </LinearLayout>
