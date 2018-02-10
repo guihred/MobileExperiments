@@ -15,7 +15,7 @@ public enum TetrisPiece {
         {1, 0},
         {1, 0},
         {1, 1}
-    }, Color.WHITE),
+    }, Color.CYAN),
     O(new int[][]{
         {1, 1},
         {1, 1}},

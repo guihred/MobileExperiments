@@ -25,10 +25,13 @@ public class TetrisView extends View {
     public int mapHeight = 24;
     public int mapWidth = 12;
     boolean movedLeftRight = false;
+    int points = 0;
+    long startTime;
     private int currentI, currentJ;
     private TetrisDirection direction = TetrisDirection.UP;
     private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
     private TetrisPiece piece = TetrisPiece.L;
+    private TetrisPiece nextPiece = TetrisPiece.L;
     private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
     private Paint paint = new Paint();
     private Random random = new Random();
@@ -81,8 +84,8 @@ public class TetrisView extends View {
         super.onLayout(changed, left, top, right, bottom);
 
         squareSize = getWidth() / mapWidth;
-        mapHeight = getHeight() / squareSize;
-
+        mapHeight = getHeight() / squareSize - 1;
+        paint.setTextSize(mapHeight * 3);
         reset();
     }
 
@@ -106,6 +109,10 @@ public class TetrisView extends View {
                 canvas.drawRect(i * squareSize, j * squareSize, (i + 1) * squareSize, (j + 1) * squareSize, paint);
             }
         }
+
+        paint.setColor(Color.BLACK);
+        canvas.drawText(points + " Points", squareSize, mapHeight * squareSize + squareSize / 2, paint);
+        drawNextPiece(canvas, (mapWidth - 2) * squareSize, mapHeight * squareSize + squareSize / 2);
         if (gameOver) {
             showDialog();
         }
@@ -194,7 +201,7 @@ public class TetrisView extends View {
         int previous = getCurrentI();
         boolean changed = false;
         for (int i = 0; i < 7; i++) {
-            int i1 = i > 3 ? 3-i : i;
+            int i1 = i > 3 ? 3 - i : i;
             if (getCurrentI() + i1 >= 0 && getCurrentI() + i1 < mapWidth)
                 setCurrentI(previous + i1);
             if (!checkCollision(getCurrentI(), getCurrentJ())) {
@@ -244,7 +251,7 @@ public class TetrisView extends View {
             try {
                 postInvalidate();
                 long a = startTime - System.currentTimeMillis();
-                Thread.sleep(UPDATE_DELAY_MILLIS-a/1000);
+                Thread.sleep(UPDATE_DELAY_MILLIS + a / 5000);
             } catch (Exception e) {
                 Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
             }
@@ -264,11 +271,9 @@ public class TetrisView extends View {
 
     }
 
-
     void drawPiece() {
         drawPiece(TetrisPieceState.TRANSITION);
     }
-
 
     void drawPiece(TetrisPieceState state) {
         final int[][] get = pieceDirection.get(piece).get(direction);
@@ -277,6 +282,20 @@ public class TetrisView extends View {
                 if (get[i][j] == 1) {
                     map[getCurrentI() + i][getCurrentJ() + j].setColor(piece.getColor());
                     map[getCurrentI() + i][getCurrentJ() + j].setState(state);
+                }
+            }
+        }
+    }
+
+    void drawNextPiece(Canvas canvas, float offsetX, float offsetY) {
+        final int[][] get = pieceDirection.get(nextPiece).get(TetrisDirection.UP);
+        paint.setColor(nextPiece.getColor());
+        int squareMiniSize = squareSize / 4;
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+
+                    canvas.drawRect(i * squareMiniSize + offsetX, j * squareMiniSize + offsetY, offsetX + (i + 1) * squareMiniSize, offsetY + (j + 1) * squareMiniSize, paint);
                 }
             }
         }
@@ -307,7 +326,8 @@ public class TetrisView extends View {
         } else {
             drawPiece(TetrisPieceState.SETTLED);
             final TetrisPiece[] values = TetrisPiece.values();
-            piece = values[random.nextInt(values.length)];
+            piece = nextPiece;
+            nextPiece = values[random.nextInt(values.length)];
             TetrisDirection[] directions = TetrisDirection.values();
             direction = directions[random.nextInt(directions.length)];
             setCurrentJ(0);
@@ -315,9 +335,11 @@ public class TetrisView extends View {
             if (checkCollision(getCurrentI(), getCurrentJ())) {
                 return false;
             }
+            int count = 1;
             for (int i = 0; i < mapHeight; i++) {
                 boolean clearLine = isLineClear(i);
                 if (clearLine) {
+                    points += count++;
                     removeLine(i);
                 }
             }
@@ -348,9 +370,10 @@ public class TetrisView extends View {
             }
         }
     }
-    long startTime;
+
     void reset() {
-        startTime=System.currentTimeMillis();
+        points = 0;
+        startTime = System.currentTimeMillis();
         map = new TetrisSquare[mapWidth][mapHeight];
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
@@ -360,6 +383,7 @@ public class TetrisView extends View {
         }
         TetrisPiece[] values = TetrisPiece.values();
         piece = values[random.nextInt(values.length)];
+        nextPiece = values[random.nextInt(values.length)];
         continueGame();
     }
 
