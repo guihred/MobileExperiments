@@ -11,7 +11,7 @@ import android.graphics.RectF;
 
 import java.util.Collection;
 
-public class Pacman  {
+public class Pacman {
 
     public static final float PACMAN_RATIO = 0.5f;
     private float startAngle = 0;
@@ -27,7 +27,7 @@ public class Pacman  {
         PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("startAngle", Keyframe.ofFloat(0, 0), Keyframe.ofFloat(1, 45));
         PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("length", Keyframe.ofFloat(0, 360), Keyframe.ofFloat(1, 270));
         eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(this, pvhRotation, pvhRotation2);
-        eatingAnimation.setDuration(1000);
+        eatingAnimation.setDuration(500);
         eatingAnimation.addUpdateListener(animation -> pacmanView.invalidate());
         eatingAnimation.setRepeatCount(ObjectAnimator.INFINITE);
         eatingAnimation.setRepeatMode(ValueAnimator.REVERSE);
@@ -133,16 +133,4 @@ public class Pacman  {
         this.length = length;
     }
 
-    public enum PacmanDirection {
-        DOWN(90),
-        LEFT(180),
-        RIGHT(0),
-        UP(270);
-
-        private final int angle;
-
-        PacmanDirection(int angle) {
-            this.angle = angle;
-        }
-    }
 }

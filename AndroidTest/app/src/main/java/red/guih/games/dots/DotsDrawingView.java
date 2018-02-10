@@ -322,9 +322,9 @@ public class DotsDrawingView extends BaseView {
                 return false;
             }
             entry.getKey().addAdj(entry.getValue());
-            final boolean criou = hasAnyAlmostSquare();
+            final boolean almostSquare = hasAnyAlmostSquare();
             entry.getKey().removeAdj(entry.getValue());
-            return !criou;
+            return !almostSquare;
         }, 5);
     }
 

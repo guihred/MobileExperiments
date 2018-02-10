@@ -85,15 +85,15 @@ public class PacmanView extends BaseView {
                 float y = event.getY();
                 if (Math.abs(startX - x) > Math.abs(startY - y)) {
                     if (startX - x > 0) {
-                        pacman.turn(Pacman.PacmanDirection.LEFT);
+                        pacman.turn(PacmanDirection.LEFT);
                     } else {
-                        pacman.turn(Pacman.PacmanDirection.RIGHT);
+                        pacman.turn(PacmanDirection.RIGHT);
                     }
                 } else {
                     if (startY - y > 0) {
-                        pacman.turn(Pacman.PacmanDirection.UP);
+                        pacman.turn(PacmanDirection.UP);
                     } else {
-                        pacman.turn(Pacman.PacmanDirection.DOWN);
+                        pacman.turn(PacmanDirection.DOWN);
                     }
                 }
                 return true;
@@ -162,7 +162,7 @@ public class PacmanView extends BaseView {
             PacmanBall pacmanBall = balls.get(nextInt);
             pacmanBall.setSpecial();
         }
-        pacman.turn(Pacman.PacmanDirection.RIGHT);
+        pacman.turn(PacmanDirection.RIGHT);
         pacman.setY(MazeSquare.SQUARE_SIZE / 4);
         pacman.setX(MazeSquare.SQUARE_SIZE / 4);
         for (int i = 0; i < ghosts.size(); i++) {
