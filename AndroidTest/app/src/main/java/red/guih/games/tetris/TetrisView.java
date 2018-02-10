@@ -14,12 +14,15 @@ import android.widget.TextView;
 
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import red.guih.games.BaseView;
 import red.guih.games.R;
+import red.guih.games.db.UserRecord;
 
-public class TetrisView extends View {
+public class TetrisView extends BaseView {
 
     public static final int UPDATE_DELAY_MILLIS = 750;
     public int mapHeight = 24;
@@ -121,6 +124,18 @@ public class TetrisView extends View {
     private void showDialog() {
 
         gameOver = false;
+        if (isRecordSuitable(points, UserRecord.TETRIS, 1, false)) {
+            createRecordIfSuitable(points, points + " Points", UserRecord.TETRIS, 1, false);
+            showRecords(1, UserRecord.TETRIS, () -> TetrisView.this.reset());
+        } else {
+            showYouLoseDialog();
+        }
+    }
+    protected List<UserRecord> getAll(int difficulty, String gameName) {
+        return db.userDao().getAllDesc(difficulty, gameName);
+    }
+
+    private void showYouLoseDialog() {
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.you_lose);
@@ -272,16 +287,12 @@ public class TetrisView extends View {
     }
 
     void drawPiece() {
-        drawPiece(TetrisPieceState.TRANSITION);
-    }
-
-    void drawPiece(TetrisPieceState state) {
         final int[][] get = pieceDirection.get(piece).get(direction);
         for (int i = 0; i < get.length; i++) {
             for (int j = 0; j < get[i].length; j++) {
                 if (get[i][j] == 1) {
                     map[getCurrentI() + i][getCurrentJ() + j].setColor(piece.getColor());
-                    map[getCurrentI() + i][getCurrentJ() + j].setState(state);
+                    map[getCurrentI() + i][getCurrentJ() + j].setState(TetrisPieceState.TRANSITION);
                 }
             }
         }
@@ -324,7 +335,15 @@ public class TetrisView extends View {
             setCurrentJ(getCurrentJ() + 1);
             return true;
         } else {
-            drawPiece(TetrisPieceState.SETTLED);
+            final int[][] get = pieceDirection.get(piece).get(direction);
+            for (int i1 = 0; i1 < get.length; i1++) {
+                for (int j = 0; j < get[i1].length; j++) {
+                    if (get[i1][j] == 1) {
+                        map[getCurrentI() + i1][getCurrentJ() + j].setColor(piece.getColor());
+                        map[getCurrentI() + i1][getCurrentJ() + j].setState(TetrisPieceState.SETTLED);
+                    }
+                }
+            }
             final TetrisPiece[] values = TetrisPiece.values();
             piece = nextPiece;
             nextPiece = values[random.nextInt(values.length)];

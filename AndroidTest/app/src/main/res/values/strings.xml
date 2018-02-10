@@ -20,6 +20,7 @@
     <string name="mode">Modo</string>
     <string name="puzzle">Quebra-Cabeça</string>
     <string name="image">Imagem</string>
+    <string name="you_beaten_the_record">Você Bateu um Recorde!</string>
     <string-array name="minesweeper_difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>

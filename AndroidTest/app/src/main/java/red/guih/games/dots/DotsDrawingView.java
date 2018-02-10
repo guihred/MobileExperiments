@@ -283,7 +283,7 @@ public class DotsDrawingView extends BaseView {
                 ImageView image2 = dialog.findViewById(R.id.image3);
                 image2.setImageResource(R.drawable.smile);
             }
-            createUserRecordThread((int) percentage, percentage + "%", UserRecord.DOTS, DIFFICULTY);
+            createUserRecordThread((int) percentage, percentage + "%", UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH);
         } else {
             text.setText(R.string.you_lose);
         }
