@@ -1,7 +1,6 @@
 package red.guih.games.puzzle;
 
 import android.app.Dialog;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,7 +19,6 @@ import java.util.Random;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
-import red.guih.games.db.UserRecordDatabase;
 
 import static java.util.stream.Collectors.toList;
 
@@ -39,8 +37,6 @@ public class PuzzleView extends BaseView {
     private List<PuzzlePiece> chosenPuzzleGroup;
     private long startTime;
 
-    final UserRecordDatabase db = Room.databaseBuilder(getContext(),
-            UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
     public PuzzleView(Context c, AttributeSet v) {
         super(c, v);
@@ -153,15 +149,21 @@ public class PuzzleView extends BaseView {
 
     private void showDialogWinning() {
         invalidate();
+        long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
+        String s = getResources().getString(R.string.time_format);
+        String format = String.format(s, inSeconds / 60, inSeconds % 60);
+        if(isRecordSuitable(inSeconds,  UserRecord.PUZZLE, PUZZLE_WIDTH,true)){
+            createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH,true);
+            showRecords(PUZZLE_WIDTH,UserRecord.PUZZLE,()-> PuzzleView.this.reset());
+            return;
+        }
+
+
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.game_over);
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.textDialog);
-        long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        String s = getResources().getString(R.string.time_format);
-        String format = String.format(s, inSeconds / 60, inSeconds % 60);
-        createUserRecordThread(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH);
         text.setText(String.format(getResources().getString(R.string.you_win), format));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog

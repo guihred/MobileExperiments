@@ -146,7 +146,6 @@ public class PacmanView extends BaseView {
                 walls.addAll(maze[i][j].updateWalls());
             }
         }
-        Context context = getContext();
         balls = DoubleStream
                 .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
                 .limit(MAZE_WIDTH * 2)

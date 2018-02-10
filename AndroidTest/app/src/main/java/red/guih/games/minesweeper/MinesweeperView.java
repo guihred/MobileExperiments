@@ -20,6 +20,7 @@ import java.util.Random;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
+import red.guih.games.dots.DotsDrawingView;
 
 import static java.lang.Math.abs;
 
@@ -345,9 +346,11 @@ public class MinesweeperView extends BaseView {
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, emSegundos / 60, emSegundos % 60);
 
-        createUserRecordThread(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS);
-
-
+        if (isRecordSuitable(emSegundos, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true)) {
+            createRecordIfSuitable(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true);
+            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, () -> MinesweeperView.this.reset());
+            return;
+        }
         text.setText(String.format(getResources().getString(R.string.you_win), format));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog

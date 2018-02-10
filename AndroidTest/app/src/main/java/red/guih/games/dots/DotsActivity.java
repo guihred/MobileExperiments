@@ -43,7 +43,7 @@ public class DotsActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(DotsDrawingView.DIFFICULTY, UserRecord.DOTS);
+                showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

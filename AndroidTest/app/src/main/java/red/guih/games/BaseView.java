@@ -138,18 +138,14 @@ public abstract class BaseView extends View {
             userRecord.setPosition(i + 1);
         }
 
+        adapter.addAll(records);
         recordListView.setSelection(max);
         recordListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        adapter.addAll(records);
         recordListView.refreshDrawableState();
     }
 
     protected List<UserRecord> getAll(int difficulty, String gameName) {
         return db.userDao().getAll(difficulty, gameName);
-    }
-
-    public void createUserRecordThread(long points, String description, String gameName, int difficulty) {
-        new Thread(() -> createUserRecord(points, description, gameName, difficulty)).start();
     }
 
 }

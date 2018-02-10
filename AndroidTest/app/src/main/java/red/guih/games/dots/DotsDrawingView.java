@@ -260,19 +260,30 @@ public class DotsDrawingView extends BaseView {
 
     }
 
+    protected List<UserRecord> getAll(int difficulty, String gameName) {
+        return db.userDao().getAllDesc(difficulty, gameName);
+    }
     private void showDialog() {
         invalidate();
+        float userPoints = this.points.get("TU").size();
+        int percentage = (int) (userPoints / (MAZE_WIDTH - 1) / (MAZE_HEIGHT - 1) * 100);
+        boolean userWon = points.get("TU").size() > points.get("EU").size();
+        if (userWon&&isRecordSuitable(percentage, UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH, false)) {
+            createRecordIfSuitable(percentage, percentage + "%", UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH, false);
+            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, () -> DotsDrawingView.this.reset());
+            return;
+        }
+
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.dots_dialog);
         dialog.setTitle(R.string.game_over);
-
+        String string = getResources().getString(R.string.you_win);
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.text);
-        if (points.get("TU").size() > points.get("EU").size()) {
-            String string = getResources().getString(R.string.you_win);
-            float userPoints = this.points.get("TU").size();
-            int percentage = (int)(userPoints / (MAZE_WIDTH - 1) / (MAZE_HEIGHT - 1) * 100);
-            text.setText(String.format(string, percentage + "%"));
+
+        if (userWon) {
+            String format = String.format(string, percentage + "%");
+            text.setText(format);
             ImageView image = dialog.findViewById(R.id.image);
             image.setImageResource(R.drawable.smile);
             if (percentage >= 60) {
@@ -283,7 +294,7 @@ public class DotsDrawingView extends BaseView {
                 ImageView image2 = dialog.findViewById(R.id.image3);
                 image2.setImageResource(R.drawable.smile);
             }
-            createUserRecordThread((int) percentage, percentage + "%", UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH);
+
         } else {
             text.setText(R.string.you_lose);
         }
