@@ -24,11 +24,13 @@ import red.guih.games.R;
 
 import static java.util.stream.Stream.of;
 
+@SuppressWarnings("MagicNumber")
 public class PacmanView extends BaseView {
 
     public static final int MAZE_WIDTH = 5;
     public static final int GHOST_AFRAID_TIME = 200;
     public static int MAZE_HEIGHT = 5;
+    private int lifeCount = 3;
     private final Pacman pacman;
     float startX, startY;
     List<RectF> walls;
@@ -49,7 +51,7 @@ public class PacmanView extends BaseView {
                         .collect(Collectors.toList());
     }
 
-    private static MazeSquare[][] initializeMaze(Context c) {
+    private static MazeSquare[][] initializeMaze() {
         MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
@@ -122,8 +124,19 @@ public class PacmanView extends BaseView {
             g.draw(canvas);
         }
         pacman.draw(canvas);
+        drawLives(canvas);
+
+
         if (gameOver) {
             showDialog();
+        }
+    }
+
+    private void drawLives(Canvas canvas) {
+        float y = MAZE_HEIGHT * 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE / 8;
+        for (int i = 0; i < lifeCount; i++) {
+            float x = MAZE_WIDTH * 0.6f * MazeSquare.SQUARE_SIZE + i * MazeSquare.SQUARE_SIZE;
+            canvas.drawArc(x, y, x + pacman.getPacmanWidth() / 1.5f, y + pacman.getPacmanWidth() / 1.5f, 45, 270, true, pacman.paint);
         }
     }
 
@@ -134,9 +147,8 @@ public class PacmanView extends BaseView {
     }
 
     public void reset() {
-        MazeSquare.SQUARE_SIZE = getWidth() / MAZE_WIDTH / 2;
-        MAZE_HEIGHT = getHeight() / MazeSquare.SQUARE_SIZE / 2;
-        maze = initializeMaze(getContext());
+        adjustDimensions(getWidth(), getHeight());
+        maze = initializeMaze();
         CreateMazeHandler eventHandler = new CreateMazeHandler(maze);
         eventHandler.handle();
 
@@ -177,7 +189,13 @@ public class PacmanView extends BaseView {
         }
         continueGame();
         gameOver = false;
+        lifeCount = 3;
 
+    }
+
+    private static void adjustDimensions(int width, int height) {
+        MazeSquare.SQUARE_SIZE = width / MAZE_WIDTH / 2;
+        MAZE_HEIGHT = height / MazeSquare.SQUARE_SIZE / 2;
     }
 
     void continueGame() {
@@ -238,6 +256,14 @@ public class PacmanView extends BaseView {
                 .collect(Collectors.toList());
         if (!gh.isEmpty()) {
             if (gh.stream().anyMatch(g -> g.getStatus() == PacmanGhost.GhostStatus.ALIVE)) {
+                if (lifeCount > 0) {
+                    lifeCount--;
+                    pacman.turn(PacmanDirection.RIGHT);
+                    pacman.setY(MazeSquare.SQUARE_SIZE / 4);
+                    pacman.setX(MazeSquare.SQUARE_SIZE / 4);
+                    return true;
+                }
+
                 pacman.die();
                 return false;
             } else {

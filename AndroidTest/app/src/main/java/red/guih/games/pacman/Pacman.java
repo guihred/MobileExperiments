@@ -17,7 +17,7 @@ public class Pacman {
     private float startAngle = 0;
     private float length = 0;
     private ObjectAnimator eatingAnimation;
-    private Paint paint = new Paint(Color.YELLOW);
+     Paint paint = new Paint(Color.YELLOW);
     private float x, y;
     private PacmanDirection direction = PacmanDirection.RIGHT;
     private RectF bounds = new RectF();
@@ -39,7 +39,7 @@ public class Pacman {
         canvas.drawArc(x, y, x + getPacmanWidth(), y + getPacmanWidth(), (direction == null ? 0 : direction.angle) + getStartAngle(), getLength(), true, paint);
     }
 
-    private float getPacmanWidth() {
+    public float getPacmanWidth() {
         return MazeSquare.SQUARE_SIZE * PACMAN_RATIO;
     }
 
