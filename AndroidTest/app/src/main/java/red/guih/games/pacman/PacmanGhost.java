@@ -286,7 +286,12 @@ public class PacmanGhost extends View {
     protected void onDraw(Canvas canvas) {
         drawable.setBounds(x, y, x + getGhostWidth(), y + getGhostWidth());
         drawable.draw(canvas);
-
+//        if (pacmanSquare != null) {
+//            canvas.drawCircle(readjustedX(pacmanSquare.i), readjustedY(pacmanSquare.j), 5, paint);
+//        }
+//        if (ghostSquare != null) {
+//            canvas.drawCircle(readjustedX(ghostSquare.i), readjustedY(ghostSquare.j), 5, paint);
+//        }
 
     }
 
