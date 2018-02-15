@@ -6,10 +6,17 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-public class MazeSquare  {
+public class MazeSquare {
     public static int SQUARE_SIZE = 20;
+    public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
+    final int i, j;
+    List<MazeSquare> adjacents;
     private List<RectF> walls = new ArrayList<>();
     private boolean visited = false;
     private boolean west = false;
@@ -17,28 +24,67 @@ public class MazeSquare  {
     private boolean north = false;
     private boolean south = false;
     private Paint paint = new Paint(Color.GREEN);
-    final int i, j;
-
+    private List<RectF> bounds;
 
     public MazeSquare(int i, int j) {
         this.i = i;
         this.j = j;
         paint.setColor(Color.GREEN);
-//        setStyle("-fx-background-color:green;");
-//        styleProperty().bind(Bindings.when(visited).then("-fx-background-color:green;").otherwise("-fx-background-color:gray;"));
-//        setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
-//        final Line line = new Line(0, 0, 0, SQUARE_SIZE);
-//        line.visibleProperty().bind(east.not());
-//        setRight(line);
-//        final Line line2 = new Line(0, 0, SQUARE_SIZE, 0);
-//        line2.visibleProperty().bind(north.not());
-//        setTop(line2);
-//        final Line line3 = new Line(0, 0, 0, SQUARE_SIZE);
-//        line3.visibleProperty().bind(west.not());
-//        setLeft(line3);
-//        final Line line4 = new Line(0, 0, SQUARE_SIZE, 0);
-//        line4.visibleProperty().bind(south.not());
-//        setBottom(line4);
+    }
+
+    public static void setPath(MazeSquare from, MazeSquare to, MazeSquare by) {
+        if (paths == null) {
+            paths = new LinkedHashMap<>();
+        }
+        if (!paths.containsKey(from)) {
+            paths.put(from, new LinkedHashMap<>());
+        }
+        paths.get(from).put(to, by);
+    }
+
+
+    // <id,cell>
+
+    @Override
+    public String toString() {
+        return "MazeSquare(" + i + "," + j + ')';
+    }
+
+    private Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source, Map<MazeSquare, Integer> distance, MazeSquare[][] map) {
+        Map<MazeSquare, Boolean> known = new HashMap<>();
+        for (MazeSquare[] u : map) {
+            for (MazeSquare v : u) {
+                distance.put(v, Integer.MAX_VALUE);
+                known.put(v, false);
+            }
+        }
+        distance.put(source, 0);
+        return known;
+    }
+
+    public List<MazeSquare> adjacents(MazeSquare[][] map) {
+        if (adjacents == null) {
+            adjacents = new ArrayList<>();
+            MazeSquare el = map[i][j];
+            if (el.east && j + 1 < PacmanView.MAZE_HEIGHT) {
+                adjacents.add(map[i][j + 1]);
+            }
+            if (el.west && j > 0) {
+                MazeSquare e = map[i][j - 1];
+                adjacents.add(e);
+
+            }
+            if (el.north && i > 0) {
+                adjacents.add(map[i - 1][j]);
+
+            }
+            if (el.south && i + 1 < PacmanView.MAZE_WIDTH) {
+                adjacents.add(map[i + 1][j]);
+            }
+            System.out.println(this + " ->" + adjacents);
+        }
+
+        return adjacents;
     }
 
     protected void draw(Canvas canvas) {
@@ -81,13 +127,54 @@ public class MazeSquare  {
 
     }
 
-    private void drawWall(Canvas canvas, RectF rectF) {
-        canvas.drawRect(rectF, paint);
+    public boolean isInBounds(float x, float y) {
+        if (bounds == null) {
+
+            float layoutX = i * SQUARE_SIZE;
+            float layoutX2 = PacmanView.MAZE_WIDTH * 2 * SQUARE_SIZE - i * SQUARE_SIZE
+                    - SQUARE_SIZE;
+            float layoutY = j * SQUARE_SIZE;
+            float layoutY2 = PacmanView.MAZE_HEIGHT * 2 * SQUARE_SIZE - j * SQUARE_SIZE
+                    - SQUARE_SIZE;
+            List<RectF> arrayList = new ArrayList<>();
+            arrayList.add(new RectF(layoutX, layoutY, layoutX+SQUARE_SIZE, layoutY+SQUARE_SIZE));
+            arrayList.add(new RectF(layoutX, layoutY2, layoutX+SQUARE_SIZE, layoutY2+MazeSquare.SQUARE_SIZE));
+            arrayList.add(new RectF(layoutX2, layoutY, layoutX2+SQUARE_SIZE, layoutY+SQUARE_SIZE));
+            arrayList.add(new RectF(layoutX2, layoutY2, layoutX2+SQUARE_SIZE, layoutY2+SQUARE_SIZE));
+
+            bounds = arrayList;
+        }
+        return bounds.stream().anyMatch(e -> e.contains(x, y));
+
     }
 
-    public void  setSouth() {
-        this.south = true;
-        updateWalls();
+    public Map<MazeSquare, Integer> dijkstra(final MazeSquare[][] map) {
+        Map<MazeSquare, Integer> distance = new LinkedHashMap<>();
+        Map<MazeSquare, Boolean> known = createDistanceMap(this, distance, map);
+        while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
+            Map.Entry<MazeSquare, Integer> orElse = distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
+                    .min(Comparator.comparing(Map.Entry<MazeSquare, Integer>::getValue)).orElse(null);
+            if (orElse == null) {
+                break;
+            }
+
+            MazeSquare v = orElse.getKey();
+            known.put(v, true);
+            for (MazeSquare w : v.adjacents(map)) {
+                if (!known.get(w)) {
+                    Integer cvw = 1;
+                    if (distance.get(v) + cvw < distance.get(w)) {
+                        distance.put(w, distance.get(v) + cvw);
+                        setPath(w, this, v);
+                    }
+                }
+            }
+        }
+        return distance;
+    }
+
+    private void drawWall(Canvas canvas, RectF rectF) {
+        canvas.drawRect(rectF, paint);
     }
 
     public final boolean isVisited() {
@@ -98,18 +185,20 @@ public class MazeSquare  {
         return south;
     }
 
+    public void setSouth(boolean b) {
+        this.south = b;
+    }
+
     public final boolean isWest() {
         return west;
     }
 
-    public final void setVisited() {
-        this.visited = true;
-        updateWalls();
-    }
-
     public final void setWest(final boolean west) {
         this.west = west;
-        updateWalls();
+    }
+
+    public final void setVisited() {
+        this.visited = true;
     }
 
     public final boolean isEast() {
@@ -117,9 +206,8 @@ public class MazeSquare  {
     }
 
 
-    public final void setEast() {
-        this.east = true;
-        updateWalls();
+    public void setEast(boolean b) {
+        this.east = b;
     }
 
     public final boolean isNorth() {
@@ -129,7 +217,6 @@ public class MazeSquare  {
 
     public final void setNorth(final boolean north) {
         this.north = north;
-        updateWalls();
     }
 
 

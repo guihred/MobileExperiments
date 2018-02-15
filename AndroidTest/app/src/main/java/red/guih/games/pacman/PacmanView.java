@@ -46,8 +46,8 @@ public class PacmanView extends BaseView {
         super(context, attrs);
         pacman = new Pacman(this);
         ghosts =
-                of(PacmanGhost.GhostColor.RED, PacmanGhost.GhostColor.BLUE, PacmanGhost.GhostColor.ORANGE, PacmanGhost.GhostColor.GREEN)
-                        .map((PacmanGhost.GhostColor color) -> new PacmanGhost(color, context))
+                of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)
+                        .map((GhostColor color) -> new PacmanGhost(color, context))
                         .collect(Collectors.toList());
     }
 
@@ -63,15 +63,17 @@ public class PacmanView extends BaseView {
                     maze[i][0].setWest(false);
                 }
                 if (MAZE_HEIGHT - 1 == j && i % 3 == 0) {
-                    maze[i][MAZE_HEIGHT - 1].setEast();
+                    maze[i][MAZE_HEIGHT - 1].setEast(true);
                 }
                 if (MAZE_WIDTH - 1 == i && j % 3 == 0) {
-                    maze[MAZE_WIDTH - 1][j].setSouth();
+                    boolean b = true;
+                    maze[MAZE_WIDTH - 1][j].setSouth(b);
                 }
             }
         }
         return maze;
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -149,13 +151,17 @@ public class PacmanView extends BaseView {
     public void reset() {
         adjustDimensions(getWidth(), getHeight());
         maze = initializeMaze();
+
         CreateMazeHandler eventHandler = new CreateMazeHandler(maze);
         eventHandler.handle();
+
+
 
         walls = new ArrayList<>();
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
                 walls.addAll(maze[i][j].updateWalls());
+                maze[i][j].dijkstra(maze);
             }
         }
         balls = DoubleStream
@@ -179,7 +185,8 @@ public class PacmanView extends BaseView {
         pacman.setX(MazeSquare.SQUARE_SIZE / 4);
         for (int i = 0; i < ghosts.size(); i++) {
             PacmanGhost ghost = ghosts.get(i);
-            ghost.setStatus(PacmanGhost.GhostStatus.ALIVE);
+            ghost.setStatus(GhostStatus.ALIVE);
+
             if (i == 0) {
                 ghost.setStartPosition(MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
             } else {
@@ -239,7 +246,7 @@ public class PacmanView extends BaseView {
         if (balls.isEmpty()) {
             return false;
         }
-        ghosts.forEach(g -> g.move(now, walls, pacman));
+        ghosts.forEach(g -> g.move(now, walls, pacman, maze));
         pacman.move(walls);
         List<PacmanBall> bal = balls.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds())).collect(Collectors.toList());
         if (!bal.isEmpty()) {
@@ -247,15 +254,15 @@ public class PacmanView extends BaseView {
             setPoints(getPoints() + bal.size());
             balls.removeAll(bal);
             if (bal.stream().anyMatch(PacmanBall::isSpecial)) {
-                ghosts.stream().filter(g -> g.getStatus() == PacmanGhost.GhostStatus.ALIVE)
-                        .forEach(g -> g.setStatus(PacmanGhost.GhostStatus.AFRAID));
+                ghosts.stream().filter(g -> g.getStatus() == GhostStatus.ALIVE)
+                        .forEach(g -> g.setStatus(GhostStatus.AFRAID));
                 time = GHOST_AFRAID_TIME;
             }
         }
         List<PacmanGhost> gh = ghosts.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds()))
                 .collect(Collectors.toList());
         if (!gh.isEmpty()) {
-            if (gh.stream().anyMatch(g -> g.getStatus() == PacmanGhost.GhostStatus.ALIVE)) {
+            if (gh.stream().anyMatch(g -> g.getStatus() == GhostStatus.ALIVE)) {
                 if (lifeCount > 0) {
                     lifeCount--;
                     pacman.turn(PacmanDirection.RIGHT);
@@ -267,15 +274,15 @@ public class PacmanView extends BaseView {
                 pacman.die();
                 return false;
             } else {
-                gh.forEach(g -> g.setStatus(PacmanGhost.GhostStatus.DEAD));
+                gh.forEach(g -> g.setStatus(GhostStatus.DEAD));
             }
         }
 //
         if (time > 0) {
             time--;
             if (time == 0) {
-                ghosts.stream().filter(g -> g.getStatus() == PacmanGhost.GhostStatus.AFRAID)
-                        .forEach(g -> g.setStatus(PacmanGhost.GhostStatus.ALIVE));
+                ghosts.stream().filter(g -> g.getStatus() == GhostStatus.AFRAID)
+                        .forEach(g -> g.setStatus(GhostStatus.ALIVE));
             }
         }
 

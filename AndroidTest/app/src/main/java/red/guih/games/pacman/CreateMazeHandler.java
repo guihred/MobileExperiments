@@ -30,20 +30,22 @@ class CreateMazeHandler {
                 if (PacmanDirection.LEFT == direction) {
                     createdMaze[r][c].setWest(true);
                     c -= 1;
-                    createdMaze[r][c].setEast();
+                    createdMaze[r][c].setEast(true);
                 }
                 if (PacmanDirection.UP == direction) {
                     createdMaze[r][c].setNorth(true);
                     r -= 1;
-                    createdMaze[r][c].setSouth();
+                    boolean b = true;
+                    createdMaze[r][c].setSouth(b);
                 }
                 if (PacmanDirection.RIGHT == direction) {
-                    createdMaze[r][c].setEast();
+                    createdMaze[r][c].setEast(true);
                     c += 1;
                     createdMaze[r][c].setWest(true);
                 }
                 if (PacmanDirection.DOWN == direction) {
-                    createdMaze[r][c].setSouth();
+                    boolean b = true;
+                    createdMaze[r][c].setSouth(b);
                     r += 1;
                     createdMaze[r][c].setNorth(true);
                 }
@@ -57,19 +59,19 @@ class CreateMazeHandler {
                 MazeSquare mazeSquare = createdMaze[i][j];
                 if (i > 0 && !mazeSquare.isEast() && !mazeSquare.isNorth() && !mazeSquare.isWest()) {
                     createdMaze[i][j].setNorth(true);
-                    createdMaze[i - 1][j].setSouth();
+                    createdMaze[i - 1][j].setSouth(true);
                 }
                 if (i < createdMaze.length - 1 && !mazeSquare.isEast() && !mazeSquare.isSouth() && !mazeSquare.isWest()) {
-                    createdMaze[i][j].setSouth();
+                    createdMaze[i][j].setSouth(true);
                     createdMaze[i + 1][j].setNorth(true);
                 }
                 if (j < createdMaze[i].length - 1 && !mazeSquare.isNorth() && !mazeSquare.isEast() && !mazeSquare.isSouth()) {
-                    createdMaze[i][j].setEast();
+                    createdMaze[i][j].setEast(true);
                     createdMaze[i][j + 1].setWest(true);
                 }
                 if (j > 0 && !mazeSquare.isNorth() && !mazeSquare.isWest() && !mazeSquare.isSouth()) {
                     createdMaze[i][j].setWest(true);
-                    createdMaze[i][j - 1].setEast();
+                    createdMaze[i][j - 1].setEast(true);
                 }
             }
         }

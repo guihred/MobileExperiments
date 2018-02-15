@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.util.Collection;
 
@@ -92,6 +93,8 @@ public class Pacman {
     }
 
     public void turn(PacmanDirection direction) {
+        Log.i("PACMAN","TURNED "+direction);
+
         this.direction = direction;
     }
 
