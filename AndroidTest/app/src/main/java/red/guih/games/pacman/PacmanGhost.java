@@ -95,11 +95,10 @@ public class PacmanGhost extends View {
         float hx = -getX() - MazeSquare.SQUARE_SIZE / 2 + (ghostSquare != null ? readjustedX(ghostSquare.i) : pacman.getX());
         float hy = -getY() - MazeSquare.SQUARE_SIZE / 2 + (ghostSquare != null ? readjustedY(ghostSquare.j) : pacman.getY());
         if (pacmanSquare != null) {
-            hx = (int) (-getX() - getGhostWidth() / 2 + readjustedX(pacmanSquare.i));
-            hy = (int) (-getY() - getGhostWidth() / 2 + readjustedY(pacmanSquare.j));
+            hx = (int) (-getX() - MazeSquare.SQUARE_SIZE / 2 + readjustedX(pacmanSquare.i));
+            hy = (int) (-getY() - MazeSquare.SQUARE_SIZE / 2 + readjustedY(pacmanSquare.j));
         }
-        if ((getY() + MazeSquare.SQUARE_SIZE / 2) % MazeSquare.SQUARE_SIZE / 2 <= 10
-                || (getX() + MazeSquare.SQUARE_SIZE / 2) % MazeSquare.SQUARE_SIZE / 2 <= 10) {
+        if (isMiddle(getY()) || isMiddle(getX())) {
             extracted(pacman, maze);
             if (pacmanSquare != null) {
                 hx = (int) (-getX() - getGhostWidth() / 2 + readjustedX(pacmanSquare.i));
@@ -128,6 +127,11 @@ public class PacmanGhost extends View {
 
     }
 
+    private boolean isMiddle(float y) {
+
+        return (y + MazeSquare.SQUARE_SIZE - getGhostWidth() / 2) % MazeSquare.SQUARE_SIZE / 2 <= 5;
+    }
+
     private float readjustedX(int i) {
 
         return MazeSquare.SQUARE_SIZE / 2 + (getX() > MazeSquare.SQUARE_SIZE * PacmanView.MAZE_WIDTH ? PacmanView.MAZE_WIDTH * 2 - i - 1 : i) * MazeSquare.SQUARE_SIZE;
@@ -154,7 +158,7 @@ public class PacmanGhost extends View {
         if (pacmanSquare != null) {
             hx = pacmanSquare.i;
             hy = pacmanSquare.j;
-            if (hx == 0 && hy == 0) {
+            if ((hx == 0 || hx == PacmanView.MAZE_WIDTH - 1) && (hy == 0 || hy == PacmanView.MAZE_HEIGHT - 1)) {
                 hx = PacmanView.MAZE_WIDTH - 1;
                 hy = PacmanView.MAZE_HEIGHT - 1;
             }

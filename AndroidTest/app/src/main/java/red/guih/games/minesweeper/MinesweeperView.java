@@ -20,7 +20,6 @@ import java.util.Random;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
-import red.guih.games.dots.DotsDrawingView;
 
 import static java.lang.Math.abs;
 
@@ -348,7 +347,7 @@ public class MinesweeperView extends BaseView {
 
         if (isRecordSuitable(emSegundos, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true)) {
             createRecordIfSuitable(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true);
-            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, () -> MinesweeperView.this.reset());
+            showRecords(NUMBER_OF_BOMBS, UserRecord.MINESWEEPER, () -> MinesweeperView.this.reset());
             return;
         }
         text.setText(String.format(getResources().getString(R.string.you_win), format));
