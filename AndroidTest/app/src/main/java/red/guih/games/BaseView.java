@@ -26,6 +26,7 @@ import red.guih.games.db.UserRecordDatabase;
 
 public abstract class BaseView extends View {
 
+    public static final int MAX_RECORDS = 5;
     protected UserRecordDatabase db = Room.databaseBuilder(this.getContext(), UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
@@ -51,7 +52,7 @@ public abstract class BaseView extends View {
             if (equals > 0)
                 return;
             int count = db.userDao().getCountRecords(difficulty, gameName);
-            if (count < 10) {
+            if (count < MAX_RECORDS) {
                 createUserRecord(points, description, gameName, difficulty);
                 return;
             }
@@ -90,7 +91,7 @@ public abstract class BaseView extends View {
             return false;
         }
         int count = db.userDao().getCountRecords(difficulty, gameName);
-        if (count < 10) {
+        if (count < MAX_RECORDS) {
             return true;
         }
         UserRecord maxPoints = db.userDao().getMaxPoints(difficulty, gameName);

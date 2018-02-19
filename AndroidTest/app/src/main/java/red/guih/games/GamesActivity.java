@@ -12,6 +12,7 @@ import red.guih.games.madmaze.MadMazeActivity;
 import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
 import red.guih.games.puzzle.PuzzleActivity;
+import red.guih.games.slidingpuzzle.SlidingPuzzleActivity;
 import red.guih.games.tetris.TetrisActivity;
 
 /**
@@ -39,6 +40,8 @@ public class GamesActivity extends AppCompatActivity {
         labyrinthButton.setOnClickListener((View v) -> startActivity(new Intent(this, MadMazeActivity.class)));
         ImageButton puzzleButton = findViewById(R.id.puzzleButton);
         puzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, PuzzleActivity.class)));
+        ImageButton slidingPuzzleButton = findViewById(R.id.slidingPuzzleButton);
+        slidingPuzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, SlidingPuzzleActivity.class)));
 
     }
 }

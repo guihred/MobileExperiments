@@ -18,6 +18,7 @@ public class UserRecord {
     public static final String DOTS = "Dots";
     public static final String TETRIS = "Tetris";
     public static final String PUZZLE = "Puzzle";
+    public static final String SLIDING_PUZZLE = "SlidingPuzzle";
 
     @PrimaryKey(autoGenerate = true)
     private int uid;

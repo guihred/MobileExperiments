@@ -53,6 +53,11 @@
             android:screenOrientation="portrait">
 
         </activity>
+        <activity
+            android:name="red.guih.games.slidingpuzzle.SlidingPuzzleActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
+        </activity>
 
     </application>
 

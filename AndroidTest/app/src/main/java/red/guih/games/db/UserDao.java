@@ -15,10 +15,10 @@ import java.util.List;
 @Dao
 public interface UserDao {
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points LIMIT 10")
+    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points LIMIT 5")
     List<UserRecord> getAll(Integer difficulty, String gameName);
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points desc LIMIT 10")
+    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points desc LIMIT 5")
     List<UserRecord> getAllDesc(Integer difficulty, String gameName);
 
     @Query("SELECT COUNT(points) FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ")

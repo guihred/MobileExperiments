@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:weightSum="3"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -91,7 +92,8 @@
         android:layout_height="wrap_content"
 
         android:orientation="horizontal"
-        android:weightSum="3">
+        android:weightSum="3"
+        android:baselineAligned="false">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -163,7 +165,36 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
-    </LinearLayout>
 
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/slidingPuzzleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="@string/labyrinth"
+                android:src="@drawable/sliding_puzzle_button"
+                tools:layout_editor_absoluteX="164dp"
+                tools:layout_editor_absoluteY="98dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/slidingpuzzle"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 </LinearLayout>
 
