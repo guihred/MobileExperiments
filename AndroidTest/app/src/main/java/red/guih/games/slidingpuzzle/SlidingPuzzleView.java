@@ -83,7 +83,7 @@ public class SlidingPuzzleView extends BaseView {
                 canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize, paint);
                 if (!map[i][j].isEmpty()) {
                     String text = "" + map[i][j].getNumber();
-                    canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(), i * squareSize + squareSize / 1.5f, paint);
+                    canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(), i * squareSize + squareSize * 2 / 3, paint);
                 }
 
             }
@@ -161,7 +161,7 @@ public class SlidingPuzzleView extends BaseView {
         }
         final Random random = new Random();
         int emptyI = MAP_WIDTH - 1, emptyJ = MAP_HEIGHT - 1;
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 125 * MAP_HEIGHT; i++) {
             int nextI = random.nextInt(3) - 1;
             int nextJ = random.nextInt(3) - 1;
             if (swapEmptyNeighbor(emptyI, emptyJ, nextI, nextJ)) {
@@ -170,6 +170,7 @@ public class SlidingPuzzleView extends BaseView {
             }
 
         }
+        invalidate();
     }
 
     final boolean swapEmptyNeighbor(int i, int j, int k, int l) {

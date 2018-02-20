@@ -21,7 +21,7 @@
 
         <red.guih.games.dots.MyNumberPicker
             android:id="@+id/number"
-            max="6"
+            max="8"
             min="3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
