@@ -7,7 +7,10 @@ package red.guih.games.slidingpuzzle;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -27,6 +30,7 @@ public class SlidingPuzzleView extends BaseView {
 
     public static int MAP_WIDTH = 4;
     public static int MAP_HEIGHT = 4;
+    public static int PUZZLE_IMAGE = 0;
 
 
     private SlidingPuzzleSquare[][] map;
@@ -80,15 +84,15 @@ public class SlidingPuzzleView extends BaseView {
     protected void onDraw(Canvas canvas) {
         for (int i = 0; i < map.length; i++) {
             for (int j = 0; j < map[i].length; j++) {
-                canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize, paint);
-                if (!map[i][j].isEmpty()) {
-                    String text = "" + map[i][j].getNumber();
-                    canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(), i * squareSize + squareSize * 2 / 3, paint);
+                if (PUZZLE_IMAGE == 0) {
+                    map[i][j].drawSquare(canvas, i, j, squareSize);
+                } else {
+                    map[i][j].draw(canvas, i, j, squareSize);
                 }
-
             }
         }
     }
+
 
     private void slideIfPossible(SlidingPuzzleSquare mem) {
         for (int i = 0; i < MAP_WIDTH; i++) {
@@ -149,16 +153,23 @@ public class SlidingPuzzleView extends BaseView {
 
     public static void setPuzzleDimensions(int progress) {
         MAP_HEIGHT = progress;
-
+    }
+    public static void setPuzzleImage(int progress) {
+        PUZZLE_IMAGE = progress;
     }
 
     final void reset() {
         map = new SlidingPuzzleSquare[MAP_WIDTH][MAP_HEIGHT];
+        Bitmap scaledBitmap = getBitmap();
         for (int i = 0; i < MAP_WIDTH; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
-                map[i][j] = new SlidingPuzzleSquare(i * MAP_HEIGHT + j + 1);
+                map[i][j] = new SlidingPuzzleSquare(i * MAP_HEIGHT + j + 1, i, j, squareSize);
+
+                map[i][j].setImage(scaledBitmap);
             }
         }
+
+
         final Random random = new Random();
         int emptyI = MAP_WIDTH - 1, emptyJ = MAP_HEIGHT - 1;
         for (int i = 0; i < 125 * MAP_HEIGHT; i++) {
@@ -172,6 +183,27 @@ public class SlidingPuzzleView extends BaseView {
         }
         moves = 0;
         invalidate();
+    }
+
+    private Bitmap getBitmap() {
+        if (PUZZLE_IMAGE == 0) {
+            return null;
+        }
+
+
+        Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if (image.getWidth() > image.getHeight()) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+        }
+        int width = getWidth() / MAP_HEIGHT;
+        int height = getHeight() / MAP_WIDTH;
+        if (width == 0) {
+            return null;
+        }
+
+        return Bitmap.createScaledBitmap(image, width *MAP_HEIGHT, height * MAP_WIDTH, false);
     }
 
     final boolean swapEmptyNeighbor(int i, int j, int k, int l) {

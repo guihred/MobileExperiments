@@ -43,5 +43,10 @@
         <item>Mona Lisa</item>
         <item>Cavalo</item>
     </string-array>
+    <string-array name="slidingpuzzle_images" >
+        <item>Números</item>
+        <item>Mona Lisa</item>
+        <item>Cavalo</item>
+    </string-array>
 
 </resources>

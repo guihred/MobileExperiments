@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
@@ -41,6 +42,7 @@ public class SlidingPuzzleActivity extends BaseActivity {
 
     private void setUserPreferences() {
         SlidingPuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, SlidingPuzzleView.MAP_HEIGHT));
+        SlidingPuzzleView.setPuzzleImage(getUserPreference(R.string.image, SlidingPuzzleView.PUZZLE_IMAGE));
     }
 
     @Override
@@ -72,6 +74,10 @@ public class SlidingPuzzleActivity extends BaseActivity {
         dialog.setTitle(R.string.config);
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
+
+
+        String[] testArray = getResources().getStringArray(R.array.slidingpuzzle_images);
+        spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, testArray));
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         seekBar.setValue(SlidingPuzzleView.MAP_HEIGHT);
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
@@ -83,14 +89,14 @@ public class SlidingPuzzleActivity extends BaseActivity {
     private void onClickConfigButton(Dialog dialog, Spinner spinner) {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
-//        int selectedItemPosition = spinner.getSelectedItemPosition();
-//        SlidingPuzzleView.PUZZLE_IMAGE = selectedItemPosition == 0 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion;
+        int selectedItemPosition = spinner.getSelectedItemPosition();
+        SlidingPuzzleView.setPuzzleImage(selectedItemPosition == 0 ? 0 : selectedItemPosition == 1 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion);
         SlidingPuzzleView.setPuzzleDimensions(progress);
         addUserPreference(R.string.size, progress);
+        addUserPreference(R.string.image, SlidingPuzzleView.PUZZLE_IMAGE);
         recreate();
         dialog.dismiss();
     }
-
 
 
 }
