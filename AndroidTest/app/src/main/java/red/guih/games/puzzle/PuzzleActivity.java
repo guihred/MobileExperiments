@@ -2,8 +2,6 @@ package red.guih.games.puzzle;
 
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
@@ -55,13 +53,10 @@ public class PuzzleActivity extends BaseActivity {
     }
 
     private void setUserPreferences() {
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        int defaultValue = PuzzleView.PUZZLE_WIDTH;
-        int highScore = sharedPref.getInt(getString(R.string.size), defaultValue);
-        PuzzleView.setPuzzleDimensions(highScore);
-        int image = sharedPref.getInt(getString(R.string.image), R.drawable.mona_lisa);
-        PuzzleView.setImage(image);
+        PuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, PuzzleView.PUZZLE_WIDTH));
+        PuzzleView.setImage(getUserPreference(R.string.image, R.drawable.mona_lisa));
     }
+
 
 
 
@@ -85,11 +80,8 @@ public class PuzzleActivity extends BaseActivity {
         int selectedItemPosition = spinner.getSelectedItemPosition();
         PuzzleView.setImage(selectedItemPosition == 0 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion);
         PuzzleView.setPuzzleDimensions(progress);
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(getString(R.string.size), progress);
-        editor.putInt(getString(R.string.image), PuzzleView.PUZZLE_IMAGE);
-        editor.apply();
+        addUserPreference(R.string.size, progress);
+        addUserPreference(R.string.image, PuzzleView.PUZZLE_IMAGE);
 
         recreate();
         dialog.dismiss();

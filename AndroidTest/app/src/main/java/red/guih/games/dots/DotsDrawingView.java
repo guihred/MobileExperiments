@@ -86,6 +86,14 @@ public class DotsDrawingView extends BaseView {
 
     }
 
+    public static void setDifficulty(int difficulty) {
+        DotsDrawingView.DIFFICULTY = difficulty;
+    }
+
+
+    public static void setMazeWidth(int mazeWidth) {
+        DotsDrawingView.MAZE_WIDTH = mazeWidth;
+    }
 
     @Override
     protected void onDraw(final Canvas canvas) {
@@ -263,14 +271,15 @@ public class DotsDrawingView extends BaseView {
     protected List<UserRecord> getAll(int difficulty, String gameName) {
         return db.userDao().getAllDesc(difficulty, gameName);
     }
+
     private void showDialog() {
         invalidate();
         float userPoints = this.points.get("TU").size();
         int percentage = (int) (userPoints / (MAZE_WIDTH - 1) / (MAZE_HEIGHT - 1) * 100);
         boolean userWon = points.get("TU").size() > points.get("EU").size();
-        if (userWon&&isRecordSuitable(percentage, UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH, false)) {
+        if (userWon && isRecordSuitable(percentage, UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH, false)) {
             createRecordIfSuitable(percentage, percentage + "%", UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH, false);
-            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, () -> DotsDrawingView.this.reset());
+            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, DotsDrawingView.this::reset);
             return;
         }
 

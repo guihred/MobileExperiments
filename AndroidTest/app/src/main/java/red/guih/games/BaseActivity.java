@@ -2,6 +2,8 @@ package red.guih.games;
 
 import android.app.Dialog;
 import android.arch.persistence.room.Room;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,6 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected UserRecordDatabase db = Room.databaseBuilder(this,
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
+
     public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter, int difficulty, String gameName) {
         List<UserRecord> records = getAll(difficulty, gameName);
         for (int i = 0; i < records.size(); i++) {
@@ -56,4 +59,20 @@ public abstract class BaseActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
+    protected int getUserPreference(int name, int defaultValue) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getInt(getString(name), defaultValue);
+    }
+
+    protected void addUserPreference(int name, int value) {
+        addUserPreference(getString(name), value);
+    }
+
+    private void addUserPreference(String name, int value) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(name, value);
+        editor.apply();
+    }
 }

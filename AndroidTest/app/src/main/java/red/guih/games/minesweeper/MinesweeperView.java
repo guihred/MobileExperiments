@@ -61,13 +61,18 @@ public class MinesweeperView extends BaseView {
         hiddenColor.setTypeface(Typeface.DEFAULT);
         hiddenColor.setShadowLayer(1, 5, 5, Color.BLACK);
         hiddenColor.setColor(Color.LTGRAY);
-        textPaint.setTextSize(50);
+        textPaint.setTextSize(boxWidth - 5);
 
         shownColor = new Paint();
         shownColor.setTypeface(Typeface.DEFAULT);
         shownColor.setColor(Color.WHITE);
 
         reset();
+    }
+
+
+    public static void setNumberOfBombs(int selectedItemPosition) {
+        MinesweeperView.NUMBER_OF_BOMBS = (selectedItemPosition + 1) * MinesweeperView.BOMBS_STEP;
     }
 
     private void clickEvent(MotionEvent e) {

@@ -29,7 +29,14 @@ public class DotsActivity extends BaseActivity {
             a.setTitle(R.string.link_dots);
             a.setDisplayHomeAsUpEnabled(true);
         }
+        setUserPrerences();
     }
+
+    private void setUserPrerences() {
+        DotsDrawingView.setDifficulty(getUserPreference(R.string.difficulty, DotsDrawingView.DIFFICULTY));
+        DotsDrawingView.setMazeWidth(getUserPreference(R.string.size, DotsDrawingView.MAZE_WIDTH));
+    }
+
     @Override
     protected List<UserRecord> getAll(int difficulty, String gameName) {
         return db.userDao().getAllDesc(difficulty, gameName);
@@ -80,9 +87,12 @@ public class DotsActivity extends BaseActivity {
     private void onClickConfigButton(Dialog dialog, Spinner spinner) {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
-        DotsDrawingView.DIFFICULTY = spinner.getSelectedItemPosition() % 3;
+        int difficulty = spinner.getSelectedItemPosition() % 3;
+        DotsDrawingView.setDifficulty(difficulty);
+        addUserPreference(R.string.difficulty, difficulty);
         if (DotsDrawingView.MAZE_WIDTH != progress) {
-            DotsDrawingView.MAZE_WIDTH = progress;
+            DotsDrawingView.setMazeWidth(progress);
+            addUserPreference(R.string.size, progress);
             recreate();
         }
 

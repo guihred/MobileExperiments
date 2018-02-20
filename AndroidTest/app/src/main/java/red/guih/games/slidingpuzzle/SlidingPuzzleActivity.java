@@ -6,8 +6,6 @@
 package red.guih.games.slidingpuzzle;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
@@ -42,10 +40,7 @@ public class SlidingPuzzleActivity extends BaseActivity {
     }
 
     private void setUserPreferences() {
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        int defaultValue = SlidingPuzzleView.MAP_HEIGHT;
-        int highScore = sharedPref.getInt(getString(R.string.size), defaultValue);
-        SlidingPuzzleView.setPuzzleDimensions(highScore);
+        SlidingPuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, SlidingPuzzleView.MAP_HEIGHT));
     }
 
     @Override
@@ -91,16 +86,11 @@ public class SlidingPuzzleActivity extends BaseActivity {
 //        int selectedItemPosition = spinner.getSelectedItemPosition();
 //        SlidingPuzzleView.PUZZLE_IMAGE = selectedItemPosition == 0 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion;
         SlidingPuzzleView.setPuzzleDimensions(progress);
-
-
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(getString(R.string.size), progress);
-        editor.apply();
-
-
+        addUserPreference(R.string.size, progress);
         recreate();
         dialog.dismiss();
     }
+
+
 
 }
