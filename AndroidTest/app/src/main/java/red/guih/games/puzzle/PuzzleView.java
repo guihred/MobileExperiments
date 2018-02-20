@@ -268,5 +268,8 @@ public class PuzzleView extends BaseView {
         PuzzleView.PUZZLE_WIDTH = progress;
         PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
     }
+    public static void setImage(int image) {
+        PuzzleView.PUZZLE_IMAGE = image;
+    }
 
 }

@@ -170,6 +170,7 @@ public class SlidingPuzzleView extends BaseView {
             }
 
         }
+        moves = 0;
         invalidate();
     }
 
