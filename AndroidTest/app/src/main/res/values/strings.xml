@@ -22,6 +22,8 @@
     <string name="slidingpuzzle">Junte os Números</string>
     <string name="image">Imagem</string>
     <string name="you_beaten_the_record">Você Bateu um Recorde!</string>
+    <string name="solitaire">Paciência</string>
+
     <string-array name="minesweeper_difficulty" >
         <item>Muito Fácil</item>
         <item>Fácil</item>

@@ -13,6 +13,7 @@ import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
 import red.guih.games.puzzle.PuzzleActivity;
 import red.guih.games.slidingpuzzle.SlidingPuzzleActivity;
+import red.guih.games.solitaire.SolitaireActivity;
 import red.guih.games.tetris.TetrisActivity;
 
 /**
@@ -42,6 +43,8 @@ public class GamesActivity extends AppCompatActivity {
         puzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, PuzzleActivity.class)));
         ImageButton slidingPuzzleButton = findViewById(R.id.slidingPuzzleButton);
         slidingPuzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, SlidingPuzzleActivity.class)));
+        ImageButton solitaire = findViewById(R.id.solitaireButton);
+        solitaire.setOnClickListener((View v) -> startActivity(new Intent(this, SolitaireActivity.class)));
 
     }
 }

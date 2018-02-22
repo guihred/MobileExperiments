@@ -74,8 +74,6 @@ public class SlidingPuzzleActivity extends BaseActivity {
         dialog.setTitle(R.string.config);
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
-
-
         String[] testArray = getResources().getStringArray(R.array.slidingpuzzle_images);
         spinner.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, testArray));
         NumberPicker seekBar = dialog.findViewById(R.id.number);

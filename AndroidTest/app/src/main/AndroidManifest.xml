@@ -59,6 +59,13 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name="red.guih.games.solitaire.SolitaireActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
+
     </application>
 
 </manifest>
