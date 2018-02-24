@@ -5,13 +5,14 @@
  */
 package red.guih.games.solitaire;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,11 +23,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import red.guih.games.BaseView;
+import red.guih.games.R;
+
 
 /**
  * @author Note
  */
-public class SolitaireView extends View {
+public class SolitaireView extends BaseView {
     private CardStack[] ascendingStacks = new CardStack[4];
     private DragContext dragContext = new DragContext();
     private List<CardStack> gridPane = new ArrayList<>();
@@ -65,7 +69,7 @@ public class SolitaireView extends View {
         for (int i = 0; i < 7; i++) {
             simpleStacks[i] = new CardStack(CardStack.StackType.SIMPLE, i + 1);
             simpleStacks[i].setLayoutX(getWidth() / 7 * i + SolitaireCard.getCardWidth() / 10);
-            simpleStacks[i].setLayoutY((int) (SolitaireCard.getCardWidth()*1.1));
+            simpleStacks[i].setLayoutY((int) (SolitaireCard.getCardWidth() * 1.1));
             List<SolitaireCard> removeLastCards = mainCardStack.removeLastCards(i + 1);
             removeLastCards.forEach(card -> card.setShown(false));
             removeLastCards.get(i).setShown(true);
@@ -153,7 +157,7 @@ public class SolitaireView extends View {
         if (dragContext.cards != null) {
             int i = 0;
             for (SolitaireCard c : dragContext.cards) {
-                c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth()/4);
+                c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth() / 4);
                 i++;
             }
         }
@@ -162,55 +166,58 @@ public class SolitaireView extends View {
     private void handleMousePressed(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        CardStack node =
+        CardStack stack =
                 gridPane.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst().orElse(null);
-        if (node == null) {
+        if (stack == null) {
             dragContext.reset();
             return;
         }
-        Log.i("PRESSED", " stack: " + node + " bounds:" + node.getBoundsF() + " (x,y): (" + event.getX() + "," + event.getY() + ")");
+        Log.i("PRESSED", " stack: " + stack + " bounds:" + stack.getBoundsF() + " (x,y): (" + event.getX() + "," + event.getY() + ")");
 
 
-        if (node.type == CardStack.StackType.MAIN) {
+        if (stack.type == CardStack.StackType.MAIN) {
             clickFirstStack();
             return;
         }
-        dragContext.x = node.getLayoutX() - event.getX();
-        dragContext.y = node.getLayoutY() - event.getY();
-        if (node.type == CardStack.StackType.SIMPLE||node.type == CardStack.StackType.DROP) {
-            List<SolitaireCard> cards = node.getCards();
+        dragContext.x = stack.getLayoutX() - event.getX();
+        dragContext.y = stack.getLayoutY() - event.getY();
+        if (stack.type == CardStack.StackType.SIMPLE || stack.type == CardStack.StackType.DROP) {
+            List<SolitaireCard> cards = stack.getCards();
             List<SolitaireCard> lastCards = new ArrayList<>();
             List<SolitaireCard> showCards = cards.stream().filter(SolitaireCard::isShown).collect(Collectors.toList());
             for (SolitaireCard solitaireCard : showCards) {
-                if (solitaireCard.getLayoutY() + node.getLayoutY() < event.getY()) {
+                if (solitaireCard.getLayoutY() + stack.getLayoutY() < event.getY()) {
                     lastCards.clear();
                 }
                 lastCards.add(solitaireCard);
             }
             dragContext.cards.clear();
-            dragContext.stack = node;
+            dragContext.stack = stack;
             if (!lastCards.isEmpty()) {
-                node.removeCards(lastCards);
+                stack.removeCards(lastCards);
                 dragContext.cards.addAll(lastCards);
-//                dragContext.y += event.getY();
+                dragContext.y = stack.getLayoutY() + lastCards.get(0).getLayoutY() - event.getY();
                 handleMouseDragged(event);
-                dragContext.stack = node;
+                dragContext.stack = stack;
             }
             return;
         }
-        SolitaireCard lastCards = node.removeLastCards();
-        if (node.type == CardStack.StackType.FINAL && lastCards != null) {
+        SolitaireCard lastCards = stack.removeLastCards();
+        if (stack.type == CardStack.StackType.FINAL && lastCards != null) {
 //            dragContext.y += event.getY();
 //            lastCards.setLayoutX(lastCards.getLayoutX() + node.getBoundsF().left);
 //            lastCards.setLayoutY(lastCards.getLayoutY() + node.getBoundsF().top);
             dragContext.cards.clear();
             dragContext.cards.add(lastCards);
-            dragContext.stack = node;
+            dragContext.stack = stack;
             handleMouseDragged(event);
         }
     }
 
     private void handleMouseReleased(MotionEvent event) {
+        if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
+            showDialogWinning();
+        }
         if (isNullOrEmpty(dragContext.cards)) {
             return;
         }
@@ -249,6 +256,9 @@ public class SolitaireView extends View {
                     dragContext.stack.getLastCards().setShown(true);
                 }
                 dragContext.cards.clear();
+                if (Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {
+                    showDialogWinning();
+                }
                 return;
             }
         }
@@ -272,6 +282,37 @@ public class SolitaireView extends View {
         dragContext.stack.addCards(dragContext.cards);
         dragContext.cards.clear();
 
+
+
+    }
+
+    private void showDialogWinning() {
+        invalidate();
+
+//        String s = getResources().getString(R.string.you_win);
+//        String format = String.format(s, moves + " moves");
+//        if (isRecordSuitable(moves, UserRecord.SOLITAIRE, MAP_WIDTH, true)) {
+//            createRecordIfSuitable(moves, format, UserRecord.SLIDING_PUZZLE, MAP_WIDTH, true);
+//            showRecords(MAP_WIDTH, UserRecord.SOLITAIRE, this::reset);
+//            return;
+//        }
+
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.minesweeper_dialog);
+        dialog.setTitle(R.string.you_win);
+        // set the custom minesweeper_dialog components - text, image and button
+//        TextView text = dialog.findViewById(R.id.textDialog);
+//        text.setText(format);
+        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        // if button is clicked, close the custom minesweeper_dialog
+        dialogButton.setOnClickListener(v -> {
+            this.reset();
+
+            dialog.dismiss();
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     private boolean isNotAscendingStackCompatible(CardStack cardStack, SolitaireCard solitaireCard) {

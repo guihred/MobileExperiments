@@ -7,8 +7,8 @@
     <group
         android:scaleX="1.25"
         android:scaleY="1.25"
-        android:translateX="0"
-        android:translateY="80">
+        android:translateX="10"
+        android:translateY="55">
         <group
             android:translateX="-20"
             android:translateY="70">
