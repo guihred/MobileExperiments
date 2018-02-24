@@ -46,12 +46,12 @@ public class SolitaireCard {
         }
         paint.setTextSize(getCardWidth() / 4);
 
-        int left = (int) (layoutX + this.layoutX);
-        int top = (int) (layoutY + this.layoutY);
-        drawable.setBounds(left + getCardWidth() / 10, top + getCardWidth() / 10, left + getCardWidth()/3*2, top + getCardWidth()/3*2);
+        int left = (int) (layoutX + this.layoutX) + getCardWidth() / 3;
+        int top = (int) (layoutY + this.layoutY) + getCardWidth() / 10 / 2;
+        drawable.setBounds(left, top, left + getCardWidth() / 4, top + getCardWidth() / 4);
         drawable.draw(canvas);
 
-        canvas.drawText(number.getRepresentation(), left, top + getCardWidth() / 4, paint);
+        canvas.drawText(number.getRepresentation(), left - getCardWidth() / 4, top + getCardWidth() / 4, paint);
     }
 
     public static int getCardWidth() {
