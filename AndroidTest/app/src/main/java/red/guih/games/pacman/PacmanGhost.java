@@ -129,7 +129,7 @@ public class PacmanGhost extends View {
 
     private boolean isMiddle(float y) {
 
-        return (y + MazeSquare.SQUARE_SIZE - getGhostWidth() / 2) % MazeSquare.SQUARE_SIZE / 2 <= 5;
+        return y % (MazeSquare.SQUARE_SIZE / 4) <= 5;
     }
 
     private float readjustedX(int i) {
