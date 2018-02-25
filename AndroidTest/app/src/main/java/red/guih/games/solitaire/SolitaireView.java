@@ -165,7 +165,7 @@ public class SolitaireView extends BaseView {
         if (dragContext.cards != null) {
             int i = 0;
             for (SolitaireCard c : dragContext.cards) {
-                c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth() / 4);
+                c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth() / 3);
                 i++;
             }
         }
@@ -436,15 +436,4 @@ public class SolitaireView extends BaseView {
             stack = null;
         }
     }
-
-//	public void makeDraggable(final Node node) {
-//		node.setOnMousePressed(this::handleMousePressed);
-//		node.setOnMouseDragged(this::handleMouseDragged);
-//		node.setOnMouseReleased(this::handleMouseReleased);
-//	}
-
-//	public static SolitaireModel create(Pane gridPane, Scene scene) {
-//		return new SolitaireModel(gridPane, scene);
-//	}
-
 }

@@ -31,19 +31,6 @@ class CardStack {
         this.n = n;
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-//		setPrefSize(50, 75);
-//		setPadding(new Insets(10));
-//		setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), new Insets(1))));
-//		setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
-//		styleProperty().bind(Bindings.createStringBinding(() -> {
-//			StringBuilder style = new StringBuilder();
-//			style.append("-fx-border-color: black; -fx-border-width: 1; -fx-border-radius: 5;");
-//			if (cards.isEmpty()) {
-//				style.append("-fx-background-color:green;");
-//			}
-//			return style.toString();
-//		}, cards));
-
     }
 
     @Override
@@ -99,7 +86,6 @@ class CardStack {
         List<SolitaireCard> lastCards = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
-//			getChildren().remove(solitaireCard);
             lastCards.add(solitaireCard);
         }
         return lastCards;
@@ -126,7 +112,6 @@ class CardStack {
             if (!this.cards.contains(solitaireCard)) {
                 this.cards.add(solitaireCard);
                 solitaireCard.setLayoutX(0);
-//				getChildren().add(solitaireCard);
             }
         }
         int layout = 0;
@@ -167,7 +152,6 @@ class CardStack {
         for (SolitaireCard solitaireCard : cards) {
             if (this.cards.contains(solitaireCard)) {
                 this.cards.remove(solitaireCard);
-//				getChildren().remove(solitaireCard);
             }
         }
     }
@@ -177,7 +161,6 @@ class CardStack {
     }
 
     public List<SolitaireCard> removeAllCards() {
-//		getChildren().clear();
         List<SolitaireCard> collect = new ArrayList<>(cards);
         cards.clear();
         return collect;
