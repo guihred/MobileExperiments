@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <red.guih.games.solitaire.SolitaireView
-        android:id="@+id/pacman_view"
+        android:id="@+id/solitaire_view"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

@@ -39,7 +39,7 @@ import red.guih.games.R;
 public class SolitaireView extends BaseView {
     private CardStack[] ascendingStacks = new CardStack[4];
     private DragContext dragContext = new DragContext();
-    private List<CardStack> gridPane = new ArrayList<>();
+    private List<CardStack> cardStackList = new ArrayList<>();
     private CardStack[] simpleStacks = new CardStack[7];
     private CardStack mainCardStack;
     private CardStack dropCardStack;
@@ -53,20 +53,20 @@ public class SolitaireView extends BaseView {
         return cards == null || cards.isEmpty();
     }
 
-    private void reset() {
+    public void reset() {
         youwin = false;
-        gridPane.clear();
+        cardStackList.clear();
         List<SolitaireCard> allCards = getAllCards();
         mainCardStack = new CardStack(CardStack.StackType.MAIN, 0);
         mainCardStack.setLayoutX(SolitaireCard.getCardWidth() / 10);
         mainCardStack.setLayoutY(0);
         mainCardStack.addCards(allCards);
-        gridPane.add(mainCardStack);
+        cardStackList.add(mainCardStack);
 
         dropCardStack = new CardStack(CardStack.StackType.DROP, 0);
         dropCardStack.setLayoutX(getWidth() / 7 + SolitaireCard.getCardWidth() / 10);
         dropCardStack.setLayoutY(0);
-        gridPane.add(dropCardStack);
+        cardStackList.add(dropCardStack);
 
         for (int i = 0; i < 7; i++) {
             simpleStacks[i] = new CardStack(CardStack.StackType.SIMPLE, i + 1);
@@ -76,13 +76,14 @@ public class SolitaireView extends BaseView {
             removeLastCards.forEach(card -> card.setShown(false));
             removeLastCards.get(i).setShown(true);
             simpleStacks[i].addCardsVertically(removeLastCards);
-            gridPane.add(simpleStacks[i]);
+            cardStackList.add(simpleStacks[i]);
         }
         for (int i = 0; i < 4; i++) {
             ascendingStacks[i] = new CardStack(CardStack.StackType.FINAL, i + 1);
             ascendingStacks[i].setLayoutX(getWidth() / 7 * (3 + i) + SolitaireCard.getCardWidth() / 10);
-            gridPane.add(ascendingStacks[i]);
+            cardStackList.add(ascendingStacks[i]);
         }
+        invalidate();
     }
 
     @Override
@@ -120,7 +121,7 @@ public class SolitaireView extends BaseView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        for (CardStack e : gridPane) {
+        for (CardStack e : cardStackList) {
             e.draw(canvas);
         }
         if (!isNullOrEmpty(dragContext.cards)) {
@@ -175,7 +176,7 @@ public class SolitaireView extends BaseView {
         float x = event.getX();
         float y = event.getY();
         CardStack stack =
-                gridPane.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst().orElse(null);
+                cardStackList.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst().orElse(null);
         if (stack == null) {
             dragContext.reset();
             return;
@@ -219,8 +220,6 @@ public class SolitaireView extends BaseView {
         }
     }
 
-    int animationCount = 0;
-
     void automaticCard() {
 
         int solitaireNumber =
@@ -231,7 +230,6 @@ public class SolitaireView extends BaseView {
 
 
         List<CardStack> collect = Stream.concat(Stream.of(simpleStacks), Stream.of(dropCardStack)).collect(Collectors.toList());
-        int i = 0;
         for (CardStack stack : collect) {
 
             for (CardStack cardStack : ascendingStacks) {
@@ -252,29 +250,7 @@ public class SolitaireView extends BaseView {
                     eatingAnimation.setDuration(500);
 
                     eatingAnimation.addUpdateListener(animation -> invalidate());
-//                    animationCount++;
-                    eatingAnimation.addListener(new Animator.AnimatorListener() {
-
-                        @Override
-                        public void onAnimationStart(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                                automaticCard();
-                        }
-
-                        @Override
-                        public void onAnimationCancel(Animator animation) {
-
-                        }
-
-                        @Override
-                        public void onAnimationRepeat(Animator animation) {
-
-                        }
-                    });
+                    eatingAnimation.addListener(new AutomaticCardsListener());
                     eatingAnimation.start();
                     return;
                 }
@@ -434,6 +410,29 @@ public class SolitaireView extends BaseView {
         void reset() {
             cards.clear();
             stack = null;
+        }
+    }
+
+    private class AutomaticCardsListener implements Animator.AnimatorListener {
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+                automaticCard();
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
         }
     }
 }

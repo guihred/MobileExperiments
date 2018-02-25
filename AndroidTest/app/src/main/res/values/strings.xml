@@ -23,6 +23,7 @@
     <string name="image">Imagem</string>
     <string name="you_beaten_the_record">Você Bateu um Recorde!</string>
     <string name="solitaire">Paciência</string>
+    <string name="reset">Reset</string>
 
     <string-array name="minesweeper_difficulty" >
         <item>Muito Fácil</item>
