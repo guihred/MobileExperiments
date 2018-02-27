@@ -64,15 +64,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getInt(getString(name), defaultValue);
     }
-
-    protected void addUserPreference(int name, int value) {
-        addUserPreference(getString(name), value);
+    protected String getUserPreference(int name, String defaultValue) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getString(getString(name), defaultValue);
     }
 
-    private void addUserPreference(String name, int value) {
+    protected void addUserPreference(int name, int value) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(name, value);
+        editor.putInt(getString(name), value);
+        editor.apply();
+    }
+
+    protected void addUserPreference(int name, String value) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(name), value);
         editor.apply();
     }
 }

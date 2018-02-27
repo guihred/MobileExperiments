@@ -28,8 +28,9 @@ public class PuzzleView extends BaseView {
     public static int PUZZLE_IMAGE = R.drawable.mona_lisa;
     public static int PUZZLE_WIDTH = 4;
     public static int PUZZLE_HEIGHT = 6;
+    private static Bitmap SELECTED_IMAGE;
 
-    PuzzlePiece[][] puzzle;
+    private PuzzlePiece[][] puzzle;
     private int width;
     private int height;
     private Point2D intersectedPoint;
@@ -152,9 +153,9 @@ public class PuzzleView extends BaseView {
         long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, inSeconds / 60, inSeconds % 60);
-        if(isRecordSuitable(inSeconds,  UserRecord.PUZZLE, PUZZLE_WIDTH,true)){
-            createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH,true);
-            showRecords(PUZZLE_WIDTH,UserRecord.PUZZLE,()-> PuzzleView.this.reset());
+        if (isRecordSuitable(inSeconds, UserRecord.PUZZLE, PUZZLE_WIDTH, true)) {
+            createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH, true);
+            showRecords(PUZZLE_WIDTH, UserRecord.PUZZLE, PuzzleView.this::reset);
             return;
         }
 
@@ -174,7 +175,6 @@ public class PuzzleView extends BaseView {
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
-
 
 
     private void toFront(List<PuzzlePiece> containsPuzzle) {
@@ -228,8 +228,10 @@ public class PuzzleView extends BaseView {
     }
 
     private PuzzlePiece[][] initializePieces() {
-        Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
-        if (image.getWidth() > image.getHeight() ) {
+
+
+        Bitmap image = SELECTED_IMAGE != null ? SELECTED_IMAGE : BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if (image.getWidth() > image.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
             image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
@@ -268,8 +270,12 @@ public class PuzzleView extends BaseView {
         PuzzleView.PUZZLE_WIDTH = progress;
         PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
     }
+
     public static void setImage(int image) {
         PuzzleView.PUZZLE_IMAGE = image;
     }
 
+    public static void setImage(Bitmap selectedImage) {
+        PuzzleView.SELECTED_IMAGE = selectedImage;
+    }
 }

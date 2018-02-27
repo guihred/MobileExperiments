@@ -1,15 +1,25 @@
 package red.guih.games.puzzle;
 
 
+import android.Manifest;
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+
+import java.io.InputStream;
 
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
@@ -55,9 +65,13 @@ public class PuzzleActivity extends BaseActivity {
     private void setUserPreferences() {
         PuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, PuzzleView.PUZZLE_WIDTH));
         PuzzleView.setImage(getUserPreference(R.string.image, R.drawable.mona_lisa));
+
+        String photoUri = getUserPreference(R.string.photo, null);
+        if (photoUri != null) {
+            loadURI(Uri.parse(photoUri));
+        }
+
     }
-
-
 
 
     private void showConfig() {
@@ -78,14 +92,61 @@ public class PuzzleActivity extends BaseActivity {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
         int selectedItemPosition = spinner.getSelectedItemPosition();
-        PuzzleView.setImage(selectedItemPosition == 0 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion);
         PuzzleView.setPuzzleDimensions(progress);
         addUserPreference(R.string.size, progress);
+
+        dialog.dismiss();
+        PuzzleView.setImage(null);
+        if (selectedItemPosition == 0) {
+            PuzzleView.setImage(R.drawable.mona_lisa);
+        } else if (selectedItemPosition == 2) {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, SELECT_PHOTO);
+            return;
+        } else {
+            PuzzleView.setImage(R.drawable.the_horse_in_motion);
+        }
         addUserPreference(R.string.image, PuzzleView.PUZZLE_IMAGE);
 
         recreate();
-        dialog.dismiss();
+
     }
 
+
+    private static final int SELECT_PHOTO = 100;
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+
+        switch (requestCode) {
+            case SELECT_PHOTO:
+                if (resultCode == RESULT_OK) {
+                    loadURI(imageReturnedIntent.getData());
+                }
+            default:
+        }
+    }
+
+    private void loadURI(Uri uri) {
+        if (uri != null) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, SELECT_PHOTO);
+            }
+            Log.i("SELECT_PHOTO", uri.toString());
+            Log.i("SELECT_PHOTO", uri.getEncodedPath());
+            Log.i("SELECT_PHOTO", uri.getPath().replaceAll(".+:", ""));
+            try (InputStream imageStream = getContentResolver().openInputStream(uri)) {
+                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                PuzzleView.setImage(selectedImage);
+                addUserPreference(R.string.photo, "file:" + uri.getPath().replaceAll(".+:", ""));
+                recreate();
+            } catch (Exception e) {
+                Log.e("SELECT_PHOTO", e.getMessage(), e);
+            }
+        }
+    }
 
 }

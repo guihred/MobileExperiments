@@ -89,6 +89,7 @@ public class SlidingPuzzleActivity extends BaseActivity {
         int progress = seekBar.getValue();
         int selectedItemPosition = spinner.getSelectedItemPosition();
         SlidingPuzzleView.setPuzzleImage(selectedItemPosition == 0 ? 0 : selectedItemPosition == 1 ? R.drawable.mona_lisa : R.drawable.the_horse_in_motion);
+        SlidingPuzzleView.setPuzzleImage(0);
         SlidingPuzzleView.setPuzzleDimensions(progress);
         addUserPreference(R.string.size, progress);
         addUserPreference(R.string.image, SlidingPuzzleView.PUZZLE_IMAGE);

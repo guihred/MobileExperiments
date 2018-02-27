@@ -53,9 +53,8 @@ public final class SlidingPuzzleSquare {
 
     public void drawSquare(Canvas canvas, int i, int j, int squareSize) {
         canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize, getStroke());
-        SlidingPuzzleSquare slidingPuzzleSquare = this;
-        if (!slidingPuzzleSquare.isEmpty()) {
-            String text = "" + slidingPuzzleSquare.getNumber();
+        if (!this.isEmpty()) {
+            String text = "" + this.getNumber();
             canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(), i * squareSize + squareSize * 2 / 3, getPaint());
         }
     }
@@ -74,6 +73,11 @@ public final class SlidingPuzzleSquare {
     }
 
     public void draw(Canvas canvas, int i, int j, int squareSize) {
+        if (image == null) {
+            drawSquare(canvas, i, j, squareSize);
+            return;
+        }
+
         dst.set(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize);
         if (!isEmpty()) {
             canvas.drawBitmap(image, src, dst, getPaint());

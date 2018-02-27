@@ -192,6 +192,8 @@ public class SlidingPuzzleView extends BaseView {
 
 
         Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if(image==null)
+            return  null;
         if (image.getWidth() > image.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
