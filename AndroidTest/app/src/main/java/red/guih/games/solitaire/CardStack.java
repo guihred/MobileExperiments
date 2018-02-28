@@ -118,7 +118,7 @@ class CardStack {
         for (int i = 0; i < this.cards.size(); i++) {
             SolitaireCard solitaireCard = this.cards.get(i);
             solitaireCard.setLayoutY(layout);
-            layout += SolitaireCard.getCardWidth() / (solitaireCard.isShown() ? 3 : 8) ;
+            layout += SolitaireCard.getCardWidth() / (solitaireCard.isShown() ? 3 : 8);
         }
 
     }
@@ -158,6 +158,14 @@ class CardStack {
 
     public List<SolitaireCard> getCards() {
         return cards;
+    }
+
+    public int getShownCards() {
+        return (int) cards.stream().filter(SolitaireCard::isShown).count();
+    }
+
+    public int getNotShownCards() {
+        return (int) cards.stream().filter(e -> !e.isShown()).count();
     }
 
     public List<SolitaireCard> removeAllCards() {

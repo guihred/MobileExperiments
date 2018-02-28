@@ -13,6 +13,7 @@ public class SolitaireCard {
     private final SolitaireNumber number;
     private final SolitaireSuit suit;
     private boolean shown = false;
+     boolean autoMoved = false;
     private float layoutX, layoutY;
     private final Drawable drawable;
     private RectF bounds;
