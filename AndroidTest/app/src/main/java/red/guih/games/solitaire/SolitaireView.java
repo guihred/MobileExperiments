@@ -204,6 +204,10 @@ public class SolitaireView extends BaseView {
             }
             if (remove.targetStack.type == CardStack.StackType.MAIN) {
                 remove.cards.forEach(e -> e.setShown(true));
+                List<SolitaireCard> list = new ArrayList<>(remove.cards);
+                Collections.reverse(list);
+                remove.cards.clear();
+                remove.cards.addAll(list);
             }
 
             remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
