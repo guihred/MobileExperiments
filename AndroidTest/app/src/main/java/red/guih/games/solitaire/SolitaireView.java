@@ -41,6 +41,7 @@ import red.guih.games.R;
  */
 public class SolitaireView extends BaseView {
     public static final int ANIMATION_DURATION = 250;
+    public static final int DARK_GREEN = 0xFF008800;
     private CardStack[] ascendingStacks = new CardStack[4];
     private final DragContext dragContext = new DragContext();
     private final Collection<CardStack> cardStackList = new ArrayList<>();
@@ -145,7 +146,7 @@ public class SolitaireView extends BaseView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(0xFF008800);
+        canvas.drawColor(DARK_GREEN);
         for (CardStack e : cardStackList) {
             e.draw(canvas);
         }
