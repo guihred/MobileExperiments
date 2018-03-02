@@ -43,7 +43,7 @@ public class SolitaireView extends BaseView {
     public static final int ANIMATION_DURATION = 250;
     private CardStack[] ascendingStacks = new CardStack[4];
     private final DragContext dragContext = new DragContext();
-    private Collection<CardStack> cardStackList = new ArrayList<>();
+    private final Collection<CardStack> cardStackList = new ArrayList<>();
     private CardStack[] simpleStacks = new CardStack[7];
     private CardStack mainCardStack;
     private CardStack dropCardStack;
@@ -66,22 +66,24 @@ public class SolitaireView extends BaseView {
         youwin = false;
         history.clear();
         cardStackList.clear();
+        int yOffset = SolitaireCard.getCardWidth() / 2;
+
         List<SolitaireCard> allCards = getAllCards();
         mainCardStack = new CardStack(CardStack.StackType.MAIN, 0);
         mainCardStack.setLayoutX(SolitaireCard.getCardWidth() / 10);
-        mainCardStack.setLayoutY(0);
+        mainCardStack.setLayoutY(yOffset);
         mainCardStack.addCards(allCards);
         cardStackList.add(mainCardStack);
 
         dropCardStack = new CardStack(CardStack.StackType.DROP, 0);
         dropCardStack.setLayoutX(getWidth() / 7 + SolitaireCard.getCardWidth() / 10);
-        dropCardStack.setLayoutY(0);
+        dropCardStack.setLayoutY(yOffset);
         cardStackList.add(dropCardStack);
 
         for (int i = 0; i < 7; i++) {
             simpleStacks[i] = new CardStack(CardStack.StackType.SIMPLE, i + 1);
             simpleStacks[i].setLayoutX(getWidth() / 7 * i + SolitaireCard.getCardWidth() / 10);
-            simpleStacks[i].setLayoutY(SolitaireCard.getCardWidth() + SolitaireCard.getCardWidth() / 10);
+            simpleStacks[i].setLayoutY(SolitaireCard.getCardWidth() + SolitaireCard.getCardWidth() / 10 + yOffset);
             List<SolitaireCard> removeLastCards = mainCardStack.removeLastCards(i + 1);
             removeLastCards.forEach(card -> card.setShown(false));
             removeLastCards.get(i).setShown(true);
@@ -91,6 +93,7 @@ public class SolitaireView extends BaseView {
         for (int i = 0; i < 4; i++) {
             ascendingStacks[i] = new CardStack(CardStack.StackType.FINAL, i + 1);
             ascendingStacks[i].setLayoutX(getWidth() / 7 * (3 + i) + SolitaireCard.getCardWidth() / 10);
+            ascendingStacks[i].setLayoutY(yOffset);
             cardStackList.add(ascendingStacks[i]);
         }
         returnButton = new Rect(getWidth() - 2 * SolitaireCard.getCardWidth(),
@@ -142,6 +145,7 @@ public class SolitaireView extends BaseView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        canvas.drawColor(0xFF008800);
         for (CardStack e : cardStackList) {
             e.draw(canvas);
         }
@@ -204,10 +208,7 @@ public class SolitaireView extends BaseView {
             }
             if (remove.targetStack.type == CardStack.StackType.MAIN) {
                 remove.cards.forEach(e -> e.setShown(true));
-                List<SolitaireCard> list = new ArrayList<>(remove.cards);
-                Collections.reverse(list);
-                remove.cards.clear();
-                remove.cards.addAll(list);
+                Collections.reverse(remove.cards);
             }
 
             remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
@@ -299,6 +300,10 @@ public class SolitaireView extends BaseView {
     }
 
     private void createMovingCardAnimation(CardStack originStack, CardStack targetStack, SolitaireCard solitaireCard) {
+
+        cardStackList.remove(targetStack);
+        cardStackList.add(targetStack);
+
         originStack.removeLastCards();
         float x = -targetStack.getLayoutX() + originStack.getLayoutX();
         float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
@@ -459,7 +464,7 @@ public class SolitaireView extends BaseView {
     }
 
     private static class MotionHistory {
-        protected final Set<SolitaireCard> cards = new LinkedHashSet<>();
+        protected final List<SolitaireCard> cards = new ArrayList<>();
         protected CardStack originStack;
         protected CardStack targetStack;
         protected SolitaireCard shownCard;
