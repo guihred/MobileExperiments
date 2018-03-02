@@ -46,9 +46,6 @@ public class SlidingPuzzleView extends BaseView {
 
     }
 
-//    final EventHandler<MouseEvent> createMouseClickedEvento(SlidingPuzzleSquare mem) {
-//        return e -> slideIfPossible(mem);
-//    }
 
 
     @Override
