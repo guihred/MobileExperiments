@@ -25,29 +25,11 @@ public final class SlidingPuzzleSquare {
         this.number = number;
         paint.setTextSize(squareSize / 2);
         src.set(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize);
-//        setPadding(new Insets(10));
-//        if (isEmpty()) {
-//            setBackground(new Background(new BackgroundFill(Color.BLUE, CornerRadii.EMPTY, new Insets(1))));
-//        } else {
-//            setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
-//            text.textProperty().bind(this.number.asString());
-//        }
-//        setPrefSize(50, 50);
-
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj.getClass() != SlidingPuzzleSquare.class) {
-            return false;
-        }
-        if (((SlidingPuzzleSquare) obj).number == number) {
-            return true;
-        }
-        return false;
+        return obj != null && obj.getClass() == SlidingPuzzleSquare.class && ((SlidingPuzzleSquare) obj).number == number;
 
     }
 

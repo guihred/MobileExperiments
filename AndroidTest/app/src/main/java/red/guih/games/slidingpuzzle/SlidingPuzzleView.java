@@ -133,7 +133,6 @@ public class SlidingPuzzleView extends BaseView {
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
             this.reset();
-
             dialog.dismiss();
         });
         dialog.setCanceledOnTouchOutside(false);
