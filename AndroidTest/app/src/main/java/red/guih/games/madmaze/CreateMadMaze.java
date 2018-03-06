@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class CreateMadMaze {
 
-    int r = 0;
+    int r ;
     List<MadEdge> allEdges;
     List<MadTriangle> triangles;
 
@@ -41,15 +41,9 @@ public class CreateMadMaze {
                     .filter(e -> !e.isVisited())
                     .findAny();
 
-            if (openA.isPresent()) {
-                check.add("A");
-            }
-            if (openB.isPresent()) {
-                check.add("B");
-            }
-            if (openC.isPresent()) {
-                check.add("C");
-            }
+            openA.ifPresent(a -> check.add("A"));
+            openB.ifPresent(b -> check.add("B"));
+            openC.ifPresent(c -> check.add("C"));
             if (check.isEmpty()) {
                 getBackIn(maze, history);
                 continue;
@@ -179,12 +173,12 @@ public class CreateMadMaze {
         triangleSoup.removeIf(t3 -> t3.hasVertex(superMadTriangle.getC()));
         allEdges = new ArrayList<>();
         for (MadTriangle t : triangleSoup) {
-            MadCell cella = t.getA().getCell();
-            MadCell cellb = t.getB().getCell();
-            MadCell cellc = t.getC().getCell();
-            allEdges.add(new MadEdge(cella, cellb));
-            allEdges.add(new MadEdge(cellb, cellc));
-            allEdges.add(new MadEdge(cellc, cella));
+            MadCell cellA = t.getA().getCell();
+            MadCell cellB = t.getB().getCell();
+            MadCell cellC = t.getC().getCell();
+            allEdges.add(new MadEdge(cellA, cellB));
+            allEdges.add(new MadEdge(cellB, cellC));
+            allEdges.add(new MadEdge(cellC, cellA));
         }
         triangles = triangleSoup;
         return triangleSoup;

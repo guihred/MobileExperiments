@@ -12,12 +12,12 @@ public class SolitaireCard {
 
     private final SolitaireNumber number;
     private final SolitaireSuit suit;
-    private boolean shown = false;
-     boolean autoMoved = false;
+    private boolean shown;
+     boolean autoMoved;
     private float layoutX, layoutY;
     private final Drawable drawable;
     private RectF bounds;
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
     private RectF boundsF;
     private static int cardWidth;
 
@@ -85,7 +85,7 @@ public class SolitaireCard {
     }
 
     public void setShown(boolean value) {
-        shown = (value);
+        shown = value;
     }
 
     public float getLayoutY() {
@@ -96,12 +96,12 @@ public class SolitaireCard {
         this.layoutY = layoutY;
     }
 
-    public RectF getBounds(float stackX, float stackY) {
+    public RectF getBounds() {
         if (bounds == null) {
             bounds = new RectF();
         }
 
-        bounds.set((int) layoutX + stackX, (int) layoutY + stackY, (int) layoutX + stackX + getCardWidth(), (int) layoutY + stackY + getCardWidth());
+        bounds.set((int) layoutX , (int) layoutY , (int) layoutX +  getCardWidth(), (int) layoutY +  getCardWidth());
         return bounds;
     }
 

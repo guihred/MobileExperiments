@@ -58,17 +58,17 @@ public class DotsDrawingView extends BaseView {
     private int MAZE_HEIGHT = 8;
     private DotsSquare selected;
     private DotsSquare[][] maze;
-    private Line line = new Line();
-    private List<Line> lines = Collections.synchronizedList(new ArrayList<>());
-    private List<Set<DotsSquare>> whites = Collections.synchronizedList(new ArrayList<>());
+    private final Line line = new Line();
+    private final List<Line> lines = Collections.synchronizedList(new ArrayList<>());
+    private final List<Set<DotsSquare>> whites = Collections.synchronizedList(new ArrayList<>());
     private final Map<String, Set<Set<DotsSquare>>> points = new HashMap<>();
     private int currentPlayer = 1;
-    private String[] players = {"EU", "TU"};
+    private final String[] players = {"EU", "TU"};
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
-    private Paint paint;
-    private Paint transparent = new Paint();
+    private final Paint paint;
+    private final Paint transparent = new Paint();
 
     public DotsDrawingView(Context c, AttributeSet attrs) {
         super(c, attrs);
@@ -86,14 +86,10 @@ public class DotsDrawingView extends BaseView {
 
     }
 
-    public static void setDifficulty(int difficulty) {
-        DotsDrawingView.DIFFICULTY = difficulty;
+    static void setSquareSize(int squareSize) {
+        DotsSquare.SQUARE_SIZE = squareSize;
     }
 
-
-    public static void setMazeWidth(int mazeWidth) {
-        DotsDrawingView.MAZE_WIDTH = mazeWidth;
-    }
 
     @Override
     protected void onDraw(final Canvas canvas) {
@@ -156,7 +152,7 @@ public class DotsDrawingView extends BaseView {
                 float right = left + DotsSquare.SQUARE_SIZE; // width (distance from X1 to X2)
                 float bottom = top + DotsSquare.SQUARE_SIZE; // height (distance from Y1 to Y2)
 
-                if (entry.getKey().equals("EU")) {
+                if ("EU".equals(entry.getKey())) {
                     paint.setColor(Color.RED);
                 } else {
                     paint.setColor(Color.BLUE);
@@ -170,7 +166,7 @@ public class DotsDrawingView extends BaseView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int width = this.getWidth();
-        DotsSquare.setSquareSize(width / MAZE_WIDTH);
+        setSquareSize(width / MAZE_WIDTH);
         MAZE_HEIGHT = this.getHeight() / DotsSquare.SQUARE_SIZE;
         if (maze == null) {
             maze = new DotsSquare[MAZE_WIDTH][MAZE_HEIGHT];
@@ -325,7 +321,6 @@ public class DotsDrawingView extends BaseView {
             if (!checkMelhor) {
                 return false;
             }
-
             final boolean checkMelhor1 = entry.getValue().checkMelhor(entry.getKey());
             if (!checkMelhor1) {
                 return false;
@@ -476,7 +471,7 @@ public class DotsDrawingView extends BaseView {
         return true;
     }
 
-    private DotsSquare getCloserDotsSquare(float x, float y) {
+    private  DotsSquare getCloserDotsSquare(float x, float y) {
         List<DotsSquare> dotsSquares = flatMap(Arrays.asList(maze), Arrays::asList);
         return min(dotsSquares, comparing((DotsSquare e) -> getDistance(e, x, y)));
     }

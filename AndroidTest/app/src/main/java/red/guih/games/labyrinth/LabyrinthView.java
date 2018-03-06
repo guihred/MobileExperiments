@@ -31,7 +31,7 @@ public class LabyrinthView extends View implements SensorEventListener {
     float xSpeed, ySpeed;
     RectF bounds = new RectF();
     private LabyrinthSquare[][] maze;
-    private List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
+    private final List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
     private float ballx, bally;
     private Thread gameLoopThread;
 
@@ -63,8 +63,9 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     public void reset() {
-        LabyrinthSquare.SQUARE_SIZE = getWidth() / MAZE_WIDTH;
-        MAZE_HEIGHT = getHeight() / LabyrinthSquare.SQUARE_SIZE;
+        int squareSize = getWidth() / MAZE_WIDTH;
+        LabyrinthSquare.setSquareSize(squareSize);
+        setMazeHeight(getHeight());
         maze = initializeMaze(getContext());
         speed = LabyrinthSquare.SQUARE_SIZE / 20;
         ballx = LabyrinthSquare.SQUARE_SIZE / 2;
@@ -81,6 +82,10 @@ public class LabyrinthView extends View implements SensorEventListener {
 
         continueGame();
         invalidate();
+    }
+
+    private static void setMazeHeight(int height) {
+        MAZE_HEIGHT = height / LabyrinthSquare.SQUARE_SIZE;
     }
 
     void continueGame() {

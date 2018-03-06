@@ -23,8 +23,8 @@ public class MadMazeView extends View implements SensorEventListener {
     float ballx, bally;
     float triangleSide;
     float xSpeed, ySpeed;
-    private static int madMazeOption = 0;
-    private Paint paint = new Paint();
+    private static int madMazeOption ;
+    private final Paint paint = new Paint();
     private Thread gameLoopThread;
     private float speed;
     private float ballRadius;

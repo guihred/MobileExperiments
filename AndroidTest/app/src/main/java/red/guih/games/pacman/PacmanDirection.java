@@ -1,6 +1,8 @@
 package red.guih.games.pacman;
 
 /**
+ * A enum to each of the pacman directions and their respective angles.
+ *
  * Created by guilherme.hmedeiros on 10/02/2018.
  */
 

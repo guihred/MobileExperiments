@@ -78,74 +78,88 @@ public class PuzzleView extends BaseView {
 
         switch (action) {
             case MotionEvent.ACTION_MOVE:
-                if (intersectedPoint == null || chosenPuzzleGroup == null) {
-                    return true;
-                }
-
-                Point2D subtract = intersectedPoint.subtract(e);
-
-
-                chosenPuzzleGroup.forEach(i -> i.move(subtract));
-
-
-                intersectedPoint = Point2D.getIntersectedPoint(e);
+                if (handleDrag(e)) return true;
                 break;
             case MotionEvent.ACTION_UP:
 
-                List<PuzzlePiece> containsP = chosenPuzzleGroup;
-                if (containsP != null) {
-                    List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> l != containsP).collect(toList());
-                    for (PuzzlePiece piece : containsP) {
-                        for (int i = 0; i < collect.size(); i++) {
-                            for (int j = 0; j < collect.get(i).size(); j++) {
-                                PuzzlePiece puzzlePiece = collect.get(i).get(j);
-                                if (checkNeighbours(piece, puzzlePiece)) {
-                                    if (distance(puzzlePiece, piece) < width * width / 16) {
-
-                                        List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
-                                        if (containsPuzzle != null
-                                                && !containsP.equals(containsPuzzle)) {
-                                            containsPuzzle.addAll(containsP);
-                                            linkedPieces.remove(containsP);
-                                            float a = xDistance(puzzlePiece, piece);
-                                            float b = yDistance(puzzlePiece, piece);
-                                            toFront(containsPuzzle);
-                                            containsP.forEach(z -> z.move(a, b));
-                                            chosenPuzzleGroup = null;
-                                            intersectedPoint = null;
-                                            if (linkedPieces.size() == 1) {
-                                                float x = -puzzle[0][0].getLayoutX();
-                                                float y = -puzzle[0][0].getLayoutY();
-                                                containsPuzzle.forEach(z -> z.move(x, y));
-                                                showDialogWinning();
-                                            }
-                                            invalidate();
-                                            return true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                chosenPuzzleGroup = null;
-                intersectedPoint = null;
+                if (handleRelease()) return true;
                 break;
             case MotionEvent.ACTION_DOWN:
-                if (intersectedPoint == null) {
-                    intersectedPoint = Point2D.getIntersectedPoint(e);
-                    List<PuzzlePiece> contains = groupWhichContains();
-                    if (contains != null) {
-                        chosenPuzzleGroup = contains;
-                        toFront(chosenPuzzleGroup);
-                    }
-                }
+                handleFirstTouch(e);
                 break;
             default:
         }
 
         invalidate();
         return true;
+    }
+
+    private void handleFirstTouch(MotionEvent e) {
+        if (intersectedPoint == null) {
+            intersectedPoint = Point2D.getIntersectedPoint(e);
+            List<PuzzlePiece> contains = groupWhichContains();
+            if (contains != null) {
+                chosenPuzzleGroup = contains;
+                toFront(chosenPuzzleGroup);
+            }
+        }
+    }
+
+    private boolean handleRelease() {
+        List<PuzzlePiece> containsP = chosenPuzzleGroup;
+        if (containsP != null) {
+            List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> l != containsP).collect(toList());
+            for (PuzzlePiece piece : containsP) {
+                for (int i = 0; i < collect.size(); i++) {
+                    for (int j = 0; j < collect.get(i).size(); j++) {
+                        PuzzlePiece puzzlePiece = collect.get(i).get(j);
+                        if (checkNeighbours(piece, puzzlePiece)) {
+                            if (distance(puzzlePiece, piece) < width * width / 16) {
+
+                                List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
+                                if (containsPuzzle != null
+                                        && !containsP.equals(containsPuzzle)) {
+                                    containsPuzzle.addAll(containsP);
+                                    linkedPieces.remove(containsP);
+                                    float a = xDistance(puzzlePiece, piece);
+                                    float b = yDistance(puzzlePiece, piece);
+                                    toFront(containsPuzzle);
+                                    containsP.forEach(z -> z.move(a, b));
+                                    chosenPuzzleGroup = null;
+                                    intersectedPoint = null;
+                                    if (linkedPieces.size() == 1) {
+                                        float x = -puzzle[0][0].getLayoutX();
+                                        float y = -puzzle[0][0].getLayoutY();
+                                        containsPuzzle.forEach(z -> z.move(x, y));
+                                        showDialogWinning();
+                                    }
+                                    invalidate();
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        chosenPuzzleGroup = null;
+        intersectedPoint = null;
+        return false;
+    }
+
+    private boolean handleDrag(MotionEvent e) {
+        if (intersectedPoint == null || chosenPuzzleGroup == null) {
+            return true;
+        }
+
+        Point2D subtract = intersectedPoint.subtract(e);
+
+
+        chosenPuzzleGroup.forEach(i -> i.move(subtract));
+
+
+        intersectedPoint = Point2D.getIntersectedPoint(e);
+        return false;
     }
 
     private void showDialogWinning() {

@@ -20,6 +20,14 @@ import red.guih.games.db.UserRecord;
 public class DotsActivity extends BaseActivity {
 
 
+    public static void setDifficulty(int difficulty) {
+        DotsDrawingView.DIFFICULTY = difficulty;
+    }
+
+    public static void setMazeWidth(int mazeWidth) {
+        DotsDrawingView.MAZE_WIDTH = mazeWidth;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,12 +37,12 @@ public class DotsActivity extends BaseActivity {
             a.setTitle(R.string.link_dots);
             a.setDisplayHomeAsUpEnabled(true);
         }
-        setUserPrerences();
+        setUserPreferences();
     }
 
-    private void setUserPrerences() {
-        DotsDrawingView.setDifficulty(getUserPreference(R.string.difficulty, DotsDrawingView.DIFFICULTY));
-        DotsDrawingView.setMazeWidth(getUserPreference(R.string.size, DotsDrawingView.MAZE_WIDTH));
+    private void setUserPreferences() {
+        setDifficulty(getUserPreference(R.string.difficulty, DotsDrawingView.DIFFICULTY));
+        setMazeWidth(getUserPreference(R.string.size, DotsDrawingView.MAZE_WIDTH));
     }
 
     @Override
@@ -88,10 +96,10 @@ public class DotsActivity extends BaseActivity {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
         int difficulty = spinner.getSelectedItemPosition() % 3;
-        DotsDrawingView.setDifficulty(difficulty);
+        setDifficulty(difficulty);
         addUserPreference(R.string.difficulty, difficulty);
         if (DotsDrawingView.MAZE_WIDTH != progress) {
-            DotsDrawingView.setMazeWidth(progress);
+            setMazeWidth(progress);
             addUserPreference(R.string.size, progress);
             recreate();
         }

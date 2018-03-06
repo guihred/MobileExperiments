@@ -21,9 +21,9 @@ class CardStack {
 
     public final StackType type;
     private final int n;
-    private List<SolitaireCard> cards = new ArrayList<>();
+    private final List<SolitaireCard> cards = new ArrayList<>();
     private int layoutX, layoutY;
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
     private RectF boundsF;
 
     public CardStack(StackType type, int n) {

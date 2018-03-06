@@ -30,13 +30,13 @@ public class SlidingPuzzleView extends BaseView {
 
     public static int MAP_WIDTH = 4;
     public static int MAP_HEIGHT = 4;
-    public static int PUZZLE_IMAGE = 0;
+    public static int PUZZLE_IMAGE;
 
 
     private SlidingPuzzleSquare[][] map;
     private int moves;
     private int squareSize;
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
 
     public SlidingPuzzleView(Context c, AttributeSet attrs) {
         super(c, attrs);
@@ -47,30 +47,32 @@ public class SlidingPuzzleView extends BaseView {
     }
 
 
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         squareSize = getWidth() / MAP_HEIGHT;
-        MAP_WIDTH = getHeight() / squareSize;
+        setMapWidth(getHeight() / squareSize);
         paint.setTextSize(squareSize / 2);
 
         reset();
 
     }
 
+    private static void setMapWidth(int height) {
+        MAP_WIDTH = height;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN: {
+            case MotionEvent.ACTION_DOWN:
                 int i = (int) (event.getY() / squareSize);
                 int j = (int) (event.getX() / squareSize);
                 if (i < MAP_WIDTH && j < MAP_HEIGHT) {
                     slideIfPossible(map[i][j]);
                 }
 
-            }
         }
 
 
@@ -150,6 +152,7 @@ public class SlidingPuzzleView extends BaseView {
     public static void setPuzzleDimensions(int progress) {
         MAP_HEIGHT = progress;
     }
+
     public static void setPuzzleImage(int progress) {
         PUZZLE_IMAGE = progress;
     }
@@ -188,8 +191,8 @@ public class SlidingPuzzleView extends BaseView {
 
 
         Bitmap image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
-        if(image==null)
-            return  null;
+        if (image == null)
+            return null;
         if (image.getWidth() > image.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
@@ -201,7 +204,7 @@ public class SlidingPuzzleView extends BaseView {
             return null;
         }
 
-        return Bitmap.createScaledBitmap(image, width *MAP_HEIGHT, height * MAP_WIDTH, false);
+        return Bitmap.createScaledBitmap(image, width * MAP_HEIGHT, height * MAP_WIDTH, false);
     }
 
     final boolean swapEmptyNeighbor(int i, int j, int k, int l) {

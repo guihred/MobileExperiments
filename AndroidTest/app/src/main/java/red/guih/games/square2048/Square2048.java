@@ -8,7 +8,6 @@ package red.guih.games.square2048;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,14 +19,13 @@ import java.util.Objects;
 public class Square2048 {
     public static float SQUARE_SIZE = 50;
     private static int PADDING;
-    private int number = 0;
+    private int number;
     private final int i;
     private final int j;
-    private Paint paint = new Paint();
-    private Paint color = new Paint();
-    private Paint opposite = new Paint();
+    private final Paint paint = new Paint();
+    private final Paint color = new Paint();
 
-    private static List<Integer> colors = Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80, 0xFF00ffff, 0xFF0008ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
+    private static final List<Integer> COLORS = Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80, 0xFF00ffff, 0xFF0008ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
 
     private float layoutX, layoutY;
 
@@ -53,19 +51,6 @@ public class Square2048 {
         }
     }
 
-    int opposite() {
-//          1. Convert your colour to HSL.
-        float[] hsv = new float[3];
-        Color.colorToHSV(color.getColor(), hsv);
-//            2. Change the Hue value to that of the Hue opposite (e.g., if your Hue is 50°, the opposite one will be at 230° on the wheel — 180° further around).
-
-        Log.i("SQUARE2048", "" + hsv[0]);
-//            4. Convert this new HSL value back to your original colour notation (RGB or whatever).
-        hsv[0] = +180;
-        hsv[0] %= 360;
-        return Color.HSVToColor(hsv) & 0x80FFFFFF;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,9 +70,8 @@ public class Square2048 {
 
         if (number > 0) {
             int v = (int) (Math.log(number) / Math.log(2));
-            Integer color = colors.get(v % colors.size());
+            Integer color = COLORS.get(v % COLORS.size());
             this.color.setColor(color);
-            opposite.setColor(opposite());
         }
 
     }

@@ -11,7 +11,6 @@ class CreateLabyrinth {
         new CreateLabyrinth().handle(maze);
     }
 
-
     int r = 0, c = 0;
     void handle(LabyrinthSquare[][] maze) {
         final Random random = new Random();

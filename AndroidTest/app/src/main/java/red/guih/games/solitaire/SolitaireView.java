@@ -42,10 +42,10 @@ import red.guih.games.R;
 public class SolitaireView extends BaseView {
     public static final int ANIMATION_DURATION = 250;
     public static final int DARK_GREEN = 0xFF008800;
-    private CardStack[] ascendingStacks = new CardStack[4];
+    private final CardStack[] ascendingStacks = new CardStack[4];
     private final DragContext dragContext = new DragContext();
     private final Collection<CardStack> cardStackList = new ArrayList<>();
-    private CardStack[] simpleStacks = new CardStack[7];
+    private final CardStack[] simpleStacks = new CardStack[7];
     private CardStack mainCardStack;
     private CardStack dropCardStack;
     private final List<MotionHistory> history = new ArrayList<>();
@@ -428,7 +428,7 @@ public class SolitaireView extends BaseView {
     private Collection<CardStack> getHoveredStacks(CardStack[] stacks) {
         SolitaireCard next = dragContext.cards.iterator().next();
         return Stream.of(stacks)
-                .filter(s -> RectF.intersects(s.getBoundsF(), next.getBounds(0, 0)))
+                .filter(s -> RectF.intersects(s.getBoundsF(), next.getBounds()))
                 .collect(Collectors.toList());
     }
 

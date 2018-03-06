@@ -5,6 +5,8 @@ import android.graphics.Color;
 import red.guih.games.R;
 
 /**
+ *  An enum to elucidate the ghosts monsters
+ *
  * Created by guilherme.hmedeiros on 11/02/2018.
  */
 

@@ -22,11 +22,11 @@ public class PuzzlePiece {
     private PuzzlePath right = PuzzlePath.STRAIGHT;
     private PuzzlePath up = PuzzlePath.STRAIGHT;
     private float width = 10, height = 10;
-    private int x = 0, y = 0;
-    private float layoutX = 0, layoutY = 0;
-    private Matrix translate = new Matrix();
-    private Path translated = new Path();
-    private Matrix mTranslationMatrix = new Matrix();
+    private int x, y;
+    private float layoutX, layoutY;
+    private final Matrix translate = new Matrix();
+    private final Path translated = new Path();
+    private final Matrix mTranslationMatrix = new Matrix();
 
     public PuzzlePiece(int x, int y, float width, float height) {
         this.x = x;

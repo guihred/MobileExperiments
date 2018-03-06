@@ -8,7 +8,7 @@ import android.view.MotionEvent;
  * Created by guilherme.hmedeiros on 06/02/2018.
  */
 
-public class Point2D {
+public final class Point2D {
     private static Point2D instance;
     float x, y;
 

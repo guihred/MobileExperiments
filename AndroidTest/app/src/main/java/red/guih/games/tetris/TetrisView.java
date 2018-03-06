@@ -126,7 +126,7 @@ public class TetrisView extends BaseView {
         gameOver = false;
         if (isRecordSuitable(points, UserRecord.TETRIS, 1, false)) {
             createRecordIfSuitable(points, points + " Points", UserRecord.TETRIS, 1, false);
-            showRecords(1, UserRecord.TETRIS, () -> TetrisView.this.reset());
+            showRecords(1, UserRecord.TETRIS, TetrisView.this::reset);
         } else {
             showYouLoseDialog();
         }

@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 class DotsSquare {
-    static int SQUARE_SIZE = 40;
+    static int SQUARE_SIZE ;
 
     final int i, j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
@@ -19,10 +19,6 @@ class DotsSquare {
     DotsSquare(int i, int j) {
         this.i = i;
         this.j = j;
-    }
-
-    static void setSquareSize(int squareSize) {
-        SQUARE_SIZE = squareSize;
     }
 
     void clear() {

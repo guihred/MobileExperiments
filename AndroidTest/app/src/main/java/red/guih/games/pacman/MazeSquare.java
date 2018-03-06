@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,13 +18,13 @@ public class MazeSquare {
     public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
     final int i, j;
     List<MazeSquare> adjacents;
-    private List<RectF> walls = new ArrayList<>();
+    private final List<RectF> walls = new ArrayList<>();
     private boolean visited = false;
     private boolean west = false;
     private boolean east = false;
     private boolean north = false;
     private boolean south = false;
-    private Paint paint = new Paint(Color.GREEN);
+    private final Paint paint = new Paint(Color.GREEN);
     private List<RectF> bounds;
 
     public MazeSquare(int i, int j) {
@@ -81,7 +82,7 @@ public class MazeSquare {
             if (el.south && i + 1 < PacmanView.MAZE_WIDTH) {
                 adjacents.add(map[i + 1][j]);
             }
-            System.out.println(this + " ->" + adjacents);
+            Log.i("MAZE_SQUARE", this + " ->" + adjacents);
         }
 
         return adjacents;
@@ -148,12 +149,12 @@ public class MazeSquare {
 
     }
 
-    public Map<MazeSquare, Integer> dijkstra(final MazeSquare[][] map) {
+    public void dijkstra(final MazeSquare[][] map) {
         Map<MazeSquare, Integer> distance = new LinkedHashMap<>();
         Map<MazeSquare, Boolean> known = createDistanceMap(this, distance, map);
         while (known.entrySet().stream().anyMatch(e -> !e.getValue())) {
             Map.Entry<MazeSquare, Integer> orElse = distance.entrySet().stream().filter(e -> !known.get(e.getKey()))
-                    .min(Comparator.comparing(Map.Entry<MazeSquare, Integer>::getValue)).orElse(null);
+                    .min(Comparator.comparing(Map.Entry::getValue)).orElse(null);
             if (orElse == null) {
                 break;
             }
@@ -170,7 +171,6 @@ public class MazeSquare {
                 }
             }
         }
-        return distance;
     }
 
     private void drawWall(Canvas canvas, RectF rectF) {

@@ -35,8 +35,7 @@ class CreateMazeHandler {
                 if (PacmanDirection.UP == direction) {
                     createdMaze[r][c].setNorth(true);
                     r -= 1;
-                    boolean b = true;
-                    createdMaze[r][c].setSouth(b);
+                    createdMaze[r][c].setSouth(true);
                 }
                 if (PacmanDirection.RIGHT == direction) {
                     createdMaze[r][c].setEast(true);
@@ -44,8 +43,7 @@ class CreateMazeHandler {
                     createdMaze[r][c].setWest(true);
                 }
                 if (PacmanDirection.DOWN == direction) {
-                    boolean b = true;
-                    createdMaze[r][c].setSouth(b);
+                    createdMaze[r][c].setSouth(true);
                     r += 1;
                     createdMaze[r][c].setNorth(true);
                 }

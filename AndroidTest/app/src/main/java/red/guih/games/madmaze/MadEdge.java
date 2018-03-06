@@ -4,8 +4,8 @@ import android.support.annotation.NonNull;
 
 public class MadEdge implements Comparable<MadEdge> {
 
-    private MadCell source;
-    private MadCell target;
+    private final MadCell source;
+    private final MadCell target;
     float a, b, c, sqrt;
     //    float[] bounds;
     float[] xBounds;

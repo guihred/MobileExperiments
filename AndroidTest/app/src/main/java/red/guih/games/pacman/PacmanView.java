@@ -35,9 +35,9 @@ public class PacmanView extends BaseView {
     float startX, startY;
     List<RectF> walls;
     Thread gameLoopThread;
-    boolean gameOver = false;
+    boolean gameOver;
     private List<PacmanBall> balls = new ArrayList<>();
-    private List<PacmanGhost> ghosts;
+    private final List<PacmanGhost> ghosts;
     private Integer points = 0;
     private long time;
     private MazeSquare[][] maze;
@@ -66,8 +66,7 @@ public class PacmanView extends BaseView {
                     maze[i][MAZE_HEIGHT - 1].setEast(true);
                 }
                 if (MAZE_WIDTH - 1 == i && j % 3 == 0) {
-                    boolean b = true;
-                    maze[MAZE_WIDTH - 1][j].setSouth(b);
+                    maze[MAZE_WIDTH - 1][j].setSouth(true);
                 }
             }
         }

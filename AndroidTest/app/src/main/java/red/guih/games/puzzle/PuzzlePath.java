@@ -37,7 +37,7 @@ public enum PuzzlePath {
     });
 
 
-    private BiFunction<Float, Float, Consumer<Path>> path;
+    private final BiFunction<Float, Float, Consumer<Path>> path;
 
 
     PuzzlePath(BiFunction<Float, Float, Consumer<Path>> path) {

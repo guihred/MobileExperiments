@@ -13,22 +13,24 @@ import java.util.List;
 
 @SuppressLint("ViewConstructor")
 public class LabyrinthSquare extends View {
-    public static int SQUARE_SIZE = 20;
-    private List<RectF> walls = new ArrayList<>();
-    private boolean visited = (false);
-    private boolean west = (false);
-    private boolean east = (false);
-    private boolean north = (false);
-    private boolean south = (false);
-    private Paint paint = new Paint(Color.GREEN);
+    public static int SQUARE_SIZE ;
     final int i, j;
-
-
+    private List<RectF> walls = new ArrayList<>();
+    private boolean visited = false;
+    private boolean west = false;
+    private boolean east = false;
+    private boolean north = false;
+    private boolean south = false;
+    private Paint paint = new Paint(Color.GREEN);
     public LabyrinthSquare(Context c, int i, int j) {
         super(c);
-        this.i = (i);
-        this.j = (j);
+        this.i = i;
+        this.j = j;
         paint.setColor(Color.GREEN);
+    }
+
+    public static void setSquareSize(int squareSize) {
+        LabyrinthSquare.SQUARE_SIZE = squareSize;
     }
 
     @Override
@@ -68,11 +70,6 @@ public class LabyrinthSquare extends View {
         canvas.drawRect(rectF, paint);
     }
 
-    public void setSouth(boolean south) {
-        this.south = (south);
-        updateWalls();
-    }
-
     public final boolean isVisited() {
         return visited;
     }
@@ -81,17 +78,22 @@ public class LabyrinthSquare extends View {
         return south;
     }
 
+    public void setSouth(boolean south) {
+        this.south = south;
+        updateWalls();
+    }
+
     public final boolean isWest() {
         return west;
     }
 
-    public final void setVisited() {
-        this.visited = (true);
+    public final void setWest(final boolean west) {
+        this.west = west;
         updateWalls();
     }
 
-    public final void setWest(final boolean west) {
-        this.west = (west);
+    public final void setVisited() {
+        this.visited = true;
         updateWalls();
     }
 
@@ -101,7 +103,7 @@ public class LabyrinthSquare extends View {
 
 
     public final void setEast(final boolean east) {
-        this.east = (east);
+        this.east = east;
         updateWalls();
     }
 
@@ -111,7 +113,7 @@ public class LabyrinthSquare extends View {
 
 
     public final void setNorth(final boolean north) {
-        this.north = (north);
+        this.north = north;
         updateWalls();
     }
 

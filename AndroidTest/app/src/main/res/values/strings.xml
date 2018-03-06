@@ -10,7 +10,7 @@
     <string name="pacman">Pacman</string>
     <string name="minesweeper">Campo Minado</string>
     <string name="link_dots">Ligue os Pontos</string>
-    <string name="tag">GAMES Activity</string>
+
     <string name="icon">Icon</string>
     <string name="difficulty">Dificuldade</string>
     <string name="size">Tamanho</string>
@@ -47,7 +47,7 @@
     <string-array name="puzzle_images" >
         <item>Mona Lisa</item>
         <item>Cavalo</item>
-        <item>Outra Imagem...</item>
+        <item>Outra Imagem…</item>
     </string-array>
     <string-array name="slidingpuzzle_images" >
         <item>Números</item>

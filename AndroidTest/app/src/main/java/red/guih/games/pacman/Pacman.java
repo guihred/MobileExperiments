@@ -17,11 +17,11 @@ public class Pacman {
     public static final float PACMAN_RATIO = 0.5f;
     private float startAngle = 0;
     private float length = 0;
-    private ObjectAnimator eatingAnimation;
+    private final ObjectAnimator eatingAnimation;
      Paint paint = new Paint(Color.YELLOW);
     private float x, y;
     private PacmanDirection direction = PacmanDirection.RIGHT;
-    private RectF bounds = new RectF();
+    private final RectF bounds = new RectF();
 
     public Pacman(PacmanView pacmanView) {
         paint.setColor(Color.YELLOW);

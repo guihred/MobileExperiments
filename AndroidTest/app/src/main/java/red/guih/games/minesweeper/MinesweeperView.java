@@ -40,7 +40,7 @@ public class MinesweeperView extends BaseView {
     private final Handler handler = new Handler();
     private final Paint hiddenColor;
     private MinesweeperSquare[][] map = new MinesweeperSquare[mapWidth][mapHeight];
-    private Runnable mLongPressed = new Runnable() {
+    private final Runnable mLongPressed = new Runnable() {
         public void run() {
             goneFlag = true;
             float x = pressedX;
@@ -86,7 +86,7 @@ public class MinesweeperView extends BaseView {
         if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
             nPlayed++;
             mem.setState(MinesweeperSquare.State.SHOWN);
-            if (mem.getMinesweeperImage().equals(MinesweeperImage.BOMB)) {
+            if (mem.getMinesweeperImage() == MinesweeperImage.BOMB) {
                 if (nPlayed == 0) {
                     reset();
                     return;
@@ -94,7 +94,7 @@ public class MinesweeperView extends BaseView {
 
                 showDialogLose();
             }
-            if (mem.getMinesweeperImage().equals(MinesweeperImage.BLANK)) {
+            if (mem.getMinesweeperImage() == MinesweeperImage.BLANK) {
                 showNeighbours(mem.getI(), mem.getJ());
             }
             if (verifyEnd()) {
@@ -352,7 +352,7 @@ public class MinesweeperView extends BaseView {
 
         if (isRecordSuitable(emSegundos, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true)) {
             createRecordIfSuitable(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true);
-            showRecords(NUMBER_OF_BOMBS, UserRecord.MINESWEEPER, () -> MinesweeperView.this.reset());
+            showRecords(NUMBER_OF_BOMBS, UserRecord.MINESWEEPER, MinesweeperView.this::reset);
             return;
         }
         text.setText(String.format(getResources().getString(R.string.you_win), format));
@@ -377,8 +377,8 @@ public class MinesweeperView extends BaseView {
                     continue;
                 }
                 if (i + k >= 0 && i + k < mapWidth && j + l >= 0 && j + l < mapHeight) {
-                    if (map[i + k][j + l].getMinesweeperImage().equals(MinesweeperImage.BLANK)
-                            && map[i + k][j + l].getState().equals(MinesweeperSquare.State.HIDDEN)) {
+                    if (map[i + k][j + l].getMinesweeperImage() == MinesweeperImage.BLANK
+                            && map[i + k][j + l].getState() == MinesweeperSquare.State.HIDDEN) {
                         showNeighbours(i + k, j + l);
                     }
                     map[i + k][j + l].setState(MinesweeperSquare.State.SHOWN);

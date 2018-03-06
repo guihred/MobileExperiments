@@ -4,7 +4,7 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 
 /**
- * Class user to create and retrive the userDAO
+ * Class user to create and retrieve the userDAO
  *
  * Created by guilherme.hmedeiros on 25/01/2018.
  */

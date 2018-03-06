@@ -24,7 +24,7 @@ import red.guih.games.db.UserRecordDatabase;
 public abstract class BaseActivity extends AppCompatActivity {
 
 
-    protected UserRecordDatabase db = Room.databaseBuilder(this,
+    protected final UserRecordDatabase db = Room.databaseBuilder(this,
             UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
 
     public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter, int difficulty, String gameName) {

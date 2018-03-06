@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 public class MadTriangle {
 
-    private MadPoint a;
+    private final MadPoint a;
 
-    private MadPoint b;
+    private final MadPoint b;
 
-    private MadPoint c;
+    private final MadPoint c;
     private boolean visited;
     private MadPoint center;
 

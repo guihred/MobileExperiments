@@ -47,23 +47,25 @@ public abstract class BaseView extends View {
     }
 
     public void createRecordIfSuitable(long points, String description, String gameName, int difficulty, boolean asc) {
-        new Thread(() -> {
-            int equals = db.userDao().getEqualRecords(points, difficulty, gameName);
-            if (equals > 0)
-                return;
-            int count = db.userDao().getCountRecords(difficulty, gameName);
-            if (count < MAX_RECORDS) {
-                createUserRecord(points, description, gameName, difficulty);
-                return;
-            }
-            UserRecord maxPoints = db.userDao().getMaxPoints(difficulty, gameName);
-            UserRecord minPoints = db.userDao().getMinPoints(difficulty, gameName);
-            if (points < maxPoints.getPoints() && asc || points > minPoints.getPoints() && !asc) {
-                createUserRecord(points, description, gameName, difficulty);
-                UserRecord updated = asc ? maxPoints : minPoints;
-                db.userDao().delete(updated);
-            }
-        }).start();
+        new Thread(() -> createRecord(points, description, gameName, difficulty, asc)).start();
+    }
+
+    private void createRecord(long points, String description, String gameName, int difficulty, boolean asc) {
+        int equals = db.userDao().getEqualRecords(points, difficulty, gameName);
+        if (equals > 0)
+            return;
+        int count = db.userDao().getCountRecords(difficulty, gameName);
+        if (count < MAX_RECORDS) {
+            createUserRecord(points, description, gameName, difficulty);
+            return;
+        }
+        UserRecord maxPoints = db.userDao().getMaxPoints(difficulty, gameName);
+        UserRecord minPoints = db.userDao().getMinPoints(difficulty, gameName);
+        if (points < maxPoints.getPoints() && asc || points > minPoints.getPoints() && !asc) {
+            createUserRecord(points, description, gameName, difficulty);
+            UserRecord updated = asc ? maxPoints : minPoints;
+            db.userDao().delete(updated);
+        }
     }
 
 
@@ -96,10 +98,7 @@ public abstract class BaseView extends View {
         }
         UserRecord maxPoints = db.userDao().getMaxPoints(difficulty, gameName);
         UserRecord minPoints = db.userDao().getMinPoints(difficulty, gameName);
-        if (points < maxPoints.getPoints() && asc || points > minPoints.getPoints() && !asc) {
-            return true;
-        }
-        return false;
+        return points < maxPoints.getPoints() && asc || points > minPoints.getPoints() && !asc;
     }
 
     public void showRecords(int difficulty, String gameName, Runnable onclick) {
