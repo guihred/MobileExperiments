@@ -14,6 +14,7 @@ import red.guih.games.pacman.PacmanActivity;
 import red.guih.games.puzzle.PuzzleActivity;
 import red.guih.games.slidingpuzzle.SlidingPuzzleActivity;
 import red.guih.games.solitaire.SolitaireActivity;
+import red.guih.games.square2048.Square2048Activity;
 import red.guih.games.tetris.TetrisActivity;
 
 /**
@@ -45,6 +46,8 @@ public class GamesActivity extends AppCompatActivity {
         slidingPuzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, SlidingPuzzleActivity.class)));
         ImageButton solitaire = findViewById(R.id.solitaireButton);
         solitaire.setOnClickListener((View v) -> startActivity(new Intent(this, SolitaireActivity.class)));
+        ImageButton square2048 = findViewById(R.id.square2048Button);
+        square2048.setOnClickListener((View v) -> startActivity(new Intent(this, Square2048Activity.class)));
 
     }
 }

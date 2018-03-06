@@ -213,7 +213,27 @@
                 android:text="@string/solitaire"
                 android:textAlignment="center" />
 
-        </LinearLayout>
+        </LinearLayout> <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/square2048Button"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:background="@null"
+            android:contentDescription="@string/square2048"
+            android:src="@drawable/square2048_button" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/square2048"
+            android:textAlignment="center" />
+
+    </LinearLayout>
 
 
     </LinearLayout>

@@ -12,10 +12,10 @@
         <activity
             android:name="red.guih.games.GamesActivity"
             android:screenOrientation="portrait">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="red.guih.games.pacman.PacmanActivity"
@@ -57,12 +57,7 @@
         <activity
             android:name="red.guih.games.square2048.Square2048Activity"
             android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait"></activity>
 
     </application>
 

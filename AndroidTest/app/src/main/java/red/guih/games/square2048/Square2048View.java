@@ -69,6 +69,7 @@ public class Square2048View extends BaseView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         Square2048.setSquareSize(getWidth() / MAP_WIDTH);
+        Square2048.setPadding((getHeight() - getWidth()) / 2);
         if (changed) {
             reset();
         }
