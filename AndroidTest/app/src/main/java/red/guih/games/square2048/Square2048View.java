@@ -36,12 +36,13 @@ public class Square2048View extends BaseView {
     public static final int MAP_HEIGHT = 4;
     public static final int MAP_WIDTH = 4;
     public static final int ANIMATION_DURATION = 100;
+    public static final int MAIN_GOAL = 2048;
     final Random random = new Random();
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     Map<Square2048, Square2048> movingSquares = new HashMap<>();
     private long nPlayed;
-    private List<Square2048> mapAsList = new ArrayList<>();
-    private List<Square2048> changedList = new ArrayList<>();
+    private final List<Square2048> mapAsList = new ArrayList<>();
+    private final List<Square2048> changedList = new ArrayList<>();
     private float initialX;
     private float initialY;
 
@@ -137,8 +138,8 @@ public class Square2048View extends BaseView {
         changedList.clear();
         while (changed) {
             changed = false;
-            for (int i = 0; i < getMap().length; i++) {
-                for (int j = 0; j < getMap()[i].length; j++) {
+            for (int i = x > 0 ? getMap().length - 1 : 0; i < getMap().length && i >= 0; i += x > 0 ? -1 : 1) {
+                for (int j = y > 0 ? getMap()[i].length - 1 : 0; j < getMap()[i].length && j >= 0; j += y > 0 ? -1 : 1) {
                     if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
                             && j + y < MAP_HEIGHT) {
                         if (getMap()[i + x][j + y].isEmpty()) {
@@ -167,7 +168,7 @@ public class Square2048View extends BaseView {
         movingSquares.forEach(this::animateMovingSquare);
 
 
-        if (mapAsList.stream().anyMatch(f -> f.getNumber() == 2048)) {
+        if (mapAsList.stream().anyMatch(f -> f.getNumber() == MAIN_GOAL)) {
             showDialogWinning();
             return;
         }
