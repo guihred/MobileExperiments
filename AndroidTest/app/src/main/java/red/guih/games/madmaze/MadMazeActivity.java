@@ -16,6 +16,7 @@ import android.widget.Spinner;
 
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
+import red.guih.games.db.UserRecord;
 
 public class MadMazeActivity extends BaseActivity {
     private SensorManager senSensorManager;
@@ -47,7 +48,7 @@ public class MadMazeActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.menu_records, menu);
         return true;
     }
 
@@ -57,7 +58,9 @@ public class MadMazeActivity extends BaseActivity {
             case R.id.config:
                 showConfig();
                 return true;
-
+            case R.id.records:
+                showRecords(MadMazeView.DIFFICULTY, UserRecord.MAD_MAZE);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
