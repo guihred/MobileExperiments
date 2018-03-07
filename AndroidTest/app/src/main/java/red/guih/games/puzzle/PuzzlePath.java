@@ -9,11 +9,11 @@ public enum PuzzlePath {
 
     STRAIGHT((x, y) -> p -> p.rLineTo(x, y)),
     ROUND((x, y) -> p -> {
-        float q=0.75f;
-        p.rCubicTo(Math.abs(y)*q-x*q, Math.abs(x)*q-y*q, Math.abs(y)*q+x*(1+q), Math.abs(x)*q+y*(1+q), x, y);
+        float q = 0.75f;
+        p.rCubicTo(Math.abs(y) * q - x * q, Math.abs(x) * q - y * q, Math.abs(y) * q + x * (1 + q), Math.abs(x) * q + y * (1 + q), x, y);
     }),
 
-    ZIGZAGGED((x, y) -> p -> {
+    TRIANGLE((x, y) -> p -> {
         float i = Math.signum(x + y);
 
         p.rLineTo(nonZero(i * y * PuzzlePiece.SQRT_0_5, x / 2f), nonZero(i * x * PuzzlePiece.SQRT_0_5, y / 2f));
@@ -26,14 +26,24 @@ public enum PuzzlePath {
         p.rLineTo(x, y);
         p.rLineTo(i * -y / 2, i * -x / 2);
     }),
+    CUBIC_WAVE((x, y) -> p -> {
+        p.rLineTo(y / 2, x / 2);
+        p.rLineTo(x / 2, y / 2);
+        p.rLineTo(-y, -x);
+        p.rLineTo(x / 2, y / 2);
+        p.rLineTo(y / 2, x / 2);
+    }),
     WAVE((x, y) -> p -> {
-//        boolean b = x + y > 0;
-//        boolean c = x == 0;
-//        boolean d = y == 0;
+        p.rQuadTo(y / 4, x / 4, y / 4 + x / 4, x / 4 + y / 4);
+        p.rQuadTo(x / 4, y / 4, -y / 4 + x / 4, -x / 4 + y / 4);
+        p.rQuadTo(-y / 4, -x / 4, -y / 4 + x / 4, -x / 4 + y / 4);
+        p.rQuadTo(x / 4, y / 4, y / 4 + x / 4, x / 4 + y / 4);
 
-
-//                new ArcTo((x + y) / 4, (x + y) / 4, 0, x / 2, y / 2, false, b && c ^ !b && d);
-//                new ArcTo((x + y) / 4, (x + y) / 4, 0, x / 2, y / 2, false, !b || !(c ^ !b) || !d);
+    }),
+    ZIGZAG((x, y) -> p -> {
+        p.rLineTo(y / 2 + x / 4, x / 2 + y / 4);
+        p.rLineTo(-y + x / 2, -x + y / 2);
+        p.rLineTo(y / 2 + x / 4, x / 2 + y / 4);
     });
 
 

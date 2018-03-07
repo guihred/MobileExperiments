@@ -263,10 +263,10 @@ public class PuzzleView extends BaseView {
                 puzzlePieces[i][j].setImage(scaledBitmap);
             }
         }
-        PuzzlePath[] values = {PuzzlePath.ZIGZAGGED, PuzzlePath.SQUARE, PuzzlePath.ROUND};
+        PuzzlePath[] values = PuzzlePath.values();
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
-                PuzzlePath puzzlePath2 = values[random.nextInt(values.length)];
+                PuzzlePath puzzlePath2 = values[random.nextInt(values.length - 1) + 1];
                 if (i < PUZZLE_WIDTH - 1) {
                     puzzlePieces[i][j].setRight(puzzlePath2);
                     puzzlePieces[i + 1][j].setLeft(puzzlePath2);
