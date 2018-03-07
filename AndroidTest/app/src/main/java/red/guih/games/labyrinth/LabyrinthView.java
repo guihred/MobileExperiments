@@ -63,8 +63,7 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     public void reset() {
-        int squareSize = getWidth() / MAZE_WIDTH;
-        LabyrinthSquare.setSquareSize(squareSize);
+        LabyrinthSquare.setSquareSize(getWidth() / MAZE_WIDTH);
         setMazeHeight(getHeight());
         maze = initializeMaze(getContext());
         speed = LabyrinthSquare.SQUARE_SIZE / 20;

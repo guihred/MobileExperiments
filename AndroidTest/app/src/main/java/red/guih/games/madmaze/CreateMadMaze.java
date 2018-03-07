@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class CreateMadMaze {
 
-    int r ;
+    int r;
     List<MadEdge> allEdges;
     List<MadTriangle> triangles;
 
@@ -40,11 +40,17 @@ public class CreateMadMaze {
                             && t.hasVertex(maze.get(r).getC()))
                     .filter(e -> !e.isVisited())
                     .findAny();
-
             openA.ifPresent(a -> check.add("A"));
             openB.ifPresent(b -> check.add("B"));
             openC.ifPresent(c -> check.add("C"));
             if (check.isEmpty()) {
+                int c=0;
+                c+=countNeighbors(maze.get(r).getA().getCell(),maze.get(r).getB().getCell());
+                c+=countNeighbors(maze.get(r).getC().getCell(),maze.get(r).getB().getCell());
+                c+=countNeighbors(maze.get(r).getA().getCell(),maze.get(r).getC().getCell());
+                if(c==2){
+                    maze.get(r).setDeadEnd();
+                }
                 getBackIn(maze, history);
                 continue;
             }
@@ -63,6 +69,15 @@ public class CreateMadMaze {
         }
 
     }
+    private int countNeighbors(MadCell cell2, MadCell cell3) {
+        if(allEdges.stream().anyMatch(e -> e.getSource().equals(cell3) && e.getTarget().equals(cell2)
+                || e.getSource().equals(cell2) && e.getTarget().equals(cell3))){
+            return 1;
+        }
+        return 0;
+    }
+
+
 
     private void linkNeighborTriangles(List<MadTriangle> maze, MadTriangle open1, MadCell cell2, MadCell cell3) {
         allEdges.removeIf(e -> e.getSource().equals(cell3) && e.getTarget().equals(cell2)

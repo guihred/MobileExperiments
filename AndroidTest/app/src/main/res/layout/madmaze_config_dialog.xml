@@ -26,6 +26,23 @@
             android:entries="@array/maze_mode"
             android:prompt="@string/choose" />
 
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:text="@string/size"
+            android:textAlignment="center"
+            android:textColor="#000" />
+
+        <red.guih.games.dots.MyNumberPicker
+            android:id="@+id/mazeSize"
+            max="4"
+            min="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
     </LinearLayout>
 
     <LinearLayout

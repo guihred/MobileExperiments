@@ -7,16 +7,17 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.NumberPicker;
 import android.widget.Spinner;
 
+import red.guih.games.BaseActivity;
 import red.guih.games.R;
 
-public class MadMazeActivity extends AppCompatActivity {
+public class MadMazeActivity extends BaseActivity {
     private SensorManager senSensorManager;
     private Sensor senAccelerometer;
     private MadMazeView labyrinthView;
@@ -42,6 +43,7 @@ public class MadMazeActivity extends AppCompatActivity {
         super.onPause();
         senSensorManager.unregisterListener(labyrinthView);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -63,23 +65,27 @@ public class MadMazeActivity extends AppCompatActivity {
 
     private void showConfig() {
 
-            final Dialog dialog = new Dialog(this);
-            dialog.setContentView(R.layout.madmaze_config_dialog);
-            dialog.setTitle(R.string.config);
-            // set the custom minesweeper_dialog components - text, image and button
-            Spinner spinner = dialog.findViewById(R.id.mazeMode);
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.madmaze_config_dialog);
+        dialog.setTitle(R.string.config);
+        // set the custom minesweeper_dialog components - text, image and button
+        Spinner spinner = dialog.findViewById(R.id.mazeMode);
 
-            spinner.setSelection(labyrinthView.getMadMazeOption());
+        spinner.setSelection(labyrinthView.getMadMazeOption());
+        NumberPicker mazeSize = dialog.findViewById(R.id.mazeSize);
 
-            Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-            // if button is clicked, close the custom minesweeper_dialog
-            dialogButton.setOnClickListener(v -> {
-                MadMazeView.setMadMazeOption(spinner.getSelectedItemPosition());
-                recreate();
-                dialog.dismiss();
-            });
-            dialog.setCanceledOnTouchOutside(false);
-            dialog.show();
+        mazeSize.setValue(MadMazeView.DIFFICULTY / 5);
+
+        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        // if button is clicked, close the custom minesweeper_dialog
+        dialogButton.setOnClickListener(v -> {
+            MadMazeView.setMadMazeOption(spinner.getSelectedItemPosition());
+            MadMazeView.setDifficulty(mazeSize.getValue());
+            recreate();
+            dialog.dismiss();
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
     }
 
     protected void onResume() {

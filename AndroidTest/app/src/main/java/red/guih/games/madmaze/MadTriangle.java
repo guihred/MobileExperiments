@@ -11,6 +11,7 @@ public class MadTriangle {
     private final MadPoint c;
     private boolean visited;
     private MadPoint center;
+    private boolean deadEnd;
 
     public MadTriangle(MadPoint a, MadPoint b, MadPoint c) {
         this.a = a;
@@ -147,4 +148,11 @@ public class MadTriangle {
         this.visited = true;
     }
 
+    public void setDeadEnd() {
+        deadEnd=true;
+    }
+
+    public boolean isDeadEnd() {
+        return deadEnd;
+    }
 }
