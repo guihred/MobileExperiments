@@ -25,7 +25,7 @@ public class Square2048 {
     private final Paint paint = new Paint();
     private final Paint color = new Paint();
 
-    private static final List<Integer> COLORS = Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80, 0xFF00ffff, 0xFF0008ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
+    private static final List<Integer> COLORS = Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80, 0xFF00ffff, 0xFF0080ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
 
     private float layoutX, layoutY;
 
