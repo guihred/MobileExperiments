@@ -123,6 +123,15 @@ class CardStack {
 
     }
 
+    void adjust(){
+        int layout = 0;
+        for (int i = 0; i < this.cards.size(); i++) {
+            SolitaireCard solitaireCard = this.cards.get(i);
+            solitaireCard.setLayoutY(layout);
+            layout += SolitaireCard.getCardWidth() / (solitaireCard.isShown() ? 3 : 8);
+        }
+    }
+
     public void addCards(SolitaireCard... cards) {
         for (SolitaireCard solitaireCard : cards) {
             if (!this.cards.contains(solitaireCard)) {

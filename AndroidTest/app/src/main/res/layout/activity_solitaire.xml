@@ -5,6 +5,7 @@
 
     <red.guih.games.solitaire.SolitaireView
         android:id="@+id/solitaire_view"
+
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />
 

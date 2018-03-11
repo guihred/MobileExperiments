@@ -56,12 +56,29 @@ public class SolitaireView extends BaseView {
         super(c, attrs);
         returnButtonIcon = getResources().getDrawable(R.drawable.return_button, null);
 
+        Log.i("SOLITAIRE", "NEW INSTANCE");
         reset();
     }
 
     private static boolean isNullOrEmpty(Collection<?> cards) {
         return cards == null || cards.isEmpty();
     }
+    <T> void copy(T[] destination, T[] origin) {
+        System.arraycopy(origin, 0, destination, 0, origin.length);
+    }
+
+
+    void copy(SolitaireView solitaireView) {
+        copy(ascendingStacks, solitaireView.ascendingStacks);
+        copy(simpleStacks, solitaireView.simpleStacks);
+        cardStackList.clear();
+        cardStackList.addAll(solitaireView.cardStackList);
+        mainCardStack=solitaireView.mainCardStack;
+        dropCardStack=solitaireView.dropCardStack;
+        history.clear();
+        history.addAll(solitaireView.history);
+    }
+
 
     public void reset() {
         youwin = false;
@@ -97,10 +114,42 @@ public class SolitaireView extends BaseView {
             ascendingStacks[i].setLayoutY(yOffset);
             cardStackList.add(ascendingStacks[i]);
         }
-        returnButton = new Rect(getWidth() - 2 * SolitaireCard.getCardWidth(),
-                getHeight() - 2 * SolitaireCard.getCardWidth(),
-                getWidth() - SolitaireCard.getCardWidth(),
-                getHeight() - SolitaireCard.getCardWidth());
+        returnButton = new Rect(getWidth() - SolitaireCard.getCardWidth(),
+                getHeight() - SolitaireCard.getCardWidth(),
+                getWidth(),
+                getHeight());
+        returnButtonIcon.setBounds(returnButton);
+        invalidate();
+        Log.i("SOLITAIRE", "RESETED");
+
+    }
+
+    public void rescale() {
+        Log.i("SOLITAIRE", "RESCALED");
+        youwin = false;
+
+        int yOffset = SolitaireCard.getCardWidth() / (getWidth() > getHeight() ? 4 : 2);
+
+
+        mainCardStack.setLayoutX(SolitaireCard.getCardWidth() / 10);
+        mainCardStack.setLayoutY(yOffset);
+
+        dropCardStack.setLayoutX(getWidth() / 7 + SolitaireCard.getCardWidth() / 10);
+        dropCardStack.setLayoutY(yOffset);
+
+        for (int i = 0; i < 7; i++) {
+            simpleStacks[i].setLayoutX(getWidth() / 7 * i + SolitaireCard.getCardWidth() / 10);
+            simpleStacks[i].setLayoutY(SolitaireCard.getCardWidth() + SolitaireCard.getCardWidth() / 10 + yOffset);
+            simpleStacks[i].adjust();
+        }
+        for (int i = 0; i < 4; i++) {
+            ascendingStacks[i].setLayoutX(getWidth() / 7 * (3 + i) + SolitaireCard.getCardWidth() / 10);
+            ascendingStacks[i].setLayoutY(yOffset);
+        }
+        returnButton = new Rect(getWidth() - SolitaireCard.getCardWidth(),
+                getHeight() - SolitaireCard.getCardWidth(),
+                getWidth(),
+                getHeight());
         returnButtonIcon.setBounds(returnButton);
         invalidate();
     }
@@ -161,8 +210,13 @@ public class SolitaireView extends BaseView {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        int cardWidth = SolitaireCard.getCardWidth();
         SolitaireCard.setCardWidth(getWidth() / 7);
-        reset();
+        if (cardWidth == 0) {
+            reset();
+        } else {
+            rescale();
+        }
     }
 
     private List<SolitaireCard> getAllCards() {
@@ -328,7 +382,7 @@ public class SolitaireView extends BaseView {
         eatingAnimation.start();
     }
 
-    boolean youwin = false;
+    boolean youwin;
 
     private void handleMouseReleased(MotionEvent event) {
         if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == SolitaireNumber.values().length)) {

@@ -55,10 +55,12 @@
         <activity
             android:name="red.guih.games.solitaire.SolitaireActivity"
             android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+             />
         <activity
             android:name="red.guih.games.square2048.Square2048Activity"
             android:parentActivityName=".GamesActivity"
+
             android:screenOrientation="portrait" />
 
     </application>
