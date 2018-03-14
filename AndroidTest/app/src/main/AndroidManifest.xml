@@ -20,6 +20,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="red.guih.games.freecell.FreeCellActivity"
+            android:parentActivityName=".GamesActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
             android:name="red.guih.games.pacman.PacmanActivity"
             android:parentActivityName=".GamesActivity"
             android:screenOrientation="portrait" />

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import red.guih.games.dots.DotsActivity;
+import red.guih.games.freecell.FreeCellActivity;
 import red.guih.games.madmaze.MadMazeActivity;
 import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
@@ -30,7 +31,6 @@ public class GamesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_games);
 
         ImageButton minesweeperButton = findViewById(R.id.minesweeperButton);
-
         minesweeperButton.setOnClickListener((View v) -> startActivity(new Intent(this, MinesweeperActivity.class)));
         ImageButton dotsButton = findViewById(R.id.dotsButton);
         dotsButton.setOnClickListener((View v) -> startActivity(new Intent(this, DotsActivity.class)));
@@ -48,6 +48,8 @@ public class GamesActivity extends AppCompatActivity {
         solitaire.setOnClickListener((View v) -> startActivity(new Intent(this, SolitaireActivity.class)));
         ImageButton square2048 = findViewById(R.id.square2048Button);
         square2048.setOnClickListener((View v) -> startActivity(new Intent(this, Square2048Activity.class)));
+        ImageButton freeCell = findViewById(R.id.freecellButton);
+        freeCell.setOnClickListener((View v) -> startActivity(new Intent(this, FreeCellActivity.class)));
 
     }
 }

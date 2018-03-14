@@ -63,6 +63,7 @@ public class SolitaireView extends BaseView {
     private static boolean isNullOrEmpty(Collection<?> cards) {
         return cards == null || cards.isEmpty();
     }
+
     <T> void copy(T[] destination, T[] origin) {
         System.arraycopy(origin, 0, destination, 0, origin.length);
     }
@@ -73,8 +74,8 @@ public class SolitaireView extends BaseView {
         copy(simpleStacks, solitaireView.simpleStacks);
         cardStackList.clear();
         cardStackList.addAll(solitaireView.cardStackList);
-        mainCardStack=solitaireView.mainCardStack;
-        dropCardStack=solitaireView.dropCardStack;
+        mainCardStack = solitaireView.mainCardStack;
+        dropCardStack = solitaireView.dropCardStack;
         history.clear();
         history.addAll(solitaireView.history);
     }

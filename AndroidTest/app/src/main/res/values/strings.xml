@@ -24,6 +24,7 @@
     <string name="photo">Foto</string>
     <string name="you_beaten_the_record">Você Bateu um Recorde!</string>
     <string name="solitaire">Paciência</string>
+    <string name="freecell">Free Cell</string>
     <string name="reset">Reset</string>
     <string name="square2048">2048</string>
 

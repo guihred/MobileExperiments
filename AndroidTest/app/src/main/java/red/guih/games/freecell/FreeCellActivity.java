@@ -1,4 +1,4 @@
-package red.guih.games.solitaire;
+package red.guih.games.freecell;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -10,21 +10,16 @@ import android.view.MenuItem;
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
 
-public class SolitaireActivity extends BaseActivity {
-
-    private SolitaireView solitaireView;
+public class FreeCellActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_solitaire);
-
-        solitaireView = findViewById(R.id.solitaire_view);
-
+        setContentView(R.layout.activity_freecell);
 
         ActionBar a = getSupportActionBar();
         if (a != null) {
-            a.setTitle(R.string.solitaire);
+            a.setTitle(R.string.freecell);
             a.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -60,7 +55,7 @@ public class SolitaireActivity extends BaseActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.config:
-                SolitaireView viewById = findViewById(R.id.solitaire_view);
+                FreeCellView viewById = findViewById(R.id.solitaire_view);
                 viewById.reset();
                 return true;
             default:
