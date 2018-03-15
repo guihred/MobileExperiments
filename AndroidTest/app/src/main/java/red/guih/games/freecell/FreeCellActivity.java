@@ -21,6 +21,9 @@ public class FreeCellActivity extends BaseActivity {
         if (a != null) {
             a.setTitle(R.string.freecell);
             a.setDisplayHomeAsUpEnabled(true);
+
+
+
         }
 
     }

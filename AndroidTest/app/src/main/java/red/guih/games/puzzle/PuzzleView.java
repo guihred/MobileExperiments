@@ -245,6 +245,9 @@ public class PuzzleView extends BaseView {
 
 
         Bitmap image = SELECTED_IMAGE != null ? SELECTED_IMAGE : BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if (image == null)
+            image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+
         if (image.getWidth() > image.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);

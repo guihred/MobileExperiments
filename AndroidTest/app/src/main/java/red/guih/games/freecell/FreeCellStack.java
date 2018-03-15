@@ -13,8 +13,8 @@ class FreeCellStack {
 
 
     public enum StackType {
-        ASCENDING,
         SIMPLE,
+        ASCENDING,
         SUPPORT,;
     }
 
