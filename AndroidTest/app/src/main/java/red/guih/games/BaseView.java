@@ -3,6 +3,7 @@ package red.guih.games;
 import android.app.Dialog;
 import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -46,6 +47,32 @@ public abstract class BaseView extends View {
         } catch (Exception e) {
             Log.e("BASEVIEW", "ERROR WHEN CREATING USER RECORD", e);
         }
+    }
+
+    protected void addUserPreference(int name, int value) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getResources().getString(name), value);
+        editor.apply();
+    }
+    protected int getUserPreference(int name, int defaultValue) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        return sharedPref.getInt(getResources().getString(name), defaultValue);
+    }
+    protected float getUserPreferenceFloat(int name, float defaultValue) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        return sharedPref.getFloat(getResources().getString(name), defaultValue);
+    }
+    protected String getUserPreference(int name, String defaultValue) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        return sharedPref.getString(getResources().getString(name), defaultValue);
+    }
+
+    protected void addUserPreference(int name, float value) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putFloat(getResources().getString(name), value);
+        editor.apply();
     }
 
     public void createRecordIfSuitable(long points, String description, String gameName, int difficulty, boolean asc) {

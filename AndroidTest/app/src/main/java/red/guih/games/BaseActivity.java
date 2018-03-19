@@ -64,6 +64,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getInt(getString(name), defaultValue);
     }
+    protected float getUserPreferenceFloat(int name, int defaultValue) {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getFloat(getString(name), defaultValue);
+    }
     protected String getUserPreference(int name, String defaultValue) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getString(getString(name), defaultValue);

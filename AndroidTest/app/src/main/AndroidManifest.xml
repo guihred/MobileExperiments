@@ -75,6 +75,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+    <meta-data android:name="AA_DB_VERSION" android:value="3" />
     </application>
+
 
 </manifest>

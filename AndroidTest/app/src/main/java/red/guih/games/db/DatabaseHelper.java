@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          */
     private static final String DB_DIR = "/data/data/red.guih.games/databases/";
     private static final String DB_NAME = UserRecord.DATABASE_NAME;
-    public static final int VERSION = 2;
+    public static final int VERSION = 4;
     private static String DB_PATH = DB_DIR + DB_NAME;
     private static final String OLD_DB_PATH = DB_DIR + "old_" + DB_NAME;
 

@@ -8,7 +8,7 @@ import android.arch.persistence.room.RoomDatabase;
  *
  * Created by guilherme.hmedeiros on 25/01/2018.
  */
-@Database(entities = {UserRecord.class,JapaneseLesson.class}, version = 2)
+@Database(entities = {UserRecord.class,JapaneseLesson.class}, version = 4)
 public abstract class UserRecordDatabase extends RoomDatabase {
     public abstract UserDao userDao();
     public abstract JapaneseLessonDao japaneseLessonDao();

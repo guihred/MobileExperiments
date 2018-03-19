@@ -1,6 +1,5 @@
 package red.guih.games.japanese;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,9 +11,6 @@ import android.text.Layout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,16 +50,27 @@ public class JapaneseView extends BaseView {
         paint.setStyle(Paint.Style.STROKE);
         greenPaint.setColor(Color.GREEN);
         greenPaint.setStyle(Paint.Style.FILL);
+        loadLessons();
+    }
+
+    private void loadLessons() {
         new Thread(() -> {
             lessons = db.japaneseLessonDao().getAll(LESSON);
             if (!lessons.isEmpty()) {
+                points = getUserPreferenceFloat(R.string.punctuation, 0);
+                currentLesson = getUserPreference(R.string.lesson, 0);
+
+
                 configureCurrentLesson();
             }
-            invalidate();
+            postInvalidate();
         }).start();
     }
 
     private void configureCurrentLesson() {
+        if (lessons.isEmpty())
+            return;
+
         JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
         letters.clear();
         answer.clear();
@@ -104,12 +111,15 @@ public class JapaneseView extends BaseView {
         int h = getHeight() * 5 / 6;
         int w = getWidth();
         okButton.set(w / 3, h, w / 3 + characterSize * 6, h + characterSize * 4);
+
         configureCurrentLesson();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
 
+        canvas.drawText("Lesson " + LESSON + " : " + currentLesson + "/" + lessons.size(), characterSize, characterSize, paint);
+        canvas.drawText(getContext().getString(R.string.punctuation, getScore()), getWidth() / 2, characterSize, paint);
 
         drawTextLayout(canvas, getWidth() / 2, getHeight() / 6, this.englishLayout);
         drawTextLayout(canvas, getWidth() / 2, getHeight() * 2 / 6, this.romajiLayout);
@@ -119,17 +129,26 @@ public class JapaneseView extends BaseView {
             canvas.drawText("Ok", okButton.centerX(), okButton.centerY(), paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
-
         drawLetters(canvas, this.letters);
         drawLetters(canvas, this.answer);
 
     }
 
+    private double getScore() {
+        if (currentLesson == 0)
+            return 0;
+
+        return points / currentLesson;
+    }
+
     private void drawTextLayout(Canvas canvas, int dx, int dy, DynamicLayout englishLayout) {
-        canvas.save();
-        canvas.translate(dx, dy);
-        englishLayout.draw(canvas);
-        canvas.restore();
+        if (englishLayout != null) {
+
+            canvas.save();
+            canvas.translate(dx, dy);
+            englishLayout.draw(canvas);
+            canvas.restore();
+        }
     }
 
     private void drawLetters(Canvas canvas, List<Letter> l) {
@@ -139,16 +158,28 @@ public class JapaneseView extends BaseView {
         }
     }
 
+    float points;
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (letters.isEmpty() && okButton.contains(event.getX(), event.getY())) {
-//                        JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
-//                        double compare = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining()));
-//                        showDialogWin(compare * 100);
-                    currentLesson++;
+                    if (lessons.isEmpty()) {
+                        loadLessons();
+                        return true;
+                    }
+
+
+                    JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
+                    float compare = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining()));
+                    points += compare * 100;
+                    currentLesson = (currentLesson + 1) % lessons.size();
+                    addUserPreference(R.string.punctuation, points);
+                    addUserPreference(R.string.lesson, currentLesson);
+
+
                     configureCurrentLesson();
                     invalidate();
                 }
@@ -178,27 +209,6 @@ public class JapaneseView extends BaseView {
 
     private int getLettersLayout() {
         return getHeight() * 4 / 6;
-    }
-
-    private void showDialogWin(Double percentage) {
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(getResources().getString(R.string.you_win_percentage, percentage));
-
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener((View v) -> {
-            currentLesson++;
-            configureCurrentLesson();
-            dialog.dismiss();
-            invalidate();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-        invalidate();
     }
 
     private boolean exchangeLetter(MotionEvent event, int sourceOffset, List<Letter> source, int targetOffset, List<Letter> target) {
