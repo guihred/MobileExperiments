@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/game"
@@ -12,62 +13,68 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="red.guih.games.GamesActivity"
+            android:name=".GamesActivity"
             android:screenOrientation="portrait">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
+
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <activity
+            android:name=".freecell.FreeCellActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".GamesActivity"></activity>
+        <activity
+            android:name=".pacman.PacmanActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".tetris.TetrisActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".dots.DotsActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".minesweeper.MinesweeperActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".labyrinth.LabyrinthActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".madmaze.MadMazeActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".puzzle.PuzzleActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".slidingpuzzle.SlidingPuzzleActivity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".solitaire.SolitaireActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:parentActivityName=".GamesActivity" />
+        <activity
+            android:name=".square2048.Square2048Activity"
+            android:parentActivityName=".GamesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".japanese.JapaneseActivity"
+            android:label="@string/title_activity_japanese"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="red.guih.games.freecell.FreeCellActivity"
-            android:parentActivityName=".GamesActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden">
-        </activity>
-        <activity
-            android:name="red.guih.games.pacman.PacmanActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.tetris.TetrisActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.dots.DotsActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.minesweeper.MinesweeperActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.labyrinth.LabyrinthActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.madmaze.MadMazeActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.puzzle.PuzzleActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="red.guih.games.slidingpuzzle.SlidingPuzzleActivity"
-            android:parentActivityName=".GamesActivity"
-            android:screenOrientation="portrait" />
-
-        <activity
-            android:name="red.guih.games.solitaire.SolitaireActivity"
-            android:parentActivityName=".GamesActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-             />
-        <activity
-            android:name="red.guih.games.square2048.Square2048Activity"
-            android:parentActivityName=".GamesActivity"
-
-            android:screenOrientation="portrait" />
-
     </application>
 
 </manifest>

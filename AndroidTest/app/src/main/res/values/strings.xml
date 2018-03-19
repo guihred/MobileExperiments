@@ -2,6 +2,7 @@
     <string name="app_name">GuihRed Games</string>
     <string name="game_over">Você Ganhou</string>
     <string name="you_win">Você Ganhou em %s </string>
+    <string name="you_win_percentage">Você Ganhou em %02.2f%% </string>
     <string name="you_lose">Você Perdeu</string>
     <string name="time_format">"%dm %02ds"</string>
     <string name="ok">OK</string>
@@ -27,33 +28,34 @@
     <string name="freecell">Free Cell</string>
     <string name="reset">Reset</string>
     <string name="square2048">2048</string>
-
-    <string-array name="minesweeper_difficulty" >
+    <item name="databaseVersion" format="integer" type="string">1</item>
+    <string-array name="minesweeper_difficulty">
         <item>Muito Fácil</item>
         <item>Fácil</item>
         <item>Médio</item>
         <item>Difícil</item>
         <item>Muito Difícil</item>
     </string-array>
-    <string-array name="maze_mode" >
+    <string-array name="maze_mode">
         <item>Quadrado</item>
         <item>Triangular</item>
         <item>Loco</item>
     </string-array>
-    <string-array name="dots_difficulty" >
+    <string-array name="dots_difficulty">
         <item>Fácil</item>
         <item>Médio</item>
         <item>Difícil</item>
     </string-array>
-    <string-array name="puzzle_images" >
+    <string-array name="puzzle_images">
         <item>Mona Lisa</item>
         <item>Cavalo</item>
         <item>Outra Imagem…</item>
     </string-array>
-    <string-array name="slidingpuzzle_images" >
+    <string-array name="slidingpuzzle_images">
         <item>Números</item>
         <item>Mona Lisa</item>
         <item>Cavalo</item>
     </string-array>
+    <string name="title_activity_japanese">JapaneseActivity</string>
 
 </resources>

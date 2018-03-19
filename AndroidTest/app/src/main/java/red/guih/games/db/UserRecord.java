@@ -11,7 +11,7 @@ import android.arch.persistence.room.PrimaryKey;
  * Created by guilherme.hmedeiros on 25/01/2018.
  */
 
-@Entity
+@Entity()
 public class UserRecord {
     public static final String DATABASE_NAME = "USER_RECORDS";
     public static final String MINESWEEPER = "Minesweeper";

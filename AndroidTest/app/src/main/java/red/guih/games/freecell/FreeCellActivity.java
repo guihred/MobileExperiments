@@ -23,6 +23,10 @@ public class FreeCellActivity extends BaseActivity {
             a.setDisplayHomeAsUpEnabled(true);
 
 
+            int orientation = getResources().getConfiguration().orientation;
+            if (Configuration.ORIENTATION_LANDSCAPE == orientation) {
+                a.hide();
+            }
 
         }
 
