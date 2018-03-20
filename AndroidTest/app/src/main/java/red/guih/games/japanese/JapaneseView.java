@@ -1,5 +1,6 @@
 package red.guih.games.japanese;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,6 +12,8 @@ import android.text.Layout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.JapaneseLesson;
+import red.guih.games.db.UserRecord;
 
 /**
  * View for displaying the japanese game
@@ -135,7 +139,7 @@ public class JapaneseView extends BaseView {
 
         drawTextLayout(canvas, getWidth() / 2, getHeight() / 6, this.englishLayout);
         if (SHOW_ROMAJI || letters.isEmpty()) {
-            drawTextLayout(canvas, getWidth() / 2, getHeight() * 2 / 6, this.romajiLayout);
+            drawTextLayout(canvas, getWidth() / 2, getHeight() * 3 / 6, this.romajiLayout);
         }
         if (letters.isEmpty()) {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
@@ -168,6 +172,10 @@ public class JapaneseView extends BaseView {
     private void drawLetters(Canvas canvas, List<Letter> l) {
         if (lessons.isEmpty())
             return;
+        if (currentLesson >= lessons.size())
+            currentLesson = 0;
+
+
         JapaneseLesson japaneseLesson = lessons.get(currentLesson);
         for (int i = 0; i < l.size(); i++) {
             Letter rc = l.get(i);
@@ -198,8 +206,15 @@ public class JapaneseView extends BaseView {
 
                     JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
                     float compare = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining()));
+                    if (currentLesson == lessons.size() - 1) {
+
+                        showDialogWinning();
+                        return true;
+                    }
                     points += compare * 100;
                     currentLesson = (currentLesson + 1) % lessons.size();
+
+
                     addUserPreference(R.string.punctuation, points);
                     addUserPreference(R.string.lesson, currentLesson);
 
@@ -227,8 +242,40 @@ public class JapaneseView extends BaseView {
         return true;
     }
 
+    private void showDialogWinning() {
+
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.minesweeper_dialog);
+        dialog.setTitle(R.string.game_over);
+
+        // set the custom minesweeper_dialog components - text, image and button
+        TextView text = dialog.findViewById(R.id.textDialog);
+        long emSegundos = (long) points;
+
+        String description = getContext().getString(R.string.punctuation, getScore());
+        currentLesson = 0;
+        if (isRecordSuitable(emSegundos, UserRecord.JAPANESE, CHAPTER, false)) {
+            createRecordIfSuitable((long) points, description, UserRecord.JAPANESE, CHAPTER, false);
+            showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
+            return;
+        }
+        text.setText(String.format(getResources().getString(R.string.you_win), description));
+        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        // if button is clicked, close the custom minesweeper_dialog
+
+
+        dialogButton.setOnClickListener(v -> nextChapter());
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+    }
+
+    private void nextChapter() {
+        setChapter((CHAPTER + 1) % 43);
+        loadLessons();
+    }
+
     private int getAnswerLayout() {
-        return getHeight() * 3 / 6;
+        return getHeight() * 2 / 6;
     }
 
     private int getLettersLayout() {
