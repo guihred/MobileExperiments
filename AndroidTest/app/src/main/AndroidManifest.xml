@@ -15,11 +15,11 @@
         <activity
             android:name=".GamesActivity"
             android:screenOrientation="portrait">
-            <!--<intent-filter>-->
-            <!--<action android:name="android.intent.action.MAIN" />-->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!--<category android:name="android.intent.category.LAUNCHER" />-->
-            <!--</intent-filter>-->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".freecell.FreeCellActivity"
@@ -68,14 +68,14 @@
         <activity
             android:name=".japanese.JapaneseActivity"
             android:label="@string/title_activity_japanese"
+            android:parentActivityName=".GamesActivity"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-    <meta-data android:name="AA_DB_VERSION" android:value="3" />
+
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="3" />
     </application>
 
 

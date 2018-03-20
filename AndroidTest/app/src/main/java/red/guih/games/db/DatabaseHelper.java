@@ -54,8 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * before opening the database. In all cases opening the database copies
          * the database in internal storage to the cache.
          */
-        getWritableDatabase();
-
+        SQLiteDatabase writableDatabase = getWritableDatabase();
         if (createDatabase) {
             /*
              * If the database is created by the copy method, then the creation
@@ -103,7 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Copies your database from your local assets-folder to the just created
      * empty database in the system folder, from where it can be accessed and
      * handled. This is done by transfering bytestream.
-     * */
+     */
     private void copyDataBase() throws IOException {
         /*
          * Close SQLiteOpenHelper so it will commit the created empty database
@@ -163,18 +162,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * This will create by reading a sql file and executing the commands in
          * it.
          */
-         try {
-         InputStream is = myContext.getResources().getAssets().open(
-         "create_database.sql");
+        try {
+            InputStream is = myContext.getResources().getAssets().open(
+                    "create_database.sql");
 
-         String[] statements = FileHelper.parseSqlFile(is);
+            String[] statements = FileHelper.parseSqlFile(is);
 
-         for (String statement : statements) {
-         db.execSQL(statement);
-         }
-         } catch (Exception ex) {
-             Log.e("DATABASE","DATABASE ERROR",ex);
-         }
+            for (String statement : statements) {
+                db.execSQL(statement);
+            }
+        } catch (Exception ex) {
+            Log.e("DATABASE", "DATABASE ERROR", ex);
+        }
     }
 
     /**
@@ -201,18 +200,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          * This will upgrade by reading a sql file and executing the commands in
          * it.
          */
-         try {
-             InputStream is = myContext.getResources().getAssets().open(
-                     "create_database.sql");
+        try {
+            InputStream is = myContext.getResources().getAssets().open(
+                    "create_database.sql");
 
-             String[] statements = FileHelper.parseSqlFile(is);
+            String[] statements = FileHelper.parseSqlFile(is);
 
-             for (String statement : statements) {
-                 db.execSQL(statement);
-             }
-         } catch (Exception ex) {
-             Log.e("DATABASE","DATABASE ERROR",ex);
-         }
+            for (String statement : statements) {
+                db.execSQL(statement);
+            }
+        } catch (Exception ex) {
+            Log.e("DATABASE", "DATABASE ERROR", ex);
+        }
     }
 
     /**

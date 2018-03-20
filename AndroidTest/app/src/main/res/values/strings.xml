@@ -59,5 +59,7 @@
     <string name="title_activity_japanese">JapaneseActivity</string>
     <string name="punctuation">Score: %02.2f%%</string>
     <string name="lesson">Lesson</string>
+    <string name="chapter">Capítulo</string>
+    <string name="japanese">Japanese</string>
 
 </resources>

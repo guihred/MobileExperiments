@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 
 import red.guih.games.dots.DotsActivity;
 import red.guih.games.freecell.FreeCellActivity;
+import red.guih.games.japanese.JapaneseActivity;
 import red.guih.games.madmaze.MadMazeActivity;
 import red.guih.games.minesweeper.MinesweeperActivity;
 import red.guih.games.pacman.PacmanActivity;
@@ -50,6 +51,8 @@ public class GamesActivity extends AppCompatActivity {
         square2048.setOnClickListener((View v) -> startActivity(new Intent(this, Square2048Activity.class)));
         ImageButton freeCell = findViewById(R.id.freecellButton);
         freeCell.setOnClickListener((View v) -> startActivity(new Intent(this, FreeCellActivity.class)));
+        ImageButton japaneseButton = findViewById(R.id.japaneseButton);
+        japaneseButton.setOnClickListener((View v) -> startActivity(new Intent(this, JapaneseActivity.class)));
 
     }
 }

@@ -30,11 +30,14 @@ import red.guih.games.db.JapaneseLesson;
 
 public class JapaneseView extends BaseView {
 
+    public static final int LIGHT_RED = 0x88FF0000;
+    public static boolean SHOW_ROMAJI;
     public int characterSize = 50;
-    public static int LESSON = 1;
+    public static int CHAPTER = 1;
     private List<JapaneseLesson> lessons = new ArrayList<>();
     private final Paint paint = new Paint();
     private final Paint greenPaint = new Paint();
+    private final Paint redPaint = new Paint();
     private int currentLesson;
     final List<Letter> answer = new ArrayList<>();
     final List<Letter> letters = new ArrayList<>();
@@ -50,17 +53,26 @@ public class JapaneseView extends BaseView {
         paint.setStyle(Paint.Style.STROKE);
         greenPaint.setColor(Color.GREEN);
         greenPaint.setStyle(Paint.Style.FILL);
+        redPaint.setColor(LIGHT_RED);
+        redPaint.setStyle(Paint.Style.FILL);
         loadLessons();
     }
 
-    private void loadLessons() {
+    public void setChapter(int seekBar) {
+        if (CHAPTER != seekBar) {
+            addUserPreference(R.string.punctuation, (float) 0);
+            addUserPreference(R.string.lesson, 0);
+        }
+        JapaneseView.CHAPTER = seekBar;
+    }
+
+    public void loadLessons() {
         new Thread(() -> {
-            lessons = db.japaneseLessonDao().getAll(LESSON);
+//            CHAPTER = getUserPreference(R.string.chapter, 1);
+            lessons = db.japaneseLessonDao().getAll(CHAPTER);
             if (!lessons.isEmpty()) {
                 points = getUserPreferenceFloat(R.string.punctuation, 0);
                 currentLesson = getUserPreference(R.string.lesson, 0);
-
-
                 configureCurrentLesson();
             }
             postInvalidate();
@@ -118,15 +130,17 @@ public class JapaneseView extends BaseView {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        canvas.drawText("Lesson " + LESSON + " : " + currentLesson + "/" + lessons.size(), characterSize, characterSize, paint);
+        canvas.drawText("Chapter " + CHAPTER + " : " + currentLesson + "/" + lessons.size(), characterSize, characterSize, paint);
         canvas.drawText(getContext().getString(R.string.punctuation, getScore()), getWidth() / 2, characterSize, paint);
 
         drawTextLayout(canvas, getWidth() / 2, getHeight() / 6, this.englishLayout);
-        drawTextLayout(canvas, getWidth() / 2, getHeight() * 2 / 6, this.romajiLayout);
+        if (SHOW_ROMAJI || letters.isEmpty()) {
+            drawTextLayout(canvas, getWidth() / 2, getHeight() * 2 / 6, this.romajiLayout);
+        }
         if (letters.isEmpty()) {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
             canvas.drawRoundRect(okButton, 10, 10, greenPaint);
-            canvas.drawText("Ok", okButton.centerX(), okButton.centerY(), paint);
+            canvas.drawText("Ok", okButton.centerX() - characterSize / 2, okButton.centerY(), paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
         drawLetters(canvas, this.letters);
@@ -152,9 +166,19 @@ public class JapaneseView extends BaseView {
     }
 
     private void drawLetters(Canvas canvas, List<Letter> l) {
-        for (Letter rc : l) {
+        if (lessons.isEmpty())
+            return;
+        JapaneseLesson japaneseLesson = lessons.get(currentLesson);
+        for (int i = 0; i < l.size(); i++) {
+            Letter rc = l.get(i);
+
+            if (letters.isEmpty() && Objects.toString(japaneseLesson.getJapanese(), "").length() > i) {
+                Paint p = Objects.equals(Character.toString(japaneseLesson.getJapanese().charAt(i)), rc.character) ? greenPaint : redPaint;
+
+                canvas.drawRoundRect(rc.bound, 10, 10, p);
+            }
             canvas.drawRoundRect(rc.bound, 10, 10, paint);
-            canvas.drawText(rc.character, rc.bound.left + characterSize / 2, rc.bound.top + characterSize * 5 / 4, paint);
+            canvas.drawText(rc.character, rc.bound.left + characterSize / 2, rc.bound.top + characterSize * 5 / 4, this.paint);
         }
     }
 

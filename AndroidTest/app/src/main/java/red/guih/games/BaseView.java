@@ -61,6 +61,12 @@ public abstract class BaseView extends View {
     }
     protected float getUserPreferenceFloat(int name, float defaultValue) {
         SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+
+        Object o = sharedPref.getAll().get(getResources().getString(name));
+        if(o instanceof Integer){
+            return ((Integer) o).floatValue();
+        }
+
         return sharedPref.getFloat(getResources().getString(name), defaultValue);
     }
     protected String getUserPreference(int name, String defaultValue) {

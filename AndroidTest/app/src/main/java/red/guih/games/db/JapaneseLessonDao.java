@@ -12,7 +12,7 @@ import java.util.List;
 @Dao
 public interface JapaneseLessonDao {
 
-    @Query("SELECT l.* FROM JAPANESE_LESSON l WHERE 1=1 OR lesson=:lesson ORDER BY lesson, exercise LIMIT 50")
+    @Query("SELECT l.* FROM JAPANESE_LESSON l WHERE lesson=:lesson ORDER BY lesson, exercise LIMIT 200")
     List<JapaneseLesson> getAll(Integer lesson);
 
 

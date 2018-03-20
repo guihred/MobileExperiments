@@ -271,6 +271,27 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/japaneseButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="@string/freecell"
+                android:src="@drawable/flag_and_map_of_japan" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/japanese"
+                android:textAlignment="center" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
 
