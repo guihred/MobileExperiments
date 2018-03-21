@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/pacman_button">
+    <target
+        android:name="redGhost"
+
+        android:animation="@anim/animated_ghost" />
+
+    <target
+        android:name="bigBall"
+        android:animation="@anim/animated_bigball" />
+    <target
+        android:name="bigBall2"
+        android:animation="@anim/animated_bigball2" />
+    <target
+        android:name="bigBall3"
+        android:animation="@anim/animated_bigball3" />
+<target
+        android:name="pacman"
+        android:animation="@anim/animated_pac" />
+
+
+</animated-vector>

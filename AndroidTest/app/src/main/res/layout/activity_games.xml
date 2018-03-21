@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/pacman"
-                android:src="@drawable/pacman_button"
+                android:src="@drawable/animated_pacman"
                 tools:layout_editor_absoluteX="164dp"
                 tools:layout_editor_absoluteY="98dp" />
 

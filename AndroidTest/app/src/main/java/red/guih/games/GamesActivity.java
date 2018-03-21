@@ -1,6 +1,8 @@
 package red.guih.games;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -54,5 +56,15 @@ public class GamesActivity extends AppCompatActivity {
         ImageButton japaneseButton = findViewById(R.id.japaneseButton);
         japaneseButton.setOnClickListener((View v) -> startActivity(new Intent(this, JapaneseActivity.class)));
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        ImageButton pacmanButton = findViewById(R.id.pacmanButton);
+        Drawable background = pacmanButton.getDrawable();
+        if (background instanceof AnimatedVectorDrawable) {
+            ((AnimatedVectorDrawable) background).start();
+        }
     }
 }

@@ -26,14 +26,17 @@
             android:pathData="M40,200v-40h120v-121"
             android:strokeColor="#00FF00"
             android:strokeWidth="2" />
-        <path
+        <path android:name="pacman"
             android:fillColor="#FFFF00"
             android:pathData="m15,15 a5,5,0,0,0,10,10 l-5,-5l5,-5 a-5,5,0,0,1,-10,10"
             android:strokeColor="#FFFF00"
             android:strokeWidth="2" />
+
         <path
+            android:name="bigBall"
             android:fillColor="#0000FF"
-            android:pathData="m55,15 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z" />
+            android:pathData="M55,15 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z" />
+
         <path
             android:fillColor="#0000FF"
             android:pathData="m97.5,17.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
@@ -45,8 +48,10 @@
             android:pathData="m177.5,17.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
 
         <path
+            android:name="bigBall2"
             android:fillColor="#0000FF"
             android:pathData="m15,95 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z" />
+
         <path
             android:fillColor="#0000FF"
             android:pathData="m17.5,57.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
@@ -79,6 +84,9 @@
             android:pathData="m17.5,137.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
         <path
             android:fillColor="#0000FF"
+            android:pathData="m57.5,137.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
+        <path
+            android:fillColor="#0000FF"
             android:pathData="m97.5,137.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
         <path
             android:fillColor="#0000FF"
@@ -99,10 +107,12 @@
             android:fillColor="#0000FF"
             android:pathData="m177.5,177.5 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z" />
         <path
+            android:name="bigBall3"
             android:fillColor="#0000FF"
             android:pathData="m55,175 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z" />
 
         <group
+            android:name="redGhost"
             android:scaleX="0.12"
             android:scaleY="0.12"
             android:translateX="48"
