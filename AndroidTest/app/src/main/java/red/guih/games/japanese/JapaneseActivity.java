@@ -4,7 +4,7 @@ import android.app.Dialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,16 +22,14 @@ public class JapaneseActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         JapaneseView.CHAPTER = getUserPreference(R.string.chapter, JapaneseView.CHAPTER);
         setContentView(R.layout.activity_japanese);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-
+        ActionBar toolbar = getSupportActionBar();
+        if (toolbar != null) {
+            toolbar.setTitle(R.string.japanese);
+            toolbar.setDisplayHomeAsUpEnabled(true);
+        }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(this::doAction);
         new Thread(this::executeDatabase).start();
-        if (toolbar != null) {
-            toolbar.setTitle(R.string.japanese);
-        }
     }
 
     private void executeDatabase() {
