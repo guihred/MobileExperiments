@@ -35,31 +35,39 @@ import red.guih.games.db.UserRecord;
 public class JapaneseView extends BaseView {
 
     public static final int LIGHT_RED = 0x88FF0000;
+    public static final int MAX_CHAPTERS = 44;
+    public static final int LIGHT_GREEN = 0x8800FF00;
     public static boolean SHOW_ROMAJI;
-    public int characterSize = 50;
     public static int CHAPTER = 1;
-    private List<JapaneseLesson> lessons = new ArrayList<>();
+
+    final List<Letter> answer = new ArrayList<>();
+    final List<Letter> letters = new ArrayList<>();
     private final Paint paint = new Paint();
     private final Paint greenPaint = new Paint();
     private final Paint redPaint = new Paint();
-    private int currentLesson;
-    final List<Letter> answer = new ArrayList<>();
-    final List<Letter> letters = new ArrayList<>();
-    private DynamicLayout englishLayout;
     private final RectF okButton = new RectF();
+    public int characterSize = 50;
+    private float points;
+    private float currentScore;
+    private List<JapaneseLesson> lessons = new ArrayList<>();
+    private int currentLesson;
+    private DynamicLayout englishLayout;
     private DynamicLayout romajiLayout;
     private DynamicLayout answerLayout;
-
 
     public JapaneseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         paint.setTextSize(characterSize);
         paint.setStyle(Paint.Style.STROKE);
-        greenPaint.setColor(Color.GREEN);
+        greenPaint.setColor(LIGHT_GREEN);
         greenPaint.setStyle(Paint.Style.FILL);
         redPaint.setColor(LIGHT_RED);
         redPaint.setStyle(Paint.Style.FILL);
         loadLessons();
+    }
+
+    private static void setStaticChapter(int seekBar) {
+        JapaneseView.CHAPTER = seekBar;
     }
 
     public void setChapter(int seekBar) {
@@ -67,7 +75,7 @@ public class JapaneseView extends BaseView {
             addUserPreference(R.string.punctuation, (float) 0);
             addUserPreference(R.string.lesson, 0);
         }
-        JapaneseView.CHAPTER = seekBar;
+        setStaticChapter(seekBar);
     }
 
     public void loadLessons() {
@@ -107,13 +115,13 @@ public class JapaneseView extends BaseView {
         tp.setTextSize(characterSize);
         tp.setTextAlign(Paint.Align.CENTER);
         tp.setAntiAlias(true);
-        englishLayout = new DynamicLayout("English: " + japaneseLesson.getEnglish(), tp,
+        englishLayout = new DynamicLayout(getContext().getString(R.string.english, japaneseLesson.getEnglish()), tp,
                 getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         englishLayout.getOffsetToRightOf(characterSize);
-        romajiLayout = new DynamicLayout("Romaji: " + Objects.toString(japaneseLesson.getRomaji(), "").replaceAll("\\(.+\\)", ""), tp,
+        romajiLayout = new DynamicLayout(getContext().getString(R.string.romaji, Objects.toString(japaneseLesson.getRomaji(), "").replaceAll("\\(.+\\)", "")), tp,
                 getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         romajiLayout.getOffsetToRightOf(characterSize);
-        answerLayout = new DynamicLayout("Answer: " + Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", ""), tp,
+        answerLayout = new DynamicLayout(getContext().getString(R.string.answer, Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", "")), tp,
                 getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         answerLayout.getOffsetToRightOf(characterSize);
 
@@ -134,17 +142,21 @@ public class JapaneseView extends BaseView {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        canvas.drawText("Chapter " + CHAPTER + " : " + currentLesson + "/" + lessons.size(), characterSize, characterSize, paint);
-        canvas.drawText(getContext().getString(R.string.punctuation, getScore()), getWidth() / 2, characterSize, paint);
+        String chapterFormat = getContext().getString(R.string.chapter_format, CHAPTER, currentLesson, lessons.size());
+        canvas.drawText(chapterFormat, characterSize, characterSize, paint);
+        String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
+        canvas.drawText(punctuationFormat, getWidth() / 2, characterSize, paint);
 
-        drawTextLayout(canvas, getWidth() / 2, getHeight() / 6, this.englishLayout);
+        drawTextLayout(canvas, getWidth() / 2, getHeight() / 12, this.englishLayout);
         if (SHOW_ROMAJI || letters.isEmpty()) {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 3 / 6, this.romajiLayout);
         }
         if (letters.isEmpty()) {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
             canvas.drawRoundRect(okButton, 10, 10, greenPaint);
-            canvas.drawText("Ok", okButton.centerX() - characterSize / 2, okButton.centerY(), paint);
+            String singleScore = getContext().getString(R.string.percent, currentScore);
+            canvas.drawText(singleScore, okButton.centerX() - characterSize * singleScore.length() / 4, okButton.centerY(), paint);
+            canvas.drawText("Ok", okButton.centerX() - characterSize / 2, okButton.centerY() + characterSize, paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
         drawLetters(canvas, this.letters);
@@ -152,9 +164,14 @@ public class JapaneseView extends BaseView {
 
     }
 
-    private double getScore() {
-        if (currentLesson == 0)
-            return 0;
+    private double getCurrentScore() {
+        if (currentLesson == 0) {
+            if (lessons.isEmpty()) {
+                return 0;
+            }
+
+            return points / lessons.size();
+        }
 
         return points / currentLesson;
     }
@@ -190,44 +207,39 @@ public class JapaneseView extends BaseView {
         }
     }
 
-    float points;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+                if (lessons.isEmpty()) {
+                    loadLessons();
+                    return true;
+                }
+                JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
                 if (letters.isEmpty() && okButton.contains(event.getX(), event.getY())) {
-                    if (lessons.isEmpty()) {
-                        loadLessons();
-                        return true;
-                    }
-
-
-                    JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
-                    float compare = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining()));
-                    if (currentLesson == lessons.size() - 1) {
+                    currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining())) * 100;
+                    points += currentScore;
+                    currentLesson = (currentLesson + 1) % lessons.size();
+                    if (currentLesson == 0) {
 
                         showDialogWinning();
                         return true;
                     }
-                    points += compare * 100;
-                    currentLesson = (currentLesson + 1) % lessons.size();
-
-
                     addUserPreference(R.string.punctuation, points);
                     addUserPreference(R.string.lesson, currentLesson);
-
-
                     configureCurrentLesson();
                     invalidate();
                 }
 
                 if (exchangeLetter(event, getLettersLayout(), this.letters, getAnswerLayout(), this.answer)) {
+                    if (letters.isEmpty()) {
+                        currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining())) * 100;
+                    }
                     return true;
                 }
 
-                if (exchangeLetter(event, getAnswerLayout(), this.answer, getLettersLayout(), this.letters)) {
+                if (!letters.isEmpty() && exchangeLetter(event, getAnswerLayout(), this.answer, getLettersLayout(), this.letters)) {
 
 
                     return true;
@@ -250,11 +262,11 @@ public class JapaneseView extends BaseView {
 
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.textDialog);
-        long emSegundos = (long) points;
 
-        String description = getContext().getString(R.string.punctuation, getScore());
+        double score = getCurrentScore();
+        String description = getContext().getString(R.string.punctuation, score);
         currentLesson = 0;
-        if (isRecordSuitable(emSegundos, UserRecord.JAPANESE, CHAPTER, false)) {
+        if (isRecordSuitable((long) points, UserRecord.JAPANESE, CHAPTER, false)) {
             createRecordIfSuitable((long) points, description, UserRecord.JAPANESE, CHAPTER, false);
             showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
             return;
@@ -270,7 +282,7 @@ public class JapaneseView extends BaseView {
     }
 
     private void nextChapter() {
-        setChapter((CHAPTER + 1) % 43);
+        setChapter((CHAPTER + 1) % MAX_CHAPTERS);
         loadLessons();
     }
 

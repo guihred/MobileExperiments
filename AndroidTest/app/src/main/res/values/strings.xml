@@ -57,9 +57,14 @@
         <item>Cavalo</item>
     </string-array>
     <string name="title_activity_japanese">JapaneseActivity</string>
-    <string name="punctuation">Score: %02.2f%%</string>
+    <string name="punctuation">Score: %02.1f%%</string>
+    <string name="percent">%02.1f%%</string>
     <string name="lesson">Lesson</string>
     <string name="chapter">Capítulo</string>
     <string name="japanese">Japanese</string>
+    <string name="chapter_format">Chapter %d : %d/%d</string>
+    <string name="english">English: %s</string>
+    <string name="romaji">Romaji: %s</string>
+    <string name="answer">Answer: %s</string>
 
 </resources>
