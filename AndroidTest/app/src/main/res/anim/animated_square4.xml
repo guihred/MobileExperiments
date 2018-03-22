@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:duration="1000"
+
+        android:repeatCount="-1">
+
+        <propertyValuesHolder
+            android:interpolator="@android:anim/linear_interpolator"
+            android:propertyName="fillAlpha">
+            <keyframe
+                android:fraction="0"
+                android:value="0" />
+            <keyframe
+                android:fraction=".199999"
+                android:value="0" />
+            <keyframe
+                android:fraction=".2"
+                android:value="1" />
+            <keyframe
+                android:fraction=".499999"
+                android:value="1" />
+            <keyframe
+                android:fraction=".5"
+                android:value="0" />
+            <keyframe
+                android:fraction="1"
+                android:value="0" />
+        </propertyValuesHolder>
+        <propertyValuesHolder
+            android:interpolator="@android:anim/linear_interpolator"
+            android:propertyName="strokeAlpha">
+            <keyframe
+                android:fraction="0"
+                android:value="0" />
+            <keyframe
+                android:fraction=".199999"
+                android:value="0" />
+            <keyframe
+                android:fraction=".2"
+                android:value="1" />
+            <keyframe
+                android:fraction=".499999"
+                android:value="1" />
+            <keyframe
+                android:fraction=".5"
+                android:value="0" />
+            <keyframe
+                android:fraction="1"
+                android:value="0" />
+        </propertyValuesHolder>
+    </objectAnimator>
+
+
+</set>

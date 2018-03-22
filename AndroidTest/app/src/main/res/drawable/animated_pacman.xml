@@ -3,9 +3,7 @@
     android:drawable="@drawable/pacman_button">
     <target
         android:name="redGhost"
-
         android:animation="@anim/animated_ghost" />
-
     <target
         android:name="bigBall"
         android:animation="@anim/animated_bigball" />
@@ -15,7 +13,7 @@
     <target
         android:name="bigBall3"
         android:animation="@anim/animated_bigball3" />
-<target
+    <target
         android:name="pacman"
         android:animation="@anim/animated_pac" />
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/square2048_button">
+    <target
+        android:name="blue"
+        android:animation="@anim/animated_square" />
+    <target
+        android:name="orange"
+        android:animation="@anim/animated_square2" />
+    <target
+        android:name="redNumber"
+        android:animation="@anim/animated_square3" />
+    <target
+        android:name="redNumber2"
+        android:animation="@anim/animated_square3" />
+    <target
+        android:name="redNumber1"
+        android:animation="@anim/animated_square3" />
+    <target
+        android:name="redNumber3"
+        android:animation="@anim/animated_square3" />
+    <target
+        android:name="orangeNumber"
+        android:animation="@anim/animated_square4" />
+    <target
+        android:name="orangeNumber4"
+        android:animation="@anim/animated_square4" />
+
+
+</animated-vector>

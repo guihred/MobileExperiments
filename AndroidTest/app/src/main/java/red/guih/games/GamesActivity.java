@@ -1,6 +1,7 @@
 package red.guih.games;
 
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -64,7 +65,12 @@ public class GamesActivity extends AppCompatActivity {
         ImageButton pacmanButton = findViewById(R.id.pacmanButton);
         Drawable background = pacmanButton.getDrawable();
         if (background instanceof AnimatedVectorDrawable) {
-            ((AnimatedVectorDrawable) background).start();
+            ((Animatable) background).start();
+        }
+        ImageButton square2048 = findViewById(R.id.square2048Button);
+        Drawable bg2 = square2048.getDrawable();
+        if (bg2 instanceof AnimatedVectorDrawable) {
+            ((Animatable) bg2).start();
         }
     }
 }
