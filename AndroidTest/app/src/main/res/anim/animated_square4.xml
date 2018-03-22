@@ -6,7 +6,6 @@
         android:repeatCount="-1">
 
         <propertyValuesHolder
-            android:interpolator="@android:anim/linear_interpolator"
             android:propertyName="fillAlpha">
             <keyframe
                 android:fraction="0"
@@ -28,7 +27,6 @@
                 android:value="0" />
         </propertyValuesHolder>
         <propertyValuesHolder
-            android:interpolator="@android:anim/linear_interpolator"
             android:propertyName="strokeAlpha">
             <keyframe
                 android:fraction="0"

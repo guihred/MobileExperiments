@@ -72,5 +72,10 @@ public class GamesActivity extends AppCompatActivity {
         if (bg2 instanceof AnimatedVectorDrawable) {
             ((Animatable) bg2).start();
         }
+        ImageButton puzzleButton = findViewById(R.id.puzzleButton);
+        Drawable puzzleButtonDrawable = puzzleButton.getDrawable();
+        if (puzzleButtonDrawable instanceof AnimatedVectorDrawable) {
+            ((Animatable) puzzleButtonDrawable).start();
+        }
     }
 }

@@ -155,7 +155,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/labyrinth"
-                android:src="@drawable/puzzle_button"
+                android:src="@drawable/animated_puzzle"
                 tools:layout_editor_absoluteX="164dp"
                 tools:layout_editor_absoluteY="98dp" />
 
