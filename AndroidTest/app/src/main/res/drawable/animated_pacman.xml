@@ -1,21 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:drawable="@drawable/pacman_button">
-    <target
-        android:name="redGhost"
-        android:animation="@anim/animated_ghost" />
-    <target
-        android:name="bigBall"
-        android:animation="@anim/animated_bigball" />
-    <target
-        android:name="bigBall2"
-        android:animation="@anim/animated_bigball2" />
-    <target
-        android:name="bigBall3"
-        android:animation="@anim/animated_bigball3" />
-    <target
-        android:name="pacman"
-        android:animation="@anim/animated_pac" />
+    <target android:name="redGhost">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder
+                    android:interpolator="@android:anim/linear_interpolator"
+                    android:propertyName="translateX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="48" />
+                    <keyframe
+                        android:fraction=".25"
+                        android:value="128" />
+                    <keyframe
+                        android:fraction=".5"
+                        android:value="128" />
+                    <keyframe
+                        android:fraction=".75"
+                        android:value="128" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="48" />
+                </propertyValuesHolder>
+                <propertyValuesHolder
+                    android:interpolator="@android:anim/linear_interpolator"
+                    android:propertyName="translateY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="135" />
+                    <keyframe
+                        android:fraction=".25"
+
+                        android:value="135" />
+                    <keyframe
+                        android:fraction=".5"
+
+                        android:value="55" />
+                    <keyframe
+                        android:fraction=".75"
+
+                        android:value="135" />
+                    <keyframe
+                        android:fraction="1"
+
+                        android:value="135" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+    <target android:name="bigBall">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:propertyName="pathData"
+                android:repeatCount="-1"
+                android:repeatMode="reverse"
+                android:valueFrom="M55,15 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z"
+                android:valueTo="M55,15 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+    <target android:name="bigBall2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:propertyName="pathData"
+                android:repeatCount="-1"
+                android:repeatMode="reverse"
+                android:valueFrom="m15,95 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z"
+                android:valueTo="m15,95 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+    <target android:name="bigBall3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:propertyName="pathData"
+                android:repeatCount="-1"
+                android:repeatMode="reverse"
+                android:valueFrom="m55,175 a2.5,2.5,0,0,0,5,5 a2.5,2.5,0,0,0,-5,-5z"
+                android:valueTo="m55,175 a5,5,0,0,0,10,10 a5,5,0,0,0,-10,-10z"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
+    <target android:name="pacman">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="250"
+                android:propertyName="pathData"
+                android:repeatCount="-1"
+                android:repeatMode="reverse"
+                android:valueFrom="m15,18.5 a5,5,0,0,0,10,0 l-5,0 l5,0 a-5,5,0,0,1,-10,0"
+                android:valueTo="m15,15 a5,5,0,0,0,10,10 l-5,-5l5,-5 a-5,5,0,0,1,-10,10"
+                android:valueType="pathType" />
+        </aapt:attr>
+    </target>
 
 
 </animated-vector>
