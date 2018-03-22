@@ -62,20 +62,18 @@ public class GamesActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        ImageButton pacmanButton = findViewById(R.id.pacmanButton);
-        Drawable background = pacmanButton.getDrawable();
-        if (background instanceof AnimatedVectorDrawable) {
-            ((Animatable) background).start();
-        }
-        ImageButton square2048 = findViewById(R.id.square2048Button);
-        Drawable bg2 = square2048.getDrawable();
-        if (bg2 instanceof AnimatedVectorDrawable) {
-            ((Animatable) bg2).start();
-        }
-        ImageButton puzzleButton = findViewById(R.id.puzzleButton);
+        playAnimation(R.id.pacmanButton);
+        playAnimation(R.id.square2048Button);
+        playAnimation(R.id.puzzleButton);
+        playAnimation(R.id.tetrisButton);
+    }
+
+    private void playAnimation(int puzzleButton1) {
+        ImageButton puzzleButton = findViewById(puzzleButton1);
         Drawable puzzleButtonDrawable = puzzleButton.getDrawable();
         if (puzzleButtonDrawable instanceof AnimatedVectorDrawable) {
             ((Animatable) puzzleButtonDrawable).start();
         }
     }
+
 }

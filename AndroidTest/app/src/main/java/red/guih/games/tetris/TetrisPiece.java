@@ -10,12 +10,12 @@ public enum TetrisPiece {
         {0, 1},
         {0, 1},
         {1, 1}
-    },Color.rgb(0xFF,0x80,0x00)),
+    }, Color.CYAN),
     L(new int[][]{
         {1, 0},
         {1, 0},
         {1, 1}
-    }, Color.CYAN),
+    },Color.rgb(0xFF,0x80,0x00)),
     O(new int[][]{
         {1, 1},
         {1, 1}},

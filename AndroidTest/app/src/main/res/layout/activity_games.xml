@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/tetris"
-                android:src="@drawable/tetris_button"
+                android:src="@drawable/animated_tetris"
                 tools:layout_editor_absoluteX="164dp"
                 tools:layout_editor_absoluteY="98dp" />
 

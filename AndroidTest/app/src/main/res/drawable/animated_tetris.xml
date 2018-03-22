@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/tetris_button">
+    <target android:name="blue">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="2000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="translateX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".49"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".5"
+                        android:value="9" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="9" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="translateY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="-20" />
+                    <keyframe
+                        android:fraction=".14"
+                        android:value="-20" />
+                    <keyframe
+                        android:fraction=".15"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".29"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".3"
+                        android:value="20" />
+                    <keyframe
+                        android:fraction=".44"
+                        android:value="20" />
+                    <keyframe
+                        android:fraction=".45"
+                        android:value="40" />
+                    <keyframe
+                        android:fraction=".59"
+                        android:value="40" />
+                    <keyframe
+                        android:fraction=".60"
+                        android:value="60" />
+                    <keyframe
+                        android:fraction=".74"
+                        android:value="60" />
+                    <keyframe
+                        android:fraction=".75"
+                        android:value="80" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="80" />
+                </propertyValuesHolder>
+            </objectAnimator>
+
+        </aapt:attr>
+    </target>
+</animated-vector>
