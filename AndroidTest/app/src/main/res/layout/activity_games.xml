@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/link_dots"
-                android:src="@drawable/dots_button"
+                android:src="@drawable/animated_dots"
                 tools:layout_editor_absoluteX="164dp"
                 tools:layout_editor_absoluteY="98dp" />
 

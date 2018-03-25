@@ -16,10 +16,10 @@
                         android:value="0" />
                     <keyframe
                         android:fraction=".5"
-                        android:value="9" />
+                        android:value="10" />
                     <keyframe
                         android:fraction="1"
-                        android:value="9" />
+                        android:value="10" />
                 </propertyValuesHolder>
                 <propertyValuesHolder android:propertyName="translateY">
                     <keyframe

@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+
+    android:drawable="@drawable/dots_button">
+
+    <target android:name="line2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="translateX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction="0.2"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="0" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="scaleX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".2"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <target android:name="line3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="translateX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction="0.4"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="0" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="scaleX">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".2"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".4"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+
+
+    <target android:name="line4">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="translateY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction=".4"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction="0.6"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="0" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="scaleY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".4"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".6"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <target android:name="square1">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="fillAlpha">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".19"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".2"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+    <target android:name="square2">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="fillAlpha">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".39"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".4"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+    <target android:name="square3">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="fillAlpha">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".59"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".6"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+    <target android:name="square4">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="fillAlpha">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".79"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".8"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+
+    <target android:name="line5">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="4000"
+                android:repeatCount="-1">
+                <propertyValuesHolder android:propertyName="translateY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction=".6"
+                        android:value="20.5" />
+                    <keyframe
+                        android:fraction=".8"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="0" />
+                </propertyValuesHolder>
+                <propertyValuesHolder android:propertyName="scaleY">
+                    <keyframe
+                        android:fraction="0"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".6"
+                        android:value="0" />
+                    <keyframe
+                        android:fraction=".8"
+                        android:value="1" />
+                    <keyframe
+                        android:fraction="1"
+                        android:value="1" />
+                </propertyValuesHolder>
+            </objectAnimator>
+        </aapt:attr>
+    </target>
+
+
+</animated-vector>

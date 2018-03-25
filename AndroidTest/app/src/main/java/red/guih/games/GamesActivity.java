@@ -66,6 +66,7 @@ public class GamesActivity extends AppCompatActivity {
         playAnimation(R.id.square2048Button);
         playAnimation(R.id.puzzleButton);
         playAnimation(R.id.tetrisButton);
+        playAnimation(R.id.dotsButton);
     }
 
     private void playAnimation(int puzzleButton1) {
