@@ -92,6 +92,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
     }
 
     private void createTrianglesPoints(float maxWidth, float maxHeight) {
+        allCells.clear();
         int sqrt = DIFFICULTY;
         triangleSide = maxWidth / sqrt;
         ballRadius = triangleSide / 5;
@@ -114,6 +115,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
     }
 
     private void createHexagonalPoints(float maxWidth, float maxHeight) {
+        allCells.clear();
         int sqrt = DIFFICULTY;
         triangleSide = maxWidth / sqrt;
         speed = triangleSide / 50;
@@ -188,7 +190,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
     }
 
     public static void setDifficulty(int mazeSize) {
-        MadMazeView.DIFFICULTY =  mazeSize* 5;
+        MadMazeView.DIFFICULTY = mazeSize * 5;
     }
 
 
