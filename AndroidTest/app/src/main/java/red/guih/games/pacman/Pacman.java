@@ -10,7 +10,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.Log;
 
-import java.util.Collection;
+import java.util.List;
 
 public class Pacman {
 
@@ -18,7 +18,7 @@ public class Pacman {
     private float startAngle = 0;
     private float length = 0;
     private final ObjectAnimator eatingAnimation;
-     Paint paint = new Paint(Color.YELLOW);
+    Paint paint = new Paint(Color.YELLOW);
     private float x, y;
     private PacmanDirection direction = PacmanDirection.RIGHT;
     private final RectF bounds = new RectF();
@@ -49,12 +49,17 @@ public class Pacman {
         return bounds;
     }
 
-    private boolean checkCollision(Collection<RectF> observableList) {
-        return observableList.parallelStream()
-                .anyMatch(p -> RectF.intersects(p, getBounds()));
+    private boolean checkCollision(List<RectF> observableList) {
+        for (int i = 0; i < observableList.size(); i++) {
+            RectF p = observableList.get(i);
+            if (RectF.intersects(p, getBounds())) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void move(Collection<RectF> walls) {
+    public void move(List<RectF> walls) {
         if (direction == null) {
             return;
         }
@@ -93,7 +98,7 @@ public class Pacman {
     }
 
     public void turn(PacmanDirection direction) {
-        Log.i("PACMAN","TURNED "+direction);
+        Log.i("PACMAN", "TURNED " + direction);
 
         this.direction = direction;
     }

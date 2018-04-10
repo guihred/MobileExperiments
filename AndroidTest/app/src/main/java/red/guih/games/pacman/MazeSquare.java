@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MazeSquare {
-    public static int SQUARE_SIZE = 20;
+    public static int SQUARE_SIZE = 0;
     public static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
     final int i, j;
     List<MazeSquare> adjacents;

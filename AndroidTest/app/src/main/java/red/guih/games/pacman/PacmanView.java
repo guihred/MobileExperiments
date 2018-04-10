@@ -33,7 +33,10 @@ public class PacmanView extends BaseView {
     private int lifeCount = 3;
     private final Pacman pacman;
     float startX, startY;
-    List<RectF> walls;
+    List<RectF>
+            walls = new ArrayList<>();
+
+
     Thread gameLoopThread;
 
     private List<PacmanBall> balls = new ArrayList<>();
@@ -49,6 +52,7 @@ public class PacmanView extends BaseView {
                 of(GhostColor.RED, GhostColor.BLUE, GhostColor.ORANGE, GhostColor.GREEN)
                         .map((GhostColor color) -> new PacmanGhost(color, context))
                         .collect(Collectors.toList());
+        createBalls();
     }
 
     private static MazeSquare[][] initializeMaze() {
@@ -128,9 +132,6 @@ public class PacmanView extends BaseView {
         drawLives(canvas);
 
 
-//        if (gameOver) {
-//            showDialog();
-//        }
     }
 
     private void drawLives(Canvas canvas) {
@@ -155,7 +156,6 @@ public class PacmanView extends BaseView {
         eventHandler.handle();
 
 
-
         walls = new ArrayList<>();
         for (int i = 0; i < MAZE_WIDTH; i++) {
             for (int j = 0; j < MAZE_HEIGHT; j++) {
@@ -163,15 +163,7 @@ public class PacmanView extends BaseView {
                 maze[i][j].dijkstra(maze);
             }
         }
-        balls = DoubleStream
-                .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
-                .limit(MAZE_WIDTH * 2)
-                .boxed()
-                .flatMap(
-                        d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2, e -> e + MazeSquare.SQUARE_SIZE)
-                                .limit(MAZE_HEIGHT * 2)
-                                .mapToObj((double e) -> new PacmanBall(d, e)))
-                .collect(Collectors.toList());
+        createBalls();
 
         Random random = new Random();
         for (int i = 0; i < 5; i++) {
@@ -197,22 +189,37 @@ public class PacmanView extends BaseView {
         lifeCount = 3;
     }
 
+    private void createBalls() {
+        balls = DoubleStream
+                .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
+                .limit(MAZE_WIDTH * 2)
+                .boxed()
+                .flatMap(
+                        d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2, e -> e + MazeSquare.SQUARE_SIZE)
+                                .limit(MAZE_HEIGHT * 2)
+                                .mapToObj((double e) -> new PacmanBall(d, e)))
+                .collect(Collectors.toList());
+    }
+
     private static void adjustDimensions(int width, int height) {
         MazeSquare.SQUARE_SIZE = width / MAZE_WIDTH / 2;
         MAZE_HEIGHT = height / MazeSquare.SQUARE_SIZE / 2;
     }
 
     void continueGame() {
+        gamePaused = false;
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
             gameLoopThread = new Thread(() -> {
-                while (gameLoop(System.currentTimeMillis())) {
-                    try {
-                        Thread.sleep(50);
-                    } catch (Exception e) {
-                        Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                if (MazeSquare.SQUARE_SIZE > 0) {
+                    while (gameLoop(System.currentTimeMillis())) {
+                        try {
+                            Thread.sleep(50);
+                        } catch (Exception e) {
+                            Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                        }
                     }
                 }
-                post(this::showDialog);
+
             });
             gameLoopThread.start();
         }
@@ -237,9 +244,18 @@ public class PacmanView extends BaseView {
         dialog.show();
     }
 
+    public void pause() {
+        gamePaused = true;
+    }
+
+    boolean gamePaused;
+
     private boolean gameLoop(long now) {
+        if (gamePaused)
+            return false;
         postInvalidate();
         if (balls.isEmpty()) {
+            post(this::showDialog);
             return false;
         }
         ghosts.forEach(g -> g.move(now, walls, pacman, maze));
@@ -268,6 +284,7 @@ public class PacmanView extends BaseView {
                 }
 
                 pacman.die();
+                post(this::showDialog);
                 return false;
             } else {
                 gh.forEach(g -> g.setStatus(GhostStatus.DEAD));

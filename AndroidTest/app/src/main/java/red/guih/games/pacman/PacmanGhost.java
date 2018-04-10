@@ -50,8 +50,14 @@ public class PacmanGhost extends View {
     }
 
     boolean checkColision(RectF boundsInParent, Collection<RectF> walls) {
-
-        return walls.parallelStream().anyMatch(b -> RectF.intersects(b, boundsInParent));
+        if (walls == null)
+            return false;
+        for (RectF b : walls) {
+            if (RectF.intersects(b, boundsInParent)) {
+                return true;
+            }
+        }
+        return false;
 
     }
 
@@ -170,6 +176,9 @@ public class PacmanGhost extends View {
     }
 
     private MazeSquare getSquareInBounds(MazeSquare[][] maze, float x, float y) {
+        if (maze == null)
+            return null;
+
         for (MazeSquare[] aMaze : maze) {
             for (MazeSquare anAMaze : aMaze) {
                 boolean inBounds = anAMaze.isInBounds(x, y);

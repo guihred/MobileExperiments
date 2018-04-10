@@ -32,6 +32,19 @@ public class PacmanActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        PacmanView view = findViewById(R.id.pacman_view);
+        if (hasFocus) {
+            view.continueGame();
+        } else {
+            view.pause();
+        }
+
+
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (pacmanView != null)
