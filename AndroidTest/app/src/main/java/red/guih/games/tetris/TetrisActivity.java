@@ -46,6 +46,17 @@ public class TetrisActivity extends BaseActivity {
     }
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        TetrisView viewById = findViewById(R.id.tetris_view);
+        if (hasFocus) {
+            viewById.continueGame();
+        } else {
+            viewById.pause();
+        }
+    }
+
+    @Override
     protected List<UserRecord> getAll(int difficulty, String gameName) {
         return db.userDao().getAllDesc(difficulty, gameName);
     }

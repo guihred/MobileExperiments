@@ -35,7 +35,7 @@ public class PacmanView extends BaseView {
     float startX, startY;
     List<RectF> walls;
     Thread gameLoopThread;
-    boolean gameOver;
+
     private List<PacmanBall> balls = new ArrayList<>();
     private final List<PacmanGhost> ghosts;
     private Integer points = 0;
@@ -128,9 +128,9 @@ public class PacmanView extends BaseView {
         drawLives(canvas);
 
 
-        if (gameOver) {
-            showDialog();
-        }
+//        if (gameOver) {
+//            showDialog();
+//        }
     }
 
     private void drawLives(Canvas canvas) {
@@ -194,9 +194,7 @@ public class PacmanView extends BaseView {
             }
         }
         continueGame();
-        gameOver = false;
         lifeCount = 3;
-
     }
 
     private static void adjustDimensions(int width, int height) {
@@ -214,7 +212,7 @@ public class PacmanView extends BaseView {
                         Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
                     }
                 }
-                gameOver = true;
+                post(this::showDialog);
             });
             gameLoopThread.start();
         }
@@ -222,7 +220,6 @@ public class PacmanView extends BaseView {
 
     private void showDialog() {
 
-        gameOver = false;
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(balls.isEmpty() ? R.string.you_win : R.string.you_lose);

@@ -72,6 +72,7 @@ public class FreeCellView extends BaseView {
     public void reset() {
         youwin = false;
         cardStackList.clear();
+        history.clear();
         int yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
 
         int xOffset = FreeCellCard.getCardWidth() / 10;
@@ -153,7 +154,8 @@ public class FreeCellView extends BaseView {
                 break;
             case MotionEvent.ACTION_UP:
                 handleMouseReleased();
-                automaticCard();
+
+
                 break;
         }
         invalidate();
@@ -331,6 +333,34 @@ public class FreeCellView extends BaseView {
         eatingAnimation.addUpdateListener(animation -> invalidate());
         eatingAnimation.addListener(new AutomaticCardsListener());
         eatingAnimation.start();
+    }private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack, FreeCellCard solitaireCard, boolean first) {
+
+        cardStackList.remove(targetStack);
+        cardStackList.add(targetStack);
+        solitaireCard.setShown(true);
+        originStack.removeLastCards();
+        float x = -targetStack.getLayoutX() + originStack.getLayoutX();
+        float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
+        targetStack.addCards(solitaireCard);
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
+        int value = 0;
+        if (targetStack.type == FreeCellStack.StackType.SIMPLE) {
+            value = (targetStack.getShownCards() - 1) * FreeCellCard.getCardWidth() / 3;
+            if (targetStack.getNotShownCards() > 0) {
+                value += targetStack.getNotShownCards() * FreeCellCard.getCardWidth() / 8;
+            }
+        }
+
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, value));
+        ObjectAnimator eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
+
+        eatingAnimation.setDuration(ANIMATION_DURATION);
+
+        eatingAnimation.addUpdateListener(animation -> invalidate());
+        if(first) {
+            eatingAnimation.addListener(new AutomaticCardsListener());
+        }
+        eatingAnimation.start();
     }
 
     private void handleMouseReleased() {
@@ -361,6 +391,7 @@ public class FreeCellView extends BaseView {
                 history.add(motionHistory);
                 cardStack.addCards(dragContext.cards);
                 dragContext.reset();
+                automaticCard();
                 if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
                     showDialogWinning();
                 }
@@ -384,6 +415,7 @@ public class FreeCellView extends BaseView {
             history.add(motionHistory);
             cardStack.addCards(dragContext.cards);
             dragContext.reset();
+            automaticCard();
             return;
         }
         cardStackList.sort(Comparator.comparing((FreeCellStack e) -> e.type).thenComparing((FreeCellStack e) -> -e.getCards().size()));
@@ -398,8 +430,10 @@ public class FreeCellView extends BaseView {
                     dragContext.stack.addCards(remove);
                 }
                 dragContext.stack.addCards(dragContext.cards);
+                boolean firstCard =true;
                 for (FreeCellCard c : dragContext.cards) {
-                    createMovingCardAnimation(dragContext.stack, e, c);
+                    createMovingCardAnimation(dragContext.stack, e, c,firstCard);
+                    firstCard=false;
                 }
                 MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, e);
                 history.add(motionHistory);

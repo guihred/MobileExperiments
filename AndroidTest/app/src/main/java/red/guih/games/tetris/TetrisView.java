@@ -25,23 +25,24 @@ import red.guih.games.db.UserRecord;
 public class TetrisView extends BaseView {
 
     public static final int UPDATE_DELAY_MILLIS = 750;
+    public static final int ACCELERATING_STEP = 5000;
     public int mapHeight = 24;
     public int mapWidth = 12;
-    boolean movedLeftRight = false;
-    int points = 0;
+    boolean movedLeftRight ;
+    int points ;
     long startTime;
     private int currentI, currentJ;
     private TetrisDirection direction = TetrisDirection.UP;
     private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
     private TetrisPiece piece = TetrisPiece.L;
     private TetrisPiece nextPiece = TetrisPiece.L;
-    private Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
-    private Paint paint = new Paint();
-    private Random random = new Random();
+    private final Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection = new EnumMap<>(TetrisPiece.class);
+    private final Paint paint = new Paint();
+    private final Random random = new Random();
     private float startX, startY;
     private int squareSize;
     private Thread gameLoopThread;
-    private boolean gameOver;
+
 
     public TetrisView(Context c, AttributeSet a) {
         super(c, a);
@@ -116,14 +117,12 @@ public class TetrisView extends BaseView {
         paint.setColor(Color.BLACK);
         canvas.drawText(points + " Points", squareSize, mapHeight * squareSize + squareSize / 2, paint);
         drawNextPiece(canvas, (mapWidth - 2) * squareSize, mapHeight * squareSize + squareSize / 2);
-        if (gameOver) {
-            showDialog();
-        }
+
     }
 
     private void showDialog() {
 
-        gameOver = false;
+
         if (isRecordSuitable(points, UserRecord.TETRIS, 1, false)) {
             createRecordIfSuitable(points, points + " Points", UserRecord.TETRIS, 1, false);
             showRecords(1, UserRecord.TETRIS, TetrisView.this::reset);
@@ -255,6 +254,7 @@ public class TetrisView extends BaseView {
     }
 
     void continueGame() {
+        gamePaused=false;
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
             gameLoopThread = new Thread(this::gameLoop);
             gameLoopThread.start();
@@ -265,13 +265,11 @@ public class TetrisView extends BaseView {
         while (movePiecesTimeline()) {
             try {
                 postInvalidate();
-                long a = startTime - System.currentTimeMillis();
-                Thread.sleep(UPDATE_DELAY_MILLIS + a / 5000);
+                Thread.sleep(UPDATE_DELAY_MILLIS + (startTime - System.currentTimeMillis()) / ACCELERATING_STEP);
             } catch (Exception e) {
                 Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
             }
         }
-        gameOver = true;
         postInvalidate();
     }
 
@@ -328,7 +326,16 @@ public class TetrisView extends BaseView {
         this.currentJ = currentJ;
     }
 
+    boolean gamePaused;
+
+    public boolean pause() {
+        return gamePaused=true;
+    }
+
     public boolean movePiecesTimeline() {
+        if(gamePaused)
+            return false;
+
         clearMovingPiece();
         if (!checkCollision(getCurrentI(), getCurrentJ() + 1)) {
             drawPiece();
@@ -352,6 +359,7 @@ public class TetrisView extends BaseView {
             setCurrentJ(0);
             setCurrentI(mapWidth / 2);
             if (checkCollision(getCurrentI(), getCurrentJ())) {
+                post(this::showDialog);
                 return false;
             }
             int count = 1;
