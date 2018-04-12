@@ -15,4 +15,5 @@ public interface JapaneseLessonDao {
     @Query("SELECT l.* FROM JAPANESE_LESSON l WHERE lesson=:lesson ORDER BY lesson, exercise LIMIT 200")
     List<JapaneseLesson> getAll(Integer lesson);
 
+
 }

@@ -147,7 +147,10 @@ public class JapaneseView extends BaseView {
                 getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         answerLayout.getOffsetToRightOf(characterSize);
         if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
-            post(() -> Toast.makeText(this.getContext(), romaji.replaceAll(".+\\((.+)\\)", "$1"), Toast.LENGTH_SHORT).show());
+            post(() -> {
+                String tip = romaji.replaceAll(".+\\((.+)\\)", "$1");
+                Toast.makeText(this.getContext(), tip,tip.length()>20?Toast.LENGTH_LONG: Toast.LENGTH_SHORT).show();
+            });
         }
 
     }
@@ -288,8 +291,8 @@ public class JapaneseView extends BaseView {
         double score = getCurrentScore();
         String description = getContext().getString(R.string.punctuation, score);
         currentLesson = 0;
-        if (isRecordSuitable((long) points, UserRecord.JAPANESE, CHAPTER, false)) {
-            createRecordIfSuitable((long) points, description, UserRecord.JAPANESE, CHAPTER, false);
+        if (isRecordSuitable((long) score*100, UserRecord.JAPANESE, CHAPTER, false)) {
+            createRecordIfSuitable((long) score*100, description, UserRecord.JAPANESE, CHAPTER, false);
             showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
             return;
         }

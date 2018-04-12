@@ -16,12 +16,17 @@ import android.widget.ListView;
 import android.widget.NumberPicker;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
 import red.guih.games.db.DatabaseHelper;
+import red.guih.games.db.UserRecord;
 
 public class JapaneseActivity extends BaseActivity {
+
+    public static final float HUNDRED = 100.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +96,10 @@ public class JapaneseActivity extends BaseActivity {
         dialog.setTitle(R.string.config);
         // set the custom minesweeper_dialog components - text, image and button
 
+
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         seekBar.setValue(JapaneseView.CHAPTER);
+        retrievePointsByDifficulty(seekBar);
         CheckBox viewById1 = dialog.findViewById(R.id.showRomaji);
         viewById1.setChecked(JapaneseView.SHOW_ROMAJI);
 
@@ -100,6 +107,17 @@ public class JapaneseActivity extends BaseActivity {
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog));
         dialog.show();
+    }
+
+    public void retrievePointsByDifficulty(NumberPicker seekBar) {
+        new Thread(() -> {
+            List<UserRecord> records = db.userDao().getMaxRecords(UserRecord.JAPANESE);
+            Log.i("RECORDS", records + "");
+
+            Map<Integer, Long> pointsMap = records.stream().collect(Collectors.toMap(UserRecord::getDifficulty, UserRecord::getPoints));
+            seekBar.setFormatter(value -> String.format("%d - %.1f%%", value, (float) pointsMap.getOrDefault(value, 0L) / HUNDRED));
+            seekBar.refreshDrawableState();
+        }).start();
     }
 
     private void showTips() {

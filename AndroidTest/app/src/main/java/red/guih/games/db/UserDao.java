@@ -32,6 +32,12 @@ public interface UserDao {
     @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName GROUP BY difficulty,gameName HAVING points=MAX(points)")
     UserRecord getMaxPoints(Integer difficulty, String gameName);
 
+    @Query("SELECT 1 as uid, u.difficulty, MAX(u.points) as points FROM UserRecord u WHERE u.gameName=:gameName GROUP BY u.difficulty ")
+    List<UserRecord> getMaxRecords(String gameName);
+
+    @Query("DELETE FROM UserRecord WHERE gameName=:gameName;")
+    void deleteAll(String gameName);
+
     @Insert
     void insertAll(UserRecord... userRecords);
 
