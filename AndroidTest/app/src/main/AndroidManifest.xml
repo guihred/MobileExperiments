@@ -69,7 +69,7 @@
             android:name=".japanese.JapaneseActivity"
             android:label="@string/title_activity_japanese"
             android:parentActivityName=".GamesActivity"
-            >
+            android:screenOrientation="portrait">
 
         </activity>
 

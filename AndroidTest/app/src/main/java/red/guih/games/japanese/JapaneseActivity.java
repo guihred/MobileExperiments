@@ -1,15 +1,21 @@
 package red.guih.games.japanese;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.NumberPicker;
+
+import java.util.List;
 
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
@@ -29,6 +35,16 @@ public class JapaneseActivity extends BaseActivity {
         }
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(this::doAction);
+        FloatingActionButton secondButton = findViewById(R.id.secondButton);
+        secondButton.setOnClickListener(e -> showTips());
+        FloatingActionButton romajiButton = findViewById(R.id.showRomajiButton);
+        romajiButton.setOnClickListener(e -> {
+
+            JapaneseView.SHOW_ROMAJI = !JapaneseView.SHOW_ROMAJI;
+            JapaneseView viewById = findViewById(R.id.japaneseView);
+            viewById.postInvalidate();
+
+        });
         new Thread(this::executeDatabase).start();
     }
 
@@ -67,7 +83,6 @@ public class JapaneseActivity extends BaseActivity {
 
     private void doAction(View view) {
         showConfig();
-
     }
 
     private void showConfig() {
@@ -85,6 +100,21 @@ public class JapaneseActivity extends BaseActivity {
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog));
         dialog.show();
+    }
+
+    private void showTips() {
+        JapaneseView viewById = findViewById(R.id.japaneseView);
+        List<String> japaneseLessons = viewById.loadTips();
+        String names[] = japaneseLessons.toArray(new String[0]);
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View convertView = inflater.inflate(R.layout.simple_list, null);
+        alertDialog.setView(convertView);
+        alertDialog.setTitle(R.string.tips);
+        ListView lv = convertView.findViewById(R.id.listView1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, names);
+        lv.setAdapter(adapter);
+        alertDialog.show();
     }
 
     private void onClickConfigButton(Dialog dialog) {

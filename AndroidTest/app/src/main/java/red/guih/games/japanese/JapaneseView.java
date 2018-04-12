@@ -14,12 +14,14 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import red.guih.games.BaseView;
 import red.guih.games.R;
@@ -49,7 +51,8 @@ public class JapaneseView extends BaseView {
     public int characterSize = 50;
     private float points;
     private float currentScore;
-    private List<JapaneseLesson> lessons = new ArrayList<>();
+    private final List<JapaneseLesson> lessons = new ArrayList<>();
+    private final List<String> tips = new ArrayList<>();
     private int currentLesson;
     private DynamicLayout englishLayout;
     private DynamicLayout romajiLayout;
@@ -78,17 +81,33 @@ public class JapaneseView extends BaseView {
         setStaticChapter(seekBar);
     }
 
-    public void loadLessons() {
+    public List<JapaneseLesson> loadLessons() {
         new Thread(() -> {
-//            CHAPTER = getUserPreference(R.string.chapter, 1);
-            lessons = db.japaneseLessonDao().getAll(CHAPTER);
+
+            lessons.clear();
+            lessons.addAll(db.japaneseLessonDao().getAll(CHAPTER));
             if (!lessons.isEmpty()) {
                 points = getUserPreferenceFloat(R.string.punctuation, 0);
                 currentLesson = getUserPreference(R.string.lesson, 0);
                 configureCurrentLesson();
             }
             postInvalidate();
+            loadTips();
         }).start();
+        return lessons;
+    }
+
+    public List<String> loadTips() {
+        tips.clear();
+        tips.addAll(lessons.stream().filter(e -> e != null && e.getRomaji() != null)
+                .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
+                .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
+                .flatMap(e -> Stream.of(e.split("\\).*\\(")))
+                .collect(Collectors.toList())
+        );
+        postInvalidate();
+
+        return tips;
     }
 
     private void configureCurrentLesson() {
@@ -116,15 +135,20 @@ public class JapaneseView extends BaseView {
         tp.setTextAlign(Paint.Align.CENTER);
         tp.setAntiAlias(true);
         englishLayout = new DynamicLayout(getContext().getString(R.string.english, japaneseLesson.getEnglish()), tp,
-                getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
+                getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         englishLayout.getOffsetToRightOf(characterSize);
-        romajiLayout = new DynamicLayout(getContext().getString(R.string.romaji, Objects.toString(japaneseLesson.getRomaji(), "").replaceAll("\\(.+\\)", "")), tp,
-                getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
+        String romaji = japaneseLesson.getRomaji();
+
+
+        romajiLayout = new DynamicLayout(getContext().getString(R.string.romaji, Objects.toString(romaji, "").replaceAll("\\(.+\\)", "")), tp,
+                getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         romajiLayout.getOffsetToRightOf(characterSize);
         answerLayout = new DynamicLayout(getContext().getString(R.string.answer, Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", "")), tp,
-                getWidth() * 3 / 4, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
+                getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         answerLayout.getOffsetToRightOf(characterSize);
-
+        if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
+            post(() -> Toast.makeText(this.getContext(), romaji.replaceAll(".+\\((.+)\\)", "$1"), Toast.LENGTH_SHORT).show());
+        }
 
     }
 
@@ -240,8 +264,6 @@ public class JapaneseView extends BaseView {
                 }
 
                 if (!letters.isEmpty() && exchangeLetter(event, getAnswerLayout(), this.answer, getLettersLayout(), this.letters)) {
-
-
                     return true;
                 }
 

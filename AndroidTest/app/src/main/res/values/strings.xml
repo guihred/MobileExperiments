@@ -66,5 +66,6 @@
     <string name="english">English: %s</string>
     <string name="romaji">Romaji: %s</string>
     <string name="answer">Answer: %s</string>
+    <string name="tips">Tips</string>
 
 </resources>
