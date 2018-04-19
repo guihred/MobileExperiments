@@ -67,5 +67,6 @@
     <string name="romaji">Romaji: %s</string>
     <string name="answer">Answer: %s</string>
     <string name="tips">Tips</string>
+    <string name="show_romaji">Show Romaji</string>
 
 </resources>

@@ -5,26 +5,23 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
+ * Class to update the database
  * Created by guilherme.hmedeiros on 16/03/2018.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     /*
-         * The Android's default system path of the application database in internal
-         * storage. The package of the application is part of the path of the
-         * directory.
-         */
-    private static final String DB_DIR = "/data/data/red.guih.games/databases/";
+     * The Android's default system path of the application database in internal
+     * storage. The package of the application is part of the path of the
+     * directory.
+     */
+
     private static final String DB_NAME = UserRecord.DATABASE_NAME;
-    public static final int VERSION = 4;
-    private static String DB_PATH = DB_DIR + DB_NAME;
-    private static final String OLD_DB_PATH = DB_DIR + "old_" + DB_NAME;
+    public static final int VERSION = 6;
+    public static final String CREATE_DATABASE2_SQL = "create_database2.sql";
 
     private final Context myContext;
 
@@ -35,13 +32,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Constructor Takes and keeps a reference of the passed context in order to
      * access to the application assets and resources.
      *
-     * @param context
+     * @param context the context
      */
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, VERSION);
         myContext = context;
         // Get the path of the database that is based on the context.
-        DB_PATH = myContext.getDatabasePath(DB_NAME).getAbsolutePath();
+
     }
 
     /**
@@ -49,88 +46,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Create a new empty database in internal storage if it does not exist.
      */
     public void initializeDataBase() {
-        /*
-         * Creates or updates the database in internal storage if it is needed
-         * before opening the database. In all cases opening the database copies
-         * the database in internal storage to the cache.
-         */
         SQLiteDatabase writableDatabase = getWritableDatabase();
-        if (createDatabase) {
-            /*
-             * If the database is created by the copy method, then the creation
-             * code needs to go here. This method consists of copying the new
-             * database from assets into internal storage and then caching it.
-             */
+        if (upgradeDatabase || createDatabase) {
             try {
-                /*
-                 * Write over the empty data that was created in internal
-                 * storage with the one in assets and then cache it.
-                 */
-                copyDataBase();
-            } catch (IOException e) {
+                onCreate(writableDatabase);
+            } catch (Exception e) {
                 throw new Error("Error copying database");
             }
-        } else if (upgradeDatabase) {
-            /*
-             * If the database is upgraded by the copy and reload method, then
-             * the upgrade code needs to go here. This method consists of
-             * renaming the old database in internal storage, create an empty
-             * new database in internal storage, copying the database from
-             * assets to the new database in internal storage, caching the new
-             * database from internal storage, loading the data from the old
-             * database into the new database in the cache and then deleting the
-             * old database from internal storage.
-             */
-//            try {
-//                FileHelper.copyFile(DB_PATH, OLD_DB_PATH);
-//                copyDataBase();
-//                SQLiteDatabase old_db = SQLiteDatabase.openDatabase(OLD_DB_PATH, null, SQLiteDatabase.OPEN_READWRITE);
-//                SQLiteDatabase new_db = SQLiteDatabase.openDatabase(DB_PATH,null, SQLiteDatabase.OPEN_READWRITE);
-//                /*
-//                 * Add code to load data into the new database from the old
-//                 * database and then delete the old database from internal
-//                 * storage after all data has been transferred.
-//                 */
-//            } catch (IOException e) {
-//                throw new Error("Error copying database");
-//            }
         }
 
-    }
 
-    /**
-     * Copies your database from your local assets-folder to the just created
-     * empty database in the system folder, from where it can be accessed and
-     * handled. This is done by transfering bytestream.
-     */
-    private void copyDataBase() throws IOException {
-        /*
-         * Close SQLiteOpenHelper so it will commit the created empty database
-         * to internal storage.
-         */
-        close();
-
-        /*
-         * Open the database in the assets folder as the input stream.
-         */
-        InputStream myInput = myContext.getAssets().open(DB_NAME);
-
-        /*
-         * Open the empty db in interal storage as the output stream.
-         */
-        OutputStream myOutput = new FileOutputStream(DB_PATH);
-
-        /*
-         * Copy over the empty db in internal storage with the database in the
-         * assets folder.
-         */
-        FileHelper.copyFile(myInput, myOutput);
-
-        /*
-         * Access the copied database so SQLiteHelper will cache it and mark it
-         * as created.
-         */
-        getWritableDatabase().close();
     }
 
     /*
@@ -164,7 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          */
         try {
             InputStream is = myContext.getResources().getAssets().open(
-                    "create_database.sql");
+                    "create_database2.sql");
 
             String[] statements = FileHelper.parseSqlFile(is);
 
@@ -202,7 +127,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          */
         try {
             InputStream is = myContext.getResources().getAssets().open(
-                    "create_database.sql");
+                    CREATE_DATABASE2_SQL);
 
             String[] statements = FileHelper.parseSqlFile(is);
 
@@ -215,7 +140,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Called everytime the database is opened by getReadableDatabase or
+     * Called every time the database is opened by getReadableDatabase or
      * getWritableDatabase. This is called after onCreate or onUpgrade is
      * called.
      */
