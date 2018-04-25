@@ -33,9 +33,10 @@
         style="@style/Platform.V25.AppCompat.Light"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="top|end"
+        android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/fab_margin"
         android:tint="@color/color3"
+        app:fabSize="mini"
         app:srcCompat="@drawable/romaji" />
 
 </FrameLayout>

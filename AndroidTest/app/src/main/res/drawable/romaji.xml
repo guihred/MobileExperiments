@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="16dp"
-    android:height="16dp"
-    android:viewportHeight="100"
-    android:viewportWidth="300">
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportHeight="600"
+    android:viewportWidth="600">
     <!--<path-->
 
         <!--android:fillColor="#00FF00"-->
-        <!--android:pathData="M 0,0 h300 v100 h-300 z "-->
+        <!--android:pathData="M 0,0 h600 v600 h-600 z "-->
         <!--android:strokeColor="#00FF00"-->
         <!--android:strokeWidth="2" />-->
-    <group android:translateY="00" android:scaleX="1" android:scaleY="0.3">
+    <group android:translateY="0" android:translateX="-0" android:scaleX="2" android:scaleY="2">
     <group
 
         android:scaleX="2"

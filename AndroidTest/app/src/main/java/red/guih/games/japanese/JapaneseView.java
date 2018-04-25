@@ -37,7 +37,7 @@ import red.guih.games.db.UserRecord;
 public class JapaneseView extends BaseView {
 
     public static final int LIGHT_RED = 0x88FF0000;
-    public static final int MAX_CHAPTERS = 44;
+    public static final int MAX_CHAPTERS = 148;
     public static final int LIGHT_GREEN = 0x8800FF00;
     public static boolean SHOW_ROMAJI;
     public static int CHAPTER = 1;
@@ -149,7 +149,7 @@ public class JapaneseView extends BaseView {
         if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
             post(() -> {
                 String tip = romaji.replaceAll(".+\\((.+)\\)", "$1");
-                Toast.makeText(this.getContext(), tip,tip.length()>20?Toast.LENGTH_LONG: Toast.LENGTH_SHORT).show();
+                Toast.makeText(this.getContext(), tip,Toast.LENGTH_LONG).show();
             });
         }
 
@@ -159,7 +159,7 @@ public class JapaneseView extends BaseView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         characterSize = getWidth() / 24;
-        int h = getHeight() * 5 / 6;
+        int h = getHeight() * 3 / 4;
         int w = getWidth();
         okButton.set(w / 3, h, w / 3 + characterSize * 6, h + characterSize * 4);
 
@@ -298,9 +298,6 @@ public class JapaneseView extends BaseView {
         }
         text.setText(String.format(getResources().getString(R.string.you_win), description));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-
-
         dialogButton.setOnClickListener(v -> nextChapter());
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
@@ -308,6 +305,7 @@ public class JapaneseView extends BaseView {
 
     private void nextChapter() {
         setChapter((CHAPTER + 1) % MAX_CHAPTERS);
+        addUserPreference("japanese."+JapaneseActivity.class.getSimpleName(),R.string.chapter, JapaneseView.CHAPTER);
         loadLessons();
     }
 

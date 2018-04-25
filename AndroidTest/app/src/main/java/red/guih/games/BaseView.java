@@ -55,6 +55,12 @@ public abstract class BaseView extends View {
         editor.putInt(getResources().getString(name), value);
         editor.apply();
     }
+    protected void addUserPreference(String classname,int name, int value) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(classname, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(getResources().getString(name), value);
+        editor.apply();
+    }
     protected int getUserPreference(int name, int defaultValue) {
         SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
         return sharedPref.getInt(getResources().getString(name), defaultValue);
