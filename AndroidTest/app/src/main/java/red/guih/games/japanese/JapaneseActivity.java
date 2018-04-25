@@ -102,6 +102,8 @@ public class JapaneseActivity extends BaseActivity {
         retrievePointsByDifficulty(seekBar);
         CheckBox viewById1 = dialog.findViewById(R.id.showRomaji);
         viewById1.setChecked(JapaneseView.SHOW_ROMAJI);
+        CheckBox nightMode = dialog.findViewById(R.id.nightMode);
+        nightMode.setChecked(JapaneseView.NIGHT_MODE);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
@@ -142,6 +144,8 @@ public class JapaneseActivity extends BaseActivity {
         viewById.loadLessons();
         CheckBox viewById1 = dialog.findViewById(R.id.showRomaji);
         JapaneseView.SHOW_ROMAJI = viewById1.isChecked();
+        CheckBox nightMode = dialog.findViewById(R.id.nightMode);
+        JapaneseView.NIGHT_MODE = nightMode.isChecked();
 
         addUserPreference(R.string.chapter, JapaneseView.CHAPTER);
         dialog.dismiss();

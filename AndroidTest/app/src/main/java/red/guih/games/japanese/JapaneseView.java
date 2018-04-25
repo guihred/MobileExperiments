@@ -40,6 +40,7 @@ public class JapaneseView extends BaseView {
     public static final int MAX_CHAPTERS = 148;
     public static final int LIGHT_GREEN = 0x8800FF00;
     public static boolean SHOW_ROMAJI;
+    public static boolean NIGHT_MODE ;
     public static int CHAPTER = 1;
 
     final List<Letter> answer = new ArrayList<>();
@@ -130,7 +131,7 @@ public class JapaneseView extends BaseView {
 
 
         TextPaint tp = new TextPaint();
-        tp.setColor(Color.BLACK);
+        tp.setColor(NIGHT_MODE ? Color.WHITE : Color.BLACK);
         tp.setTextSize(characterSize);
         tp.setTextAlign(Paint.Align.CENTER);
         tp.setAntiAlias(true);
@@ -149,7 +150,7 @@ public class JapaneseView extends BaseView {
         if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
             post(() -> {
                 String tip = romaji.replaceAll(".+\\((.+)\\)", "$1");
-                Toast.makeText(this.getContext(), tip,Toast.LENGTH_LONG).show();
+                Toast.makeText(this.getContext(), tip, Toast.LENGTH_LONG).show();
             });
         }
 
@@ -161,13 +162,21 @@ public class JapaneseView extends BaseView {
         characterSize = getWidth() / 24;
         int h = getHeight() * 3 / 4;
         int w = getWidth();
-        okButton.set(w / 3, h, w / 3 + characterSize * 6, h + characterSize * 4);
+        okButton.set(w / 3, h, w * 2 / 3, h + characterSize * 4);
 
         configureCurrentLesson();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (NIGHT_MODE) {
+            paint.setColor(Color.WHITE);
+            canvas.drawColor(Color.BLACK);
+        } else {
+            paint.setColor(Color.BLACK);
+            canvas.drawColor(Color.WHITE);
+        }
+
 
         String chapterFormat = getContext().getString(R.string.chapter_format, CHAPTER, currentLesson, lessons.size());
         canvas.drawText(chapterFormat, characterSize, characterSize, paint);
@@ -291,8 +300,8 @@ public class JapaneseView extends BaseView {
         double score = getCurrentScore();
         String description = getContext().getString(R.string.punctuation, score);
         currentLesson = 0;
-        if (isRecordSuitable((long) score*100, UserRecord.JAPANESE, CHAPTER, false)) {
-            createRecordIfSuitable((long) score*100, description, UserRecord.JAPANESE, CHAPTER, false);
+        if (isRecordSuitable((long) score * 100, UserRecord.JAPANESE, CHAPTER, false)) {
+            createRecordIfSuitable((long) score * 100, description, UserRecord.JAPANESE, CHAPTER, false);
             showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
             return;
         }
@@ -305,7 +314,7 @@ public class JapaneseView extends BaseView {
 
     private void nextChapter() {
         setChapter((CHAPTER + 1) % MAX_CHAPTERS);
-        addUserPreference("japanese."+JapaneseActivity.class.getSimpleName(),R.string.chapter, JapaneseView.CHAPTER);
+        addUserPreference("japanese." + JapaneseActivity.class.getSimpleName(), R.string.chapter, JapaneseView.CHAPTER);
         loadLessons();
     }
 
