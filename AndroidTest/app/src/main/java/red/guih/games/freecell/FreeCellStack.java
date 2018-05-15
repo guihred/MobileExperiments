@@ -22,6 +22,8 @@ class FreeCellStack {
     private final int n;
     private final List<FreeCellCard> cards = new ArrayList<>();
     private int layoutX, layoutY;
+    private float maxHeight;
+
     private final Paint paint = new Paint();
     private RectF boundsF;
 
@@ -78,24 +80,12 @@ class FreeCellStack {
     }
 
 
-    public List<FreeCellCard> removeLastCards(int n) {
+    public void removeLastCards() {
         if (cards.isEmpty()) {
-            return null;
-        }
-        List<FreeCellCard> lastCards = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            FreeCellCard solitaireCard = cards.remove(cards.size() - 1);
-            lastCards.add(solitaireCard);
-        }
-        return lastCards;
-    }
-
-    public FreeCellCard removeLastCards() {
-        if (cards.isEmpty()) {
-            return null;
+            return;
         }
 
-        return cards.remove(cards.size() - 1);
+        cards.remove(cards.size() - 1);
     }
 
     public void addCards(Collection<FreeCellCard> cards) {
@@ -117,22 +107,36 @@ class FreeCellStack {
                 solitaireCard.setLayoutX(0);
             }
         }
-        int layout = 0;
-        for (int i = 0; i < this.cards.size(); i++) {
-            FreeCellCard solitaireCard = this.cards.get(i);
-            solitaireCard.setLayoutY(layout);
-            layout += FreeCellCard.getCardWidth() / (solitaireCard.isShown() ? 3 : 8);
-        }
+        adjust();
 
     }
 
-    void adjust() {
+    float adjust() {
+        return adjust(cards.size());
+    }
+
+    float adjust(int cards) {
+        if (type != StackType.SIMPLE)
+            return 0;
         int layout = 0;
         for (int i = 0; i < this.cards.size(); i++) {
             FreeCellCard solitaireCard = this.cards.get(i);
             solitaireCard.setLayoutY(layout);
-            layout += FreeCellCard.getCardWidth() / (solitaireCard.isShown() ? 3 : 8);
+            layout += FreeCellCard.getCardWidth() / 3;
         }
+        float spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3;
+        if (layout <= spaceToDisplay) {
+            return layout - FreeCellCard.getCardWidth() / 3;
+        }
+        float newGap = spaceToDisplay / cards;
+        layout = 0;
+        for (int i = 0; i < this.cards.size(); i++) {
+            FreeCellCard solitaireCard = this.cards.get(i);
+            solitaireCard.setLayoutY(layout);
+            layout += newGap;
+        }
+        return layout - newGap;
+
     }
 
     public void addCards(FreeCellCard... cards) {
@@ -180,9 +184,7 @@ class FreeCellStack {
         return (int) cards.stream().filter(e -> !e.isShown()).count();
     }
 
-    public List<FreeCellCard> removeAllCards() {
-        List<FreeCellCard> collect = new ArrayList<>(cards);
-        cards.clear();
-        return collect;
+    public void setMaxHeight(int maxHeight) {
+        this.maxHeight = maxHeight;
     }
 }

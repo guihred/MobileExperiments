@@ -24,7 +24,9 @@
         <activity
             android:name=".freecell.FreeCellActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:parentActivityName=".GamesActivity"></activity>
+            android:parentActivityName=".GamesActivity"
+
+             />
         <activity
             android:name=".pacman.PacmanActivity"
             android:parentActivityName=".GamesActivity"
