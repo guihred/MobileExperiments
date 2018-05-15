@@ -125,7 +125,7 @@ class FreeCellStack {
             layout += FreeCellCard.getCardWidth() / 3;
         }
         float spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3;
-        if (layout <= spaceToDisplay) {
+        if (FreeCellCard.getCardWidth() / 3*cards <= spaceToDisplay) {
             return layout - FreeCellCard.getCardWidth() / 3;
         }
         float newGap = spaceToDisplay / cards;
