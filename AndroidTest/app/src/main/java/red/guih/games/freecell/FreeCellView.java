@@ -42,7 +42,7 @@ import static red.guih.games.freecell.FreeCellStack.StackType.SUPPORT;
  * @author Note
  */
 public class FreeCellView extends BaseView {
-    public static final int ANIMATION_DURATION = 250;
+    public static final int ANIMATION_DURATION = 125;
     public static final int DARK_GREEN = 0xFF008800;
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
     private final FreeCellStack[] supportingStacks = new FreeCellStack[4];
@@ -141,6 +141,11 @@ public class FreeCellView extends BaseView {
                 getHeight());
         returnButtonIcon.setBounds(returnButton);
         invalidate();
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     @Override
@@ -317,20 +322,22 @@ public class FreeCellView extends BaseView {
         float x = -targetStack.getLayoutX() + originStack.getLayoutX();
         float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
         targetStack.addCards(solitaireCard);
+        
         PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
-        int value = 0;
-        if (targetStack.type == FreeCellStack.StackType.SIMPLE) {
-            value = (targetStack.getShownCards() - 1) * FreeCellCard.getCardWidth() / 3;
-            if (targetStack.getNotShownCards() > 0) {
-                value += targetStack.getNotShownCards() * FreeCellCard.getCardWidth() / 8;
-            }
-        }
+
+        float value = targetStack.adjust();
+//        if (targetStack.type == FreeCellStack.StackType.SIMPLE) {
+//            value = (targetStack.getShownCards() - 1) * FreeCellCard.getCardWidth() / 3;
+//            if (targetStack.getNotShownCards() > 0) {
+//                value += targetStack.getNotShownCards() * FreeCellCard.getCardWidth() / 8;
+//            }
+//        }
 
         PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, value));
         ObjectAnimator eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
 
         eatingAnimation.setDuration(ANIMATION_DURATION);
-
+        originStack.adjust();
         eatingAnimation.addUpdateListener(animation -> invalidate());
         eatingAnimation.addListener(new AutomaticCardsListener());
         eatingAnimation.start();
@@ -364,7 +371,6 @@ public class FreeCellView extends BaseView {
         if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
             showDialogWinning();
         }
-
         if (isNullOrEmpty(dragContext.cards)) {
             return;
         }
@@ -372,7 +378,6 @@ public class FreeCellView extends BaseView {
             dragContext.reset();
             return;
         }
-
 
         FreeCellCard first = dragContext.cards.iterator().next();
         if (dragContext.cards.size() == 1) {
@@ -490,8 +495,6 @@ public class FreeCellView extends BaseView {
             n = c.getNumber().getNumber();
             color = c.getSuit().getColor();
         }
-
-
         return true;
     }
 
