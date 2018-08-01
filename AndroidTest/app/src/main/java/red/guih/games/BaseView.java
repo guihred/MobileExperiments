@@ -1,7 +1,6 @@
 package red.guih.games;
 
 import android.app.Dialog;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
@@ -28,11 +27,7 @@ import red.guih.games.db.UserRecordDatabase;
 public abstract class BaseView extends View {
 
     public static final int MAX_RECORDS = 5;
-    protected UserRecordDatabase db = Room.databaseBuilder(this.getContext(), UserRecordDatabase.class, UserRecord.DATABASE_NAME)
-            .fallbackToDestructiveMigration()
-            .allowMainThreadQueries()
-
-            .build();
+    protected UserRecordDatabase db = BaseActivity.getInstance(this.getContext().getApplicationContext());
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -57,28 +52,39 @@ public abstract class BaseView extends View {
         editor.putInt(getResources().getString(name), value);
         editor.apply();
     }
-    protected void addUserPreference(String classname,int name, int value) {
+
+    protected void addUserPreference(int name, String value) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getResources().getString(name), value);
+        editor.apply();
+    }
+
+    protected void addUserPreference(String classname, int name, int value) {
         SharedPreferences sharedPref = getContext().getSharedPreferences(classname, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getResources().getString(name), value);
         editor.apply();
     }
+
     protected int getUserPreference(int name, int defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         return sharedPref.getInt(getResources().getString(name), defaultValue);
     }
+
     protected float getUserPreferenceFloat(int name, float defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
 
         Object o = sharedPref.getAll().get(getResources().getString(name));
-        if(o instanceof Integer){
+        if (o instanceof Integer) {
             return ((Integer) o).floatValue();
         }
 
         return sharedPref.getFloat(getResources().getString(name), defaultValue);
     }
+
     protected String getUserPreference(int name, String defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(),Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         return sharedPref.getString(getResources().getString(name), defaultValue);
     }
 

@@ -24,8 +24,7 @@ import red.guih.games.db.UserRecordDatabase;
 public abstract class BaseActivity extends AppCompatActivity {
 
 
-    protected final UserRecordDatabase db = Room.databaseBuilder(this,
-            UserRecordDatabase.class, UserRecord.DATABASE_NAME).build();
+    protected final UserRecordDatabase db = BaseActivity.getInstance(this);
 
     public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter, int difficulty, String gameName) {
         List<UserRecord> records = getAll(difficulty, gameName);
@@ -34,6 +33,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         adapter.addAll(records);
         recordListView.refreshDrawableState();
+    }
+
+    public static UserRecordDatabase getInstance(Context context) {
+
+        return Room.databaseBuilder(context,
+                UserRecordDatabase.class, UserRecord.DATABASE_NAME)
+                .fallbackToDestructiveMigration()
+                .allowMainThreadQueries().build();
     }
 
     protected List<UserRecord> getAll(int difficulty, String gameName) {
@@ -64,10 +71,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getInt(getString(name), defaultValue);
     }
+
     protected float getUserPreferenceFloat(int name, int defaultValue) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getFloat(getString(name), defaultValue);
     }
+
     protected String getUserPreference(int name, String defaultValue) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getString(getString(name), defaultValue);

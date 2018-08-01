@@ -69,5 +69,6 @@
     <string name="tips">Tips</string>
     <string name="show_romaji">Show Romaji</string>
     <string name="night_mode">Night Mode</string>
+    <string name="executed">EXECUTADO</string>
 
 </resources>

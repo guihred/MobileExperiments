@@ -11,6 +11,7 @@ import android.text.DynamicLayout;
 import android.text.Layout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 
 import red.guih.games.BaseView;
 import red.guih.games.R;
+import red.guih.games.db.DatabaseMigration;
 import red.guih.games.db.JapaneseLesson;
 import red.guih.games.db.UserRecord;
 
@@ -83,15 +85,27 @@ public class JapaneseView extends BaseView {
     }
 
     public List<JapaneseLesson> loadLessons() {
-        new Thread(() -> {
 
+        new Thread(() -> {
+            Log.e("JAPANESE VIEW","LOADING LESSONS");
             lessons.clear();
             List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
+            Log.e("JAPANESE VIEW",db.toString());
             lessons.addAll(all);
             if (!lessons.isEmpty()) {
                 points = getUserPreferenceFloat(R.string.punctuation, 0);
                 currentLesson = getUserPreference(R.string.lesson, 0);
                 configureCurrentLesson();
+            }else{
+                Log.e("JAPANESE VIEW","NO LESSONS");
+                String nao = getUserPreference(R.string.executed, "NAO");
+                if ("SIM".equals(nao)) {
+                    new Thread(() -> {
+                        Log.e("DATABASE", "INITIALIZING DATABASE");
+                        DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
+                        addUserPreference(R.string.executed, "NAO");
+                    }).start();
+                }
             }
             postInvalidate();
             loadTips();
