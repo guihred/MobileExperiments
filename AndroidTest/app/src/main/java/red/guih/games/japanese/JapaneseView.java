@@ -86,7 +86,8 @@ public class JapaneseView extends BaseView {
         new Thread(() -> {
 
             lessons.clear();
-            lessons.addAll(db.japaneseLessonDao().getAll(CHAPTER));
+            List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
+            lessons.addAll(all);
             if (!lessons.isEmpty()) {
                 points = getUserPreferenceFloat(R.string.punctuation, 0);
                 currentLesson = getUserPreference(R.string.lesson, 0);

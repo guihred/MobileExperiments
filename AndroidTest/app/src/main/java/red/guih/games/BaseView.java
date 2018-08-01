@@ -30,6 +30,8 @@ public abstract class BaseView extends View {
     public static final int MAX_RECORDS = 5;
     protected UserRecordDatabase db = Room.databaseBuilder(this.getContext(), UserRecordDatabase.class, UserRecord.DATABASE_NAME)
             .fallbackToDestructiveMigration()
+            .allowMainThreadQueries()
+
             .build();
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {

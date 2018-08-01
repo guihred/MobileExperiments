@@ -89,13 +89,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          */
         try {
             InputStream is = myContext.getResources().getAssets().open(
-                    "create_database2.sql");
+                    CREATE_DATABASE2_SQL);
 
             String[] statements = FileHelper.parseSqlFile(is);
-
-            for (String statement : statements) {
+            db.beginTransaction();
+            for (int i = 0; i < statements.length; i++) {
+                String statement = statements[i];
                 db.execSQL(statement);
+
+                if(i%100==0){
+                    db.endTransaction();
+                    db.beginTransaction();
+                }
             }
+            db.endTransaction();
         } catch (Exception ex) {
             Log.e("DATABASE", "DATABASE ERROR", ex);
         }
