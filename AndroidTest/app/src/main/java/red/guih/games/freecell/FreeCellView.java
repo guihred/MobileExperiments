@@ -233,6 +233,7 @@ public class FreeCellView extends BaseView {
         if (returnButton.contains((int) x, (int) y) && !history.isEmpty()) {
             MotionHistory remove = history.remove(history.size() - 1);
             remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
+
             dragContext.reset();
             return;
         }

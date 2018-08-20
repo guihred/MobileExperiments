@@ -20,6 +20,7 @@ import red.guih.games.puzzle.PuzzleActivity;
 import red.guih.games.slidingpuzzle.SlidingPuzzleActivity;
 import red.guih.games.solitaire.SolitaireActivity;
 import red.guih.games.square2048.Square2048Activity;
+import red.guih.games.sudoku.SudokuActivity;
 import red.guih.games.tetris.TetrisActivity;
 
 /**
@@ -56,6 +57,8 @@ public class GamesActivity extends AppCompatActivity {
         freeCell.setOnClickListener((View v) -> startActivity(new Intent(this, FreeCellActivity.class)));
         ImageButton japaneseButton = findViewById(R.id.japaneseButton);
         japaneseButton.setOnClickListener((View v) -> startActivity(new Intent(this, JapaneseActivity.class)));
+        ImageButton sudoku = findViewById(R.id.sudokuButton);
+        sudoku.setOnClickListener((View v) -> startActivity(new Intent(this, SudokuActivity.class)));
 
     }
 

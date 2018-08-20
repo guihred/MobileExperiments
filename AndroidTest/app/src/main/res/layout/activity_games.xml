@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/gamesActivity"
     android:layout_width="match_parent"
@@ -7,7 +7,7 @@
     android:baselineAligned="true"
     android:orientation="vertical">
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false"
@@ -85,9 +85,9 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
-    </LinearLayout>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
 
@@ -167,91 +167,71 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+    </TableRow>
 
-    <LinearLayout
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <ImageButton
+            android:id="@+id/slidingPuzzleButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/labyrinth"
+            android:src="@drawable/sliding_puzzle_button" />
+
+        <ImageButton
+            android:id="@+id/solitaireButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/solitaire"
+            android:src="@drawable/solitaire_button" />
+
+        <ImageButton
+            android:id="@+id/square2048Button"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:contentDescription="@string/square2048"
+            android:src="@drawable/square2048_button" />
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:baselineAligned="false">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/slidingPuzzleButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:contentDescription="@string/labyrinth"
-                android:src="@drawable/sliding_puzzle_button"
-                tools:layout_editor_absoluteX="164dp"
-                tools:layout_editor_absoluteY="98dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/slidingpuzzle"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/solitaireButton"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:background="@null"
-                android:contentDescription="@string/solitaire"
-                android:src="@drawable/solitaire_button" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/solitaire"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/square2048Button"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:background="@null"
-                android:contentDescription="@string/square2048"
-                android:src="@drawable/animated_square2048" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/square2048"
-                android:textAlignment="center" />
-
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/slidingpuzzle"
+            android:textAlignment="center" />
 
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/solitaire"
+            android:textAlignment="center" />
 
-    <LinearLayout
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/square2048"
+            android:textAlignment="center" />
+
+    </TableRow>
+
+    <TableRow
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="3">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -271,8 +251,31 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/sudokuButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:contentDescription="@string/sudoku"
+                android:src="@drawable/crown" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sudoku"
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -292,6 +295,6 @@
                 android:textAlignment="center" />
 
         </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+    </TableRow>
+</TableLayout>
 

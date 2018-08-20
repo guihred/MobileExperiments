@@ -20,7 +20,7 @@
     <string name="labyrinth">Labirinto</string>
     <string name="mode">Modo</string>
     <string name="puzzle">Quebra-Cabeça</string>
-    <string name="slidingpuzzle">Junte os Números</string>
+    <string name="slidingpuzzle">Números</string>
     <string name="image">Imagem</string>
     <string name="photo">Foto</string>
     <string name="you_beaten_the_record">Você Bateu um Recorde!</string>
@@ -70,5 +70,6 @@
     <string name="show_romaji">Show Romaji</string>
     <string name="night_mode">Night Mode</string>
     <string name="executed">EXECUTADO</string>
+    <string name="sudoku">Sudoku</string>
 
 </resources>

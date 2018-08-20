@@ -180,9 +180,7 @@ class FreeCellStack {
         return (int) cards.stream().filter(FreeCellCard::isShown).count();
     }
 
-    public int getNotShownCards() {
-        return (int) cards.stream().filter(e -> !e.isShown()).count();
-    }
+
 
     public void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
