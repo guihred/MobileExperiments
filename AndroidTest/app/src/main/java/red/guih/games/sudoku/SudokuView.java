@@ -27,9 +27,9 @@ public class SudokuView extends BaseView {
     public static final int MAP_NUMBER = 3;
 
     public static final int MAP_N_SQUARED = MAP_NUMBER * MAP_NUMBER;
-    private List<NumberButton> numberOptions = new ArrayList<>();
-    private List<SudokuSquare> sudokuSquares = new ArrayList<>();
-    private Random random = new Random();
+    private final List<NumberButton> numberOptions = new ArrayList<>();
+    private final List<SudokuSquare> sudokuSquares = new ArrayList<>();
+    private final Random random = new Random();
 
     private SudokuSquare pressedSquare;
     private Paint black;
@@ -67,7 +67,6 @@ public class SudokuView extends BaseView {
     }
 
     private void initialize() {
-//        numberBoard.setVisible(false);
         for (int i = 0; i < MAP_N_SQUARED; i++) {
             for (int j = 0; j < MAP_N_SQUARED; j++) {
                 sudokuSquares.add(new SudokuSquare(i, j));
@@ -77,12 +76,10 @@ public class SudokuView extends BaseView {
             for (int j = 0; j < MAP_NUMBER; j++) {
                 NumberButton child = new NumberButton(i * MAP_NUMBER + j + 1);
                 numberOptions.add(child);
-//                numberBoard.add(child, j, i);
             }
         }
         NumberButton child = new NumberButton(0);
         numberOptions.add(child);
-//        numberBoard.add(child, 3, 0);
         reset();
     }
 
@@ -92,6 +89,17 @@ public class SudokuView extends BaseView {
             sq.draw(canvas);
         }
         paintDarkerSquares(canvas);
+        if (pressedSquare != null) {
+
+            RectF boundsInParent = pressedSquare.getBounds();
+            int halfTheSize = MAP_N_SQUARED / 2;
+            float maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.top - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
+                    : boundsInParent.bottom;
+            float maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.left - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
+                    : boundsInParent.right;
+            numberOptions.forEach(e -> e.draw(canvas, maxX, maxY));
+
+        }
 
     }
 
@@ -101,7 +109,7 @@ public class SudokuView extends BaseView {
             black.setStyle(Paint.Style.STROKE);
             black.setColor(Color.BLACK);
             black.setStrokeWidth(4);
-            black.setTextSize(30);
+            black.setTextSize(NumberButton.TEXT_SIZE);
             black.setTextAlign(Paint.Align.CENTER);
         }
 
@@ -177,49 +185,43 @@ public class SudokuView extends BaseView {
     }
 
     private void updatePossibilities() {
-        sudokuSquares.stream().forEach(sq -> sq.setPossibilities(IntStream
-                .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList())));
-        sudokuSquares.stream()
-                .forEach(sq -> sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber())));
+        for (SudokuSquare sq : sudokuSquares) {
+            sq.setPossibilities(IntStream
+                    .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList()));
+            sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber()));
+        }
     }
 
     public void handleMousePressed(MotionEvent ev) {
         Optional<SudokuSquare> pressed = sudokuSquares.stream()
                 .filter(e -> !e.isPermanent())
-                .filter(s -> s.contains(ev.getX(), ev.getY())).findFirst();
+                .filter(s -> s.contains(ev.getX(), ev.getY()))
+                .findFirst();
         if (!pressed.isPresent()) {
             pressedSquare = null;
             return;
         }
         pressedSquare = pressed.get();
-        RectF boundsInParent = pressedSquare.getBounds();
-        int halfTheSize = MAP_N_SQUARED / 2;
-        double maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.top - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
-                : boundsInParent.bottom;
-        double maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.left - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
-                : boundsInParent.right;
-//        numberBoard.setPadding(new Insets(maxY, 0, 0, maxX));
-//        numberBoard.setVisible(true);
         handleMouseMoved(ev);
     }
 
     public void handleMouseMoved(MotionEvent s) {
-//        numberOptions.forEach(e -> e.setOver(e.contains(s.getX(), s.getY())));
+        numberOptions.forEach(e -> e.setOver(e.contains(s.getX(), s.getY())));
     }
 
     public void handleMouseReleased(MotionEvent s) {
-//        Optional<NumberButton> findFirst = numberOptions.stream()
-//                .filter(e -> e.getBoundsInParent().contains(s.getX(), s.getY())).findFirst();
-//        if (pressedSquare != null && findFirst.isPresent()) {
-//            NumberButton node = findFirst.get();
-//            pressedSquare.setNumber(node.getNumber());
-//            updatePossibilities();
-//            pressedSquare = null;
-//        }
-//        numberBoard.setVisible(false);
-//        if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
-//            showDialogWinning();
-//        }
+        Optional<NumberButton> findFirst = numberOptions.stream()
+                .filter(e -> e.contains(s.getX(), s.getY())).findFirst();
+        if (pressedSquare != null && findFirst.isPresent()) {
+            NumberButton node = findFirst.get();
+            pressedSquare.setNumber(node.getNumber());
+            updatePossibilities();
+        }
+        pressedSquare = null;
+
+        if (sudokuSquares.stream().allMatch(e -> !e.isEmpty() && !e.isWrong())) {
+            showDialogWinning();
+        }
 
     }
 
@@ -256,32 +258,3 @@ public class SudokuView extends BaseView {
 
 }
 
-final class NumberButton {
-
-    private final int number;
-    private boolean over = (false);
-
-    public NumberButton(int i) {
-        this.number = i;
-//        styleProperty().bind(Bindings.when(over).then("-fx-background-color: white;")
-//                .otherwise("-fx-background-color: lightgray;"));
-//        setEffect(new InnerShadow());
-//        Text text = new Text(i == 0 ? "X" : Integer.toString(i));
-//        text.wrappingWidthProperty().bind(widthProperty());
-//        text.setTextOrigin(VPos.CENTER);
-//        text.layoutYProperty().bind(heightProperty().divide(2));
-//        text.setTextAlignment(TextAlignment.CENTER);
-//        getChildren().add(text);
-//        setPrefSize(30, 30);
-
-    }
-
-
-    public void setOver(boolean over) {
-        this.over = (over);
-    }
-
-    public int getNumber() {
-        return number;
-    }
-}

@@ -68,8 +68,10 @@ public class SudokuSquare {
         }
 
         if (!isEmpty()) {
+            BLACK.setStyle(Paint.Style.FILL);
             canvas.drawText(Integer.toString(number), row * SQUARE_SIZE + SQUARE_SIZE / 2, top + SQUARE_SIZE / 2, wrong ? RED : BLACK);
         }
+        BLACK.setStyle(Paint.Style.STROKE);
         canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE, BLACK);
     }
 
@@ -79,7 +81,7 @@ public class SudokuSquare {
 
     public RectF getBounds() {
         if (rect == null)
-            rect = new RectF(row * SQUARE_SIZE, col * SQUARE_SIZE, row * SQUARE_SIZE + SQUARE_SIZE, col * SQUARE_SIZE + SQUARE_SIZE);
+            rect = new RectF(row * SQUARE_SIZE, col * SQUARE_SIZE + LAYOUT_Y, row * SQUARE_SIZE + SQUARE_SIZE, col * SQUARE_SIZE + SQUARE_SIZE + LAYOUT_Y);
         return rect;
     }
 
@@ -176,10 +178,11 @@ public class SudokuSquare {
         BLACK.setStyle(Paint.Style.STROKE);
         BLACK.setColor(Color.BLACK);
         BLACK.setStrokeWidth(1);
-        BLACK.setTextSize(30);
+        BLACK.setTextSize(NumberButton.TEXT_SIZE);
         BLACK.setTextAlign(Paint.Align.CENTER);
         RED.setStyle(Paint.Style.FILL);
         RED.setColor(Color.RED);
+        RED.setTextSize(NumberButton.TEXT_SIZE);
         WHITE.setStyle(Paint.Style.FILL);
         WHITE.setColor(Color.WHITE);
         GRAY.setStyle(Paint.Style.FILL);

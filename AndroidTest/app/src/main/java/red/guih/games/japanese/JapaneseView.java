@@ -42,7 +42,7 @@ public class JapaneseView extends BaseView {
     public static final int MAX_CHAPTERS = 148;
     public static final int LIGHT_GREEN = 0x8800FF00;
     public static boolean SHOW_ROMAJI;
-    public static boolean NIGHT_MODE ;
+    public static boolean NIGHT_MODE;
     public static int CHAPTER = 1;
 
     final List<Letter> answer = new ArrayList<>();
@@ -87,26 +87,26 @@ public class JapaneseView extends BaseView {
     public List<JapaneseLesson> loadLessons() {
 
         new Thread(() -> {
-            Log.e("JAPANESE VIEW","LOADING LESSONS");
+            Log.e("JAPANESE VIEW", "LOADING LESSONS");
             lessons.clear();
             List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
-            Log.e("JAPANESE VIEW",db.toString());
+            Log.e("JAPANESE VIEW", db.toString());
             lessons.addAll(all);
             if (!lessons.isEmpty()) {
                 points = getUserPreferenceFloat(R.string.punctuation, 0);
                 currentLesson = getUserPreference(R.string.lesson, 0);
                 configureCurrentLesson();
-            }else{
-                Log.e("JAPANESE VIEW","NO LESSONS");
-                String nao = getUserPreference(R.string.executed, "NAO");
-                if ("SIM".equals(nao)) {
-                    new Thread(() -> {
-                        Log.e("DATABASE", "INITIALIZING DATABASE");
-                        DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
-                        addUserPreference(R.string.executed, "NAO");
-                    }).start();
-                }
             }
+            Log.e("JAPANESE VIEW", "NO LESSONS");
+            String nao = getUserPreference(R.string.executed, "NAO");
+            if ("SIM".equals(nao)) {
+                new Thread(() -> {
+                    Log.e("DATABASE", "INITIALIZING DATABASE");
+                    DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
+                    addUserPreference(R.string.executed, "NAO");
+                }).start();
+            }
+
             postInvalidate();
             loadTips();
         }).start();
