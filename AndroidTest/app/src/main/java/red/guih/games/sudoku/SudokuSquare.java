@@ -69,7 +69,7 @@ public class SudokuSquare {
 
         if (!isEmpty()) {
             BLACK.setStyle(Paint.Style.FILL);
-            canvas.drawText(Integer.toString(number), row * SQUARE_SIZE + SQUARE_SIZE / 2, top + SQUARE_SIZE / 2, wrong ? RED : BLACK);
+            canvas.drawText(Integer.toString(number), row * SQUARE_SIZE + SQUARE_SIZE / 2, top + SQUARE_SIZE / 2 + NumberButton.TEXT_SIZE *2/ 5, wrong ? RED : BLACK);
         }
         BLACK.setStyle(Paint.Style.STROKE);
         canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE, BLACK);

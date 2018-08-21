@@ -173,90 +173,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <ImageButton
-            android:id="@+id/slidingPuzzleButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:contentDescription="@string/labyrinth"
-            android:src="@drawable/sliding_puzzle_button" />
-
-        <ImageButton
-            android:id="@+id/solitaireButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:contentDescription="@string/solitaire"
-            android:src="@drawable/solitaire_button" />
-
-        <ImageButton
-            android:id="@+id/square2048Button"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:contentDescription="@string/square2048"
-            android:src="@drawable/square2048_button" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:baselineAligned="false">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/slidingpuzzle"
-            android:textAlignment="center" />
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/solitaire"
-            android:textAlignment="center" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/square2048"
-            android:textAlignment="center" />
-
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="3">
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/freecellButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@null"
-                android:contentDescription="@string/freecell"
-                android:src="@drawable/crown" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/freecell"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
 
             <ImageButton
                 android:id="@+id/sudokuButton"
@@ -264,7 +186,7 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:contentDescription="@string/sudoku"
-                android:src="@drawable/crown" />
+                android:src="@drawable/sudoku_button" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -281,20 +203,106 @@
             android:orientation="vertical">
 
             <ImageButton
-                android:id="@+id/japaneseButton"
+                android:id="@+id/slidingPuzzleButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:background="@null"
-                android:contentDescription="@string/freecell"
-                android:src="@drawable/flag_and_map_of_japan" />
+                android:contentDescription="@string/labyrinth"
+                android:src="@drawable/sliding_puzzle_button" />
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/japanese"
+                android:layout_height="match_parent"
+                android:text="@string/slidingpuzzle"
                 android:textAlignment="center" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/square2048Button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                android:background="@null"
+                android:contentDescription="@string/square2048"
+                android:src="@drawable/animated_square2048"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/square2048"
+                android:textAlignment="center" />
+
+
+        </LinearLayout>
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3">
+
+        <ImageButton
+            android:id="@+id/freecellButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:contentDescription="@string/freecell"
+            android:src="@drawable/crown" />
+
+        <ImageButton
+            android:id="@+id/solitaireButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:contentDescription="@string/solitaire"
+            android:src="@drawable/solitaire_button" />
+
+        <ImageButton
+            android:id="@+id/japaneseButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:contentDescription="@string/japanese"
+            android:src="@drawable/flag_and_map_of_japan" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="3">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/freecell"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/solitaire"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/japanese"
+            android:textAlignment="center" />
+
     </TableRow>
 </TableLayout>
 
