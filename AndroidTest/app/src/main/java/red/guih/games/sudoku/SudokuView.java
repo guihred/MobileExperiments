@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,7 +29,6 @@ public class SudokuView extends BaseView {
     public static final int MAP_N_SQUARED = MAP_NUMBER * MAP_NUMBER;
     private final List<NumberButton> numberOptions = new ArrayList<>();
     private final List<SudokuSquare> sudokuSquares = new ArrayList<>();
-    private final Random random = new Random();
 
     private SudokuSquare pressedSquare;
     private Paint black;
@@ -121,8 +120,9 @@ public class SudokuView extends BaseView {
         }
     }
 
-    private void createRandomNumbers() {
-        List<Integer> numbers = IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
+    private void createRandomNumbers(List<Integer> numbers) {
+
+
         int nTries = 0;
         for (int i = 0; i < MAP_N_SQUARED; i++) {
             for (int j = 0; j < MAP_N_SQUARED; j++) {
@@ -158,6 +158,15 @@ public class SudokuView extends BaseView {
                 .noneMatch(s -> s.getNumber() == n);
     }
 
+    private boolean isNumberFitExtrictly(int n, int row, int col) {
+        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInRow(row))
+                .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
+                .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInCol(col))
+                .noneMatch(s -> s.getNumber() == n);
+    }
+
 
     public SudokuSquare getMapAt(int i, int j) {
         return sudokuSquares.get(i * MAP_N_SQUARED + j);
@@ -168,11 +177,25 @@ public class SudokuView extends BaseView {
 //        return numberBoard;
 //    }
 
+    private void reset() {
 
-    private void removeRandomNumbers() {
+        Log.i("Reset", "0");
+        List<Integer> numbers = IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
+        Collections.shuffle(numbers);
+        createRandomNumbers(numbers);
         List<SudokuSquare> sudokuSquares2 = sudokuSquares.stream().filter(SudokuSquare::isNotEmpty)
                 .collect(Collectors.toList());
-        SudokuSquare sudokuSquare = sudokuSquares2.get(random.nextInt(sudokuSquares2.size()));
+        Collections.shuffle(sudokuSquares2);
+        for (int i = 0; i < MAP_N_SQUARED * MAP_N_SQUARED / 2; i++) {
+
+            removeRandomNumbers(sudokuSquares2);
+
+        }
+    }
+
+
+    private void removeRandomNumbers(List<SudokuSquare> sudokuSquares2) {
+        SudokuSquare sudokuSquare = sudokuSquares2.remove(0);
         int previousN = sudokuSquare.setEmpty();
         List<Integer> possibleNumbers = IntStream.rangeClosed(1, MAP_N_SQUARED)
                 .filter(n -> isNumberFit(sudokuSquare, n)).boxed().collect(Collectors.toList());
@@ -187,7 +210,7 @@ public class SudokuView extends BaseView {
     private void updatePossibilities() {
         for (SudokuSquare sq : sudokuSquares) {
             sq.setPossibilities(IntStream
-                    .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFit(sq, n)).boxed().collect(Collectors.toList()));
+                    .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFitExtrictly(n, sq.getRow(), sq.getCol())).boxed().collect(Collectors.toList()));
             sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber()));
         }
     }
@@ -242,13 +265,6 @@ public class SudokuView extends BaseView {
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
         invalidate();
-    }
-
-    private void reset() {
-        createRandomNumbers();
-        for (int i = 0; i < MAP_N_SQUARED * MAP_N_SQUARED; i++) {
-            removeRandomNumbers();
-        }
     }
 
 
