@@ -99,11 +99,11 @@ public class JapaneseView extends BaseView {
             }
             Log.e("JAPANESE VIEW", "NO LESSONS");
             String nao = getUserPreference(R.string.executed, "NAO");
-            if ("SIM".equals(nao)) {
+            if ("NAO".equals(nao)) {
                 new Thread(() -> {
                     Log.e("DATABASE", "INITIALIZING DATABASE");
                     DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
-                    addUserPreference(R.string.executed, "NAO");
+                    addUserPreference(R.string.executed, "SIM");
                 }).start();
             }
 
