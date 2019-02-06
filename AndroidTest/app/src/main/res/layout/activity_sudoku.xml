@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <red.guih.games.sudoku.SudokuView
+        android:id="@+id/sudokuView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

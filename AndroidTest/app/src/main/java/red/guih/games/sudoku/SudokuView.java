@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -33,13 +34,18 @@ public class SudokuView extends BaseView {
 
     private SudokuSquare pressedSquare;
     private Paint black;
+    private boolean resetStarted;
+    private Drawable spinButton;
 
     public SudokuView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        spinButton = getResources().getDrawable(R.drawable.return_button, null);
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (resetStarted)
+            return true;
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -62,8 +68,13 @@ public class SudokuView extends BaseView {
         int squareSize = getWidth() / MAP_N_SQUARED;
         float layoutY = (getHeight() - squareSize * MAP_N_SQUARED) / 2;
         SudokuSquare.setSquareSize(squareSize, layoutY);
-        initialize();
+        blank();
+        spinButton.setBounds(0, 0, getWidth(), getHeight());
         invalidate();
+        new Thread(() -> {
+            initialize();
+            invalidate();
+        }).start();
     }
 
     private void initialize() {
@@ -85,6 +96,11 @@ public class SudokuView extends BaseView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (resetStarted) {
+
+            spinButton.draw(canvas);
+            return;
+        }
         for (SudokuSquare sq : sudokuSquares) {
             sq.draw(canvas);
         }
@@ -169,8 +185,8 @@ public class SudokuView extends BaseView {
         return sudokuSquares.get(i * MAP_N_SQUARED + j);
     }
 
-    private void reset() {
-
+    public void reset() {
+        resetStarted = true;
         Log.i("Reset", "0");
         List<Integer> numbers = IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
         Collections.shuffle(numbers);
@@ -190,6 +206,7 @@ public class SudokuView extends BaseView {
             }
             sudokuSquares.stream().filter(t -> !t.isPermanent()).forEach(SudokuSquare::setEmpty);
         }
+        resetStarted = false;
     }
 
     private void updatePossibilities() {
@@ -240,6 +257,14 @@ public class SudokuView extends BaseView {
             }
             setSquareWithOnePossibility();
         }
+    }
+
+    public void blank() {
+        for (SudokuSquare sq : sudokuSquares) {
+            sq.setPermanent(false);
+            sq.setEmpty();
+        }
+        invalidate();
     }
 
     private void setSquareWithOnePossibility() {
@@ -422,9 +447,6 @@ public class SudokuView extends BaseView {
         }
     }
 
-    private boolean isNumberFit(SudokuSquare sudokuSquare, int n) {
-        return isNumberFit(n, sudokuSquare.getRow(), sudokuSquare.getCol());
-    }
 
 }
 

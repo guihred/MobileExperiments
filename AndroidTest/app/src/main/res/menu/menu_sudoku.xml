@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <item
+        android:id="@+id/reset"
+        android:title="@string/reset" />
+    <item
+        android:id="@+id/solve"
+        android:title="@string/solve" />
+    <item
+        android:id="@+id/blank"
+        android:title="@string/blank" />
+</menu>

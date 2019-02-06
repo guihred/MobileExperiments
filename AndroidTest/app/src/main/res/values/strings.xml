@@ -71,5 +71,7 @@
     <string name="night_mode">Night Mode</string>
     <string name="executed">EXECUTADO</string>
     <string name="sudoku">Sudoku</string>
+    <string name="solve">Solve</string>
+    <string name="blank">Blank</string>
 
 </resources>
