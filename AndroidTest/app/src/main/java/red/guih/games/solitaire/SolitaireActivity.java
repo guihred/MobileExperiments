@@ -12,15 +12,12 @@ import red.guih.games.R;
 
 public class SolitaireActivity extends BaseActivity {
 
-    private SolitaireView solitaireView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solitaire);
-
-        solitaireView = findViewById(R.id.solitaire_view);
-
+        SolitaireView solitaireView = findViewById(R.id.solitaire_view);
 
         ActionBar a = getSupportActionBar();
         if (a != null) {
@@ -58,14 +55,12 @@ public class SolitaireActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.config:
-                SolitaireView viewById = findViewById(R.id.solitaire_view);
-                viewById.reset();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.config) {
+            SolitaireView viewById = findViewById(R.id.solitaire_view);
+            viewById.reset();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 

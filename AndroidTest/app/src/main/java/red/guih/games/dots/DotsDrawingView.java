@@ -575,7 +575,7 @@ public class DotsDrawingView extends BaseView {
         return Collections.emptySet();
     }
 
-    @SuppressWarnings("AssignmentToCollectionOrArrayFieldFromParameter")
+
     private class LineAnimatorListener implements Animator.AnimatorListener {
         private final Line line2;
         private final Set<Set<DotsSquare>> squaresWon;

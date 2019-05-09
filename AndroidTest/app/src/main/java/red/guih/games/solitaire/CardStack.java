@@ -16,7 +16,7 @@ class CardStack {
         MAIN,
         DROP,
         SIMPLE,
-        FINAL;
+        FINAL
     }
 
     public final StackType type;

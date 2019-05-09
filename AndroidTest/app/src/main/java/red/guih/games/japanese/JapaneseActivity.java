@@ -90,7 +90,7 @@ public class JapaneseActivity extends BaseActivity {
     private void showTips() {
         JapaneseView viewById = findViewById(R.id.japaneseView);
         List<String> japaneseLessons = viewById.loadTips();
-        String names[] = japaneseLessons.toArray(new String[0]);
+        String[] names = japaneseLessons.toArray(new String[0]);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View convertView = inflater.inflate(R.layout.simple_list, null);

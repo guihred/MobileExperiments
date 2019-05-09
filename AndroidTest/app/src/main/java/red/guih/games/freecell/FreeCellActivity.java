@@ -60,14 +60,12 @@ public class FreeCellActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.config:
-                FreeCellView viewById = findViewById(R.id.solitaire_view);
-                viewById.reset();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.config) {
+            FreeCellView viewById = findViewById(R.id.solitaire_view);
+            viewById.reset();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 

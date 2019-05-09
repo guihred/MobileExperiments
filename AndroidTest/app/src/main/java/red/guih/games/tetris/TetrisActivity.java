@@ -36,13 +36,11 @@ public class TetrisActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.records:
-                showRecords(1, UserRecord.TETRIS);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.records) {
+            showRecords(1, UserRecord.TETRIS);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

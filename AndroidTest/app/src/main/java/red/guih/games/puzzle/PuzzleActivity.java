@@ -105,7 +105,7 @@ public class PuzzleActivity extends BaseActivity {
             startActivityForResult(photoPickerIntent, SELECT_PHOTO);
             return;
         } else {
-            PuzzleView.setImage(R.drawable.the_horse_in_motion);
+            PuzzleView.setImage(R.drawable.mona_lisa);
         }
         addUserPreference(R.string.image, PuzzleView.PUZZLE_IMAGE);
 
