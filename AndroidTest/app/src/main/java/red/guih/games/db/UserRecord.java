@@ -22,7 +22,6 @@ public class UserRecord {
     public static final String SLIDING_PUZZLE = "SlidingPuzzle";
     public static final String SQUARE_2048 = "Square2048";
     public static final String MAD_MAZE = "MadMaze";
-//    public static final String SOLITAIRE = "Solitaire";
 
     @PrimaryKey(autoGenerate = true)
     private int uid;

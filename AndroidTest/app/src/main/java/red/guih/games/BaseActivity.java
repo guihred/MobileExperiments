@@ -5,6 +5,7 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -26,7 +27,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected final UserRecordDatabase db = BaseActivity.getInstance(this);
 
-    public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter, int difficulty, String gameName) {
+    public void retrieveRecords(View recordListView, ArrayAdapter<UserRecord> adapter,
+            int difficulty, String gameName) {
         List<UserRecord> records = getAll(difficulty, gameName);
         for (int i = 0; i < records.size(); i++) {
             records.get(i).setPosition(i + 1);
@@ -39,8 +41,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         return Room.databaseBuilder(context,
                 UserRecordDatabase.class, UserRecord.DATABASE_NAME)
-                .fallbackToDestructiveMigration()
-                .allowMainThreadQueries().build();
+                   .fallbackToDestructiveMigration()
+                   .allowMainThreadQueries().build();
     }
 
     protected List<UserRecord> getAll(int difficulty, String gameName) {

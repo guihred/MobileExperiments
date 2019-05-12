@@ -17,8 +17,6 @@ public class SolitaireActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_solitaire);
-        SolitaireView solitaireView = findViewById(R.id.solitaire_view);
-
         ActionBar a = getSupportActionBar();
         if (a != null) {
             a.setTitle(R.string.solitaire);

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 public class CreateMadMaze {
 
+    final Random random = new Random();
     int r;
     List<MadEdge> allEdges;
     List<MadTriangle> triangles;
@@ -21,7 +22,6 @@ public class CreateMadMaze {
     }
 
     void handle(List<MadTriangle> maze) {
-        final Random random = new Random();
         final List<MadTriangle> history = new ArrayList<>();
         final List<String> check = new ArrayList<>();
         history.add(maze.get(0));
@@ -44,11 +44,11 @@ public class CreateMadMaze {
             openB.ifPresent(b -> check.add("B"));
             openC.ifPresent(c -> check.add("C"));
             if (check.isEmpty()) {
-                int c=0;
-                c+=countNeighbors(maze.get(r).getA().getCell(),maze.get(r).getB().getCell());
-                c+=countNeighbors(maze.get(r).getC().getCell(),maze.get(r).getB().getCell());
-                c+=countNeighbors(maze.get(r).getA().getCell(),maze.get(r).getC().getCell());
-                if(c==2){
+                int c = 0;
+                c += countNeighbors(maze.get(r).getA().getCell(), maze.get(r).getB().getCell());
+                c += countNeighbors(maze.get(r).getC().getCell(), maze.get(r).getB().getCell());
+                c += countNeighbors(maze.get(r).getA().getCell(), maze.get(r).getC().getCell());
+                if (c == 2) {
                     maze.get(r).setDeadEnd();
                 }
                 getBackIn(maze, history);
@@ -69,14 +69,14 @@ public class CreateMadMaze {
         }
 
     }
+
     private int countNeighbors(MadCell cell2, MadCell cell3) {
-        if(allEdges.stream().anyMatch(e -> e.getSource().equals(cell3) && e.getTarget().equals(cell2)
-                || e.getSource().equals(cell2) && e.getTarget().equals(cell3))){
+        if (allEdges.stream().anyMatch(e -> e.getSource().equals(cell3) && e.getTarget().equals(cell2)
+                || e.getSource().equals(cell2) && e.getTarget().equals(cell3))) {
             return 1;
         }
         return 0;
     }
-
 
 
     private void linkNeighborTriangles(List<MadTriangle> maze, MadTriangle open1, MadCell cell2, MadCell cell3) {
@@ -140,6 +140,9 @@ public class CreateMadMaze {
                 MadTriangle first = triangleSoup.stream().filter(t4 -> t4.isNeighbour(edge)).findFirst().orElse(null);
                 MadTriangle second = triangleSoup.stream().filter(t5 -> t5.isNeighbour(edge) && t5 != first).findFirst()
                         .orElse(null);
+                if (first==null||second==null) {
+                    continue;
+                }
 
                 MadPoint firstNoneEdgeVertex = first.getNoneEdgeVertex(edge);
                 MadPoint secondNoneEdgeVertex = second.getNoneEdgeVertex(edge);

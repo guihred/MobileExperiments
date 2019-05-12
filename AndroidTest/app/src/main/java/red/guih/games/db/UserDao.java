@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RoomWarnings;
 
 import java.util.List;
 
@@ -14,35 +15,40 @@ import java.util.List;
 @Dao
 public interface UserDao {
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points LIMIT 5")
+    @Query("SELECT * FROM UserRecord " +
+            "WHERE difficulty=:difficulty AND gameName=:gameName " +
+            "ORDER BY points LIMIT 5")
     List<UserRecord> getAll(Integer difficulty, String gameName);
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ORDER BY points desc LIMIT 5")
+    @Query("SELECT * FROM UserRecord " +
+            "WHERE difficulty=:difficulty AND gameName=:gameName " +
+            "ORDER BY points desc LIMIT 5")
     List<UserRecord> getAllDesc(Integer difficulty, String gameName);
 
-    @Query("SELECT COUNT(points) FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName ")
+    @Query("SELECT COUNT(points) FROM UserRecord " +
+            "WHERE difficulty=:difficulty AND gameName=:gameName ")
     int getCountRecords(Integer difficulty, String gameName);
 
-    @Query("SELECT COUNT(points) FROM UserRecord WHERE points=:points AND difficulty=:difficulty AND gameName=:gameName ")
+    @Query("SELECT COUNT(points) FROM UserRecord " +
+            "WHERE points=:points AND difficulty=:difficulty AND gameName=:gameName ")
     int getEqualRecords(Long points, Integer difficulty, String gameName);
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName GROUP BY difficulty,gameName HAVING points=MIN(points)")
+    @Query("SELECT * FROM UserRecord " +
+            "WHERE difficulty=:difficulty AND gameName=:gameName " +
+            "GROUP BY difficulty,gameName HAVING points=MIN(points)")
     UserRecord getMinPoints(Integer difficulty, String gameName);
 
-    @Query("SELECT * FROM UserRecord WHERE difficulty=:difficulty AND gameName=:gameName GROUP BY difficulty,gameName HAVING points=MAX(points)")
+    @Query("SELECT * FROM UserRecord " +
+            "WHERE difficulty=:difficulty AND gameName=:gameName " +
+            "GROUP BY difficulty,gameName HAVING points=MAX(points)")
     UserRecord getMaxPoints(Integer difficulty, String gameName);
-
-    @Query("SELECT 1 as uid, u.difficulty, MAX(u.points) as points FROM UserRecord u WHERE u.gameName=:gameName GROUP BY u.difficulty ")
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
+    @Query("SELECT 1 as uid, u.difficulty, MAX(u.points) as points FROM UserRecord u " +
+            "WHERE u.gameName=:gameName GROUP BY u.difficulty ")
     List<UserRecord> getMaxRecords(String gameName);
-
-    @Query("DELETE FROM UserRecord WHERE gameName=:gameName;")
-    void deleteAll(String gameName);
 
     @Insert
     void insertAll(UserRecord... userRecords);
-
-//    @Update
-//    void updateUsers(UserRecord... userRecords);
 
     @Delete
     void delete(UserRecord userRecord);

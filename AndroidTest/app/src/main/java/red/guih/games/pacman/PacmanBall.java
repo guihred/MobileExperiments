@@ -37,7 +37,10 @@ public class PacmanBall {
 
         this.special = true;
         objectAnimator.setDuration(250);
-        objectAnimator.setValues(PropertyValuesHolder.ofKeyframe("radius", Keyframe.ofFloat(0, 10), Keyframe.ofFloat(1, MazeSquare.SQUARE_SIZE / 4)));
+        PropertyValuesHolder radius1 = PropertyValuesHolder
+                .ofKeyframe("radius", Keyframe.ofFloat(0, 10),
+                        Keyframe.ofFloat(1, MazeSquare.SQUARE_SIZE / 4));
+        objectAnimator.setValues(radius1);
         objectAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         objectAnimator.setRepeatMode(ValueAnimator.REVERSE);
         objectAnimator.setTarget(this);

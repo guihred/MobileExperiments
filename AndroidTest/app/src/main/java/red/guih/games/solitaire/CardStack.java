@@ -71,7 +71,8 @@ class CardStack {
             boundsF = new RectF();
         }
         int right = SolitaireCard.getCardWidth();
-        float bottom = cards.isEmpty() ? SolitaireCard.getCardWidth() : getLastCards().getBoundsF().bottom;
+        float bottom =
+                cards.isEmpty() ? SolitaireCard.getCardWidth() : getLastCards().getBoundsF().bottom;
 
 
         boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
@@ -123,7 +124,7 @@ class CardStack {
 
     }
 
-    void adjust(){
+    void adjust() {
         int layout = 0;
         for (int i = 0; i < this.cards.size(); i++) {
             SolitaireCard solitaireCard = this.cards.get(i);
@@ -149,7 +150,8 @@ class CardStack {
     public void draw(Canvas canvas) {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRoundRect(getLayoutX(), getLayoutY(), SolitaireCard.getCardWidth() + layoutX, SolitaireCard.getCardWidth() + layoutY, 5, 5, paint);
+        canvas.drawRoundRect(getLayoutX(), getLayoutY(), SolitaireCard.getCardWidth() + layoutX,
+                SolitaireCard.getCardWidth() + layoutY, 5, 5, paint);
         for (SolitaireCard card : cards) {
             card.draw(canvas, layoutX, layoutY);
         }
@@ -159,9 +161,7 @@ class CardStack {
 
     public void removeCards(SolitaireCard... cards) {
         for (SolitaireCard solitaireCard : cards) {
-            if (this.cards.contains(solitaireCard)) {
-                this.cards.remove(solitaireCard);
-            }
+            this.cards.remove(solitaireCard);
         }
     }
 

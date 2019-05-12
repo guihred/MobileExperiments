@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Random;
 
 class CreateMazeHandler {
-    private int r, c;
     private final Random random = new Random();
-
     private final List<MazeSquare> history = new ArrayList<>();
     private final List<PacmanDirection> check = new ArrayList<>();
     private final MazeSquare[][] createdMaze;
+    private int r, c;
 
     CreateMazeHandler(MazeSquare[][] maze) {
         createdMaze = maze;
@@ -55,22 +54,7 @@ class CreateMazeHandler {
         for (int i = 0; i < createdMaze.length; i++) {
             for (int j = 0; j < createdMaze[i].length; j++) {
                 MazeSquare mazeSquare = createdMaze[i][j];
-                if (i > 0 && !mazeSquare.isEast() && !mazeSquare.isNorth() && !mazeSquare.isWest()) {
-                    createdMaze[i][j].setNorth(true);
-                    createdMaze[i - 1][j].setSouth(true);
-                }
-                if (i < createdMaze.length - 1 && !mazeSquare.isEast() && !mazeSquare.isSouth() && !mazeSquare.isWest()) {
-                    createdMaze[i][j].setSouth(true);
-                    createdMaze[i + 1][j].setNorth(true);
-                }
-                if (j < createdMaze[i].length - 1 && !mazeSquare.isNorth() && !mazeSquare.isEast() && !mazeSquare.isSouth()) {
-                    createdMaze[i][j].setEast(true);
-                    createdMaze[i][j + 1].setWest(true);
-                }
-                if (j > 0 && !mazeSquare.isNorth() && !mazeSquare.isWest() && !mazeSquare.isSouth()) {
-                    createdMaze[i][j].setWest(true);
-                    createdMaze[i][j - 1].setEast(true);
-                }
+                setProperDirection(i, j, mazeSquare);
             }
         }
 
@@ -102,6 +86,29 @@ class CreateMazeHandler {
                     return;
                 }
             }
+        }
+    }
+
+    private void setProperDirection(int i, int j, MazeSquare mazeSquare) {
+        if (i > 0 && !mazeSquare.isEast() && !mazeSquare.isNorth() &&
+                !mazeSquare.isWest()) {
+            createdMaze[i][j].setNorth(true);
+            createdMaze[i - 1][j].setSouth(true);
+        }
+        if (i < createdMaze.length - 1 && !mazeSquare.isEast() && !mazeSquare.isSouth() &&
+                !mazeSquare.isWest()) {
+            createdMaze[i][j].setSouth(true);
+            createdMaze[i + 1][j].setNorth(true);
+        }
+        if (j < createdMaze[i].length - 1 && !mazeSquare.isNorth() &&
+                !mazeSquare.isEast() && !mazeSquare.isSouth()) {
+            createdMaze[i][j].setEast(true);
+            createdMaze[i][j + 1].setWest(true);
+        }
+        if (j > 0 && !mazeSquare.isNorth() && !mazeSquare.isWest() &&
+                !mazeSquare.isSouth()) {
+            createdMaze[i][j].setWest(true);
+            createdMaze[i][j - 1].setEast(true);
         }
     }
 }

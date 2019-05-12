@@ -10,8 +10,11 @@ import java.io.InputStream;
  * Class to update the database
  * Created by guilherme.hmedeiros on 16/03/2018.
  */
-public class DatabaseMigration {
-    public static final String CREATE_DATABASE2_SQL = "create_database2.sql";
+public final class DatabaseMigration {
+    private static final String CREATE_DATABASE2_SQL = "create_database2.sql";
+
+    private DatabaseMigration() {
+    }
 
     public static void createDatabase(Context c, UserRecordDatabase db) {
         String currentStatement = null;

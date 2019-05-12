@@ -27,13 +27,15 @@ import red.guih.games.db.UserRecordDatabase;
 public abstract class BaseView extends View {
 
     public static final int MAX_RECORDS = 5;
-    protected UserRecordDatabase db = BaseActivity.getInstance(this.getContext().getApplicationContext());
+    protected UserRecordDatabase db = BaseActivity
+            .getInstance(this.getContext().getApplicationContext());
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    private void createUserRecord(long points, String description, String gameName, int difficulty) {
+    private void createUserRecord(long points, String description, String gameName,
+            int difficulty) {
         try {
             UserRecord userRecord = new UserRecord();
             userRecord.setDescription(description);
@@ -47,33 +49,38 @@ public abstract class BaseView extends View {
     }
 
     protected void addUserPreference(int name, int value) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getResources().getString(name), value);
         editor.apply();
     }
 
     protected void addUserPreference(int name, String value) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(getResources().getString(name), value);
         editor.apply();
     }
 
     protected void addUserPreference(String classname, int name, int value) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(classname, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(classname, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(getResources().getString(name), value);
         editor.apply();
     }
 
     protected int getUserPreference(int name, int defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         return sharedPref.getInt(getResources().getString(name), defaultValue);
     }
 
     protected float getUserPreferenceFloat(int name, float defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
 
         Object o = sharedPref.getAll().get(getResources().getString(name));
         if (o instanceof Integer) {
@@ -84,25 +91,30 @@ public abstract class BaseView extends View {
     }
 
     protected String getUserPreference(int name, String defaultValue) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         return sharedPref.getString(getResources().getString(name), defaultValue);
     }
 
     protected void addUserPreference(int name, float value) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getContext()
+                .getSharedPreferences(getClass().getSimpleName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putFloat(getResources().getString(name), value);
         editor.apply();
     }
 
-    public void createRecordIfSuitable(long points, String description, String gameName, int difficulty, boolean asc) {
+    public void createRecordIfSuitable(long points, String description, String gameName,
+            int difficulty, boolean asc) {
         new Thread(() -> createRecord(points, description, gameName, difficulty, asc)).start();
     }
 
-    private void createRecord(long points, String description, String gameName, int difficulty, boolean asc) {
+    private void createRecord(long points, String description, String gameName, int difficulty,
+            boolean asc) {
         int equals = db.userDao().getEqualRecords(points, difficulty, gameName);
-        if (equals > 0)
+        if (equals > 0) {
             return;
+        }
         int count = db.userDao().getCountRecords(difficulty, gameName);
         if (count < MAX_RECORDS) {
             createUserRecord(points, description, gameName, difficulty);
@@ -125,7 +137,8 @@ public abstract class BaseView extends View {
             return false;
         }
 
-        Thread thread = new Thread(() -> suitable = BaseView.this.isSuitable(points, gameName, difficulty, asc));
+        Thread thread = new Thread(
+                () -> suitable = BaseView.this.isSuitable(points, gameName, difficulty, asc));
         thread.start();
         try {
             thread.join();
@@ -158,7 +171,8 @@ public abstract class BaseView extends View {
 
         TextView title = dialog.findViewById(R.id.recordTitle);
         title.setText(R.string.you_beaten_the_record);
-        ArrayAdapter<UserRecord> adapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1, all);
+        ArrayAdapter<UserRecord> adapter = new ArrayAdapter<>(this.getContext(),
+                android.R.layout.simple_list_item_1, all);
 
         new Thread(() -> retrieveRecords(recordListView, adapter, difficulty, gameName)).start();
         recordListView.setAdapter(adapter);
@@ -174,7 +188,8 @@ public abstract class BaseView extends View {
         dialog.show();
     }
 
-    public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter, int difficulty, String gameName) {
+    public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter,
+            int difficulty, String gameName) {
         List<UserRecord> records = getAll(difficulty, gameName);
         int max = 0;
         long maxId = 0;

@@ -47,7 +47,8 @@ public class PacmanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (pacmanView != null)
+        if (pacmanView != null) {
             pacmanView.continueGame();
+        }
     }
 }

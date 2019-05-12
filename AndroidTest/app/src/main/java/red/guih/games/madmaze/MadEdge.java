@@ -6,10 +6,12 @@ public class MadEdge implements Comparable<MadEdge> {
 
     private final MadCell source;
     private final MadCell target;
-    float a, b, c, sqrt;
-    //    float[] bounds;
-    float[] xBounds;
-    float[] yBounds;
+    private float a;
+    private float b;
+    private float c;
+    private float sqrt;
+    private float[] xBounds;
+    private float[] yBounds;
 
     public MadEdge(MadCell source, MadCell target) {
         this.source = source;
@@ -31,8 +33,10 @@ public class MadEdge implements Comparable<MadEdge> {
             float right = target.getX();
             float bottom = target.getY();
             float frac = 2;
-            xBounds = new float[]{left + getA() / frac, left - getA() / frac, right - getA() / frac, right + getA() / frac};
-            yBounds = new float[]{top + getB() / frac, top - getB() / frac, bottom - getB() / frac, bottom + getB() / frac};
+            xBounds = new float[]{left + getA() / frac, left - getA() / frac,
+                    right - getA() / frac, right + getA() / frac};
+            yBounds = new float[]{top + getB() / frac, top - getB() / frac,
+                    bottom - getB() / frac, bottom + getB() / frac};
         }
 
     }
@@ -41,20 +45,18 @@ public class MadEdge implements Comparable<MadEdge> {
         getBounds();
         return checkInBounds(xBounds, yBounds, testx, testy);
     }
-
-
     boolean checkInBounds(float[] vertx, float[] verty, float testx, float testy) {
         int i, j;
-        boolean c = false;
+        boolean inBound = false;
         for (i = 0, j = 3; i < 4; j = i++) {
-            if (verty[i] > testy != verty[j] > testy &&
-                    testx < (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i])
-                c = !c;
+            if (verty[i] > testy != verty[j] > testy
+                    && testx <
+                    (vertx[j] - vertx[i]) * (testy - verty[i]) / (verty[j] - verty[i]) + vertx[i]) {
+                inBound = !inBound;
+            }
         }
-        return c;
+        return inBound;
     }
-
-
     @Override
     public int compareTo(@NonNull MadEdge o) {
         return 0;
@@ -65,34 +67,34 @@ public class MadEdge implements Comparable<MadEdge> {
     }
 
     private float getSqrt() {
-        if (sqrt != 0)
+        if (sqrt != 0) {
             return sqrt;
-
-
-        float a = getA();
-        float b = getB();
-        return sqrt = (float) Math.sqrt(a * a + b * b);
+        }
+        float a1 = getA();
+        float b1 = getB();
+        sqrt = (float) Math.sqrt(a1 * a1 + b1 * b1);
+        return sqrt;
     }
 
     private float getC() {
-        if (c != 0)
-            return c;
-        return c = -this.getTarget().getX() * this.getSource().getY() + this.getTarget().getY() * this.getSource().getX();
+        if (c == 0) {
+            c = -this.getTarget().getX() * this.getSource().getY() +
+                    this.getTarget().getY() * this.getSource().getX();
+        }
+        return c;
     }
 
     private float getB() {
-        if (b != 0)
-            return b;
-
-
-        return b = this.getTarget().getX() - this.getSource().getX();
+        if (b == 0) {
+            b = this.getTarget().getX() - this.getSource().getX();
+        }
+        return b;
     }
 
     private float getA() {
-        if (a != 0)
-            return a;
-        return a = this.getSource().getY() - this.getTarget().getY();
+        if (a == 0) {
+            a = this.getSource().getY() - this.getTarget().getY();
+        }
+        return a;
     }
-
-
 }

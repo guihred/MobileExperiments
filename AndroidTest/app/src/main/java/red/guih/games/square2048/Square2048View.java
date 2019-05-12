@@ -87,16 +87,12 @@ public class Square2048View extends BaseView {
     public boolean onTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                initialX = event.getX();
-                initialY = event.getY();
-                break;
-
-            case MotionEvent.ACTION_UP:
-                handleKeyPressed(getDirection(event));
-                invalidate();
-                break;
+        if (action == MotionEvent.ACTION_DOWN) {
+            initialX = event.getX();
+            initialY = event.getY();
+        } else if (action == MotionEvent.ACTION_UP) {
+            handleKeyPressed(getDirection(event));
+            invalidate();
         }
 
         return true;
@@ -136,33 +132,7 @@ public class Square2048View extends BaseView {
         boolean changed = true;
         changedList.clear();
         while (changed) {
-            changed = false;
-            for (int i = x > 0 ? getMap().length - 1 : 0; i < getMap().length && i >= 0; i += x > 0 ? -1 : 1) {
-                for (int j = y > 0 ? getMap()[i].length - 1 : 0; j < getMap()[i].length && j >= 0; j += y > 0 ? -1 : 1) {
-                    if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
-                            && j + y < MAP_HEIGHT) {
-                        if (getMap()[i + x][j + y].isEmpty()) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
-                            getMap()[i][j].setNumber(0);
-                            movingSquares.put(getMap()[i + x][j + y], movingSquares.getOrDefault(getMap()[i][j], getMap()[i][j]));
-                            if (movingSquares.containsKey(getMap()[i][j])) {
-                                movingSquares.remove(getMap()[i][j]);
-                            }
-                            changed = true;
-                        } else if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber() && !changedList.contains(getMap()[i + x][j + y]) && !changedList.contains(getMap()[i][j])) {
-                            getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
-                            getMap()[i][j].setNumber(0);
-                            movingSquares.put(getMap()[i + x][j + y], movingSquares.getOrDefault(getMap()[i][j], getMap()[i][j]));
-                            if (movingSquares.containsKey(getMap()[i][j])) {
-                                movingSquares.remove(getMap()[i][j]);
-                            }
-                            changedList.add(getMap()[i + x][j + y]);
-
-                            changed = true;
-                        }
-                    }
-                }
-            }
+            changed = moveSquares(x, y);
         }
         movingSquares.forEach(this::animateMovingSquare);
 
@@ -171,7 +141,8 @@ public class Square2048View extends BaseView {
             showDialogWinning();
             return;
         }
-        List<Square2048> emptySquares = mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
+        List<Square2048> emptySquares =
+                mapAsList.stream().filter(Square2048::isEmpty).collect(Collectors.toList());
         if (emptySquares.isEmpty() && noPossibleMove()) {
             showDialogLose();
             return;
@@ -185,6 +156,39 @@ public class Square2048View extends BaseView {
 
     }
 
+    private boolean moveSquares(int x, int y) {
+        boolean changed = false;
+        for (int i = x > 0 ? getMap().length - 1 : 0;
+             i < getMap().length && i >= 0; i += x > 0 ? -1 : 1) {
+            for (int j = y > 0 ? getMap()[i].length - 1 : 0;
+                 j < getMap()[i].length && j >= 0; j += y > 0 ? -1 : 1) {
+                if (isInBounds(x, y, i, j)) {
+                    if (getMap()[i + x][j + y].isEmpty()) {
+                        getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber());
+                        getMap()[i][j].setNumber(0);
+                        movingSquares.put(getMap()[i + x][j + y],
+                                movingSquares.getOrDefault(getMap()[i][j], getMap()[i][j]));
+                        movingSquares.remove(getMap()[i][j]);
+                        changed = true;
+                    } else if (
+                            isSameNumber(i, j, getMap()[i + x][j + y]) &&
+                                    !changedList.contains(getMap()[i + x][j + y]) &&
+                                    !changedList.contains(getMap()[i][j])) {
+                        getMap()[i + x][j + y].setNumber(getMap()[i][j].getNumber() * 2);
+                        getMap()[i][j].setNumber(0);
+                        movingSquares.put(getMap()[i + x][j + y],
+                                movingSquares.getOrDefault(getMap()[i][j], getMap()[i][j]));
+                        movingSquares.remove(getMap()[i][j]);
+                        changedList.add(getMap()[i + x][j + y]);
+
+                        changed = true;
+                    }
+                }
+            }
+        }
+        return changed;
+    }
+
     private boolean noPossibleMove() {
 
         for (Direction dir : Direction.values()) {
@@ -193,11 +197,9 @@ public class Square2048View extends BaseView {
 
             for (int i = 0; i < getMap().length; i++) {
                 for (int j = 0; j < getMap()[i].length; j++) {
-                    if (!getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
-                            && j + y < MAP_HEIGHT) {
-                        if (getMap()[i + x][j + y].getNumber() == getMap()[i][j].getNumber()) {
-                            return false;
-                        }
+                    if (isInBounds(x, y, i, j) && isSameNumber(i, j, getMap()[i + x][j + y])) {
+                        return false;
+
                     }
                 }
             }
@@ -205,10 +207,24 @@ public class Square2048View extends BaseView {
         return true;
     }
 
+    private boolean isSameNumber(int i, int j, Square2048 square2048) {
+        return square2048.getNumber() == getMap()[i][j].getNumber();
+    }
+
+    private boolean isInBounds(int x, int y, int i, int j) {
+        return !getMap()[i][j].isEmpty() && i + x >= 0 && i + x < MAP_WIDTH && j + y >= 0
+                && j + y < MAP_HEIGHT;
+    }
+
     private void animateMovingSquare(Square2048 target, Square2048 origin) {
-        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("layoutX", Keyframe.ofFloat(0, origin.getX() - target.getX()), Keyframe.ofFloat(1, 0));
-        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("layoutY", Keyframe.ofFloat(0, origin.getY() - target.getY()), Keyframe.ofFloat(1, 0));
-        ObjectAnimator eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(target, pvhRotation, pvhRotation2);
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder
+                .ofKeyframe("layoutX", Keyframe.ofFloat(0, origin.getX() - target.getX()),
+                        Keyframe.ofFloat(1, 0));
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder
+                .ofKeyframe("layoutY", Keyframe.ofFloat(0, origin.getY() - target.getY()),
+                        Keyframe.ofFloat(1, 0));
+        ObjectAnimator eatingAnimation =
+                ObjectAnimator.ofPropertyValuesHolder(target, pvhRotation, pvhRotation2);
         eatingAnimation.setDuration(ANIMATION_DURATION);
         eatingAnimation.addUpdateListener(animation -> invalidate());
         eatingAnimation.start();

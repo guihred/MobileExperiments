@@ -25,8 +25,12 @@ public class Pacman {
 
     public Pacman(PacmanView pacmanView) {
         paint.setColor(Color.YELLOW);
-        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("startAngle", Keyframe.ofFloat(0, 0), Keyframe.ofFloat(1, 45));
-        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("length", Keyframe.ofFloat(0, 360), Keyframe.ofFloat(1, 270));
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder
+                .ofKeyframe("startAngle", Keyframe.ofFloat(0, 0),
+                        Keyframe.ofFloat(1, 45));
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder
+                .ofKeyframe("length", Keyframe.ofFloat(0, 360),
+                        Keyframe.ofFloat(1, 270));
         eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(this, pvhRotation, pvhRotation2);
         eatingAnimation.setDuration(500);
         eatingAnimation.addUpdateListener(animation -> pacmanView.invalidate());
@@ -37,7 +41,9 @@ public class Pacman {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawArc(x, y, x + getPacmanWidth(), y + getPacmanWidth(), (direction == null ? 0 : direction.angle) + getStartAngle(), getLength(), true, paint);
+        canvas.drawArc(x, y, x + getPacmanWidth(), y + getPacmanWidth(),
+                (direction == null ? 0 : direction.angle) + getStartAngle(), getLength(), true,
+                paint);
     }
 
     public float getPacmanWidth() {

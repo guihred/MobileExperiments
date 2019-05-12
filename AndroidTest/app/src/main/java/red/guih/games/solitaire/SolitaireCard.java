@@ -13,7 +13,7 @@ public class SolitaireCard {
     private final SolitaireNumber number;
     private final SolitaireSuit suit;
     private boolean shown;
-     boolean autoMoved;
+    boolean autoMoved;
     private float layoutX, layoutY;
     private final Drawable drawable;
     private RectF bounds;
@@ -34,14 +34,14 @@ public class SolitaireCard {
     }
 
     public void draw(Canvas canvas, float layoutX, float layoutY) {
-        RectF boundsF = getBoundsF();
-        boundsF.offset(layoutX, layoutY);
+        RectF boundsF1 = getBoundsF();
+        boundsF1.offset(layoutX, layoutY);
         paint.setStyle(Paint.Style.FILL);
         paint.setColor(Color.WHITE);
-        canvas.drawRoundRect(boundsF, 5, 5, paint);
+        canvas.drawRoundRect(boundsF1, 5, 5, paint);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRoundRect(boundsF, 5, 5, paint);
+        canvas.drawRoundRect(boundsF1, 5, 5, paint);
         if (!shown) {
             return;
         }
@@ -52,7 +52,8 @@ public class SolitaireCard {
         drawable.setBounds(left, top, left + getCardWidth() / 4, top + getCardWidth() / 4);
         drawable.draw(canvas);
 
-        canvas.drawText(number.getRepresentation(), left - getCardWidth() / 4, top + getCardWidth() / 4, paint);
+        canvas.drawText(number.getRepresentation(), left - getCardWidth() / 4,
+                top + getCardWidth() / 4, paint);
     }
 
     public static int getCardWidth() {
@@ -101,7 +102,8 @@ public class SolitaireCard {
             bounds = new RectF();
         }
 
-        bounds.set((int) layoutX , (int) layoutY , (int) layoutX +  getCardWidth(), (int) layoutY +  getCardWidth());
+        bounds.set((int) layoutX, (int) layoutY, (int) layoutX + getCardWidth(),
+                (int) layoutY + getCardWidth());
         return bounds;
     }
 
@@ -110,7 +112,8 @@ public class SolitaireCard {
             boundsF = new RectF();
         }
 
-        boundsF.set((int) layoutX, (int) layoutY, (int) layoutX + getCardWidth(), (int) layoutY + getCardWidth());
+        boundsF.set((int) layoutX, (int) layoutY, (int) layoutX + getCardWidth(),
+                (int) layoutY + getCardWidth());
         return boundsF;
     }
 

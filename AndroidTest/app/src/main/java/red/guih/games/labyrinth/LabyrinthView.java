@@ -26,12 +26,12 @@ public class LabyrinthView extends View implements SensorEventListener {
 
     public static final int MAZE_WIDTH = 15;
     public static int MAZE_HEIGHT = 5;
+    private final List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
     Paint paint = new Paint();
     float speed = LabyrinthSquare.SQUARE_SIZE / 4;
     float xSpeed, ySpeed;
     RectF bounds = new RectF();
     private LabyrinthSquare[][] maze;
-    private final List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
     private float ballx, bally;
     private Thread gameLoopThread;
 
@@ -39,27 +39,20 @@ public class LabyrinthView extends View implements SensorEventListener {
         super(context, attrs);
     }
 
-
-    private  LabyrinthSquare[][] initializeMaze(Context c) {
-        LabyrinthSquare[][] maze = new LabyrinthSquare[MAZE_WIDTH][MAZE_HEIGHT];
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
-                maze[i][j] = new LabyrinthSquare(c, i, j);
-                if (i == 0) {
-                    maze[0][j].setNorth(false);
-                }
-                if (j == 0) {
-                    maze[i][0].setWest(false);
-                }
-                if (MAZE_HEIGHT - 1 == j) {
-                    maze[i][MAZE_HEIGHT - 1].setEast(false);
-                }
-                if (MAZE_WIDTH - 1 == i) {
-                    maze[MAZE_WIDTH - 1][j].setSouth(false);
-                }
-            }
+    @Override
+    protected void onDraw(Canvas canvas) {
+        for (RectF w : walls) {
+            canvas.drawRect(w, paint);
         }
-        return maze;
+        canvas.drawCircle(ballx, bally, LabyrinthSquare.SQUARE_SIZE / 4, paint);
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (maze == null) {
+            reset();
+        }
     }
 
     public void reset() {
@@ -87,6 +80,28 @@ public class LabyrinthView extends View implements SensorEventListener {
         MAZE_HEIGHT = height / LabyrinthSquare.SQUARE_SIZE;
     }
 
+    private static LabyrinthSquare[][] initializeMaze(Context c) {
+        LabyrinthSquare[][] maze = new LabyrinthSquare[MAZE_WIDTH][MAZE_HEIGHT];
+        for (int i = 0; i < MAZE_WIDTH; i++) {
+            for (int j = 0; j < MAZE_HEIGHT; j++) {
+                maze[i][j] = new LabyrinthSquare(c, i, j);
+                if (i == 0) {
+                    maze[0][j].setNorth(false);
+                }
+                if (j == 0) {
+                    maze[i][0].setWest(false);
+                }
+                if (MAZE_HEIGHT - 1 == j) {
+                    maze[i][MAZE_HEIGHT - 1].setEast(false);
+                }
+                if (MAZE_WIDTH - 1 == i) {
+                    maze[MAZE_WIDTH - 1][j].setSouth(false);
+                }
+            }
+        }
+        return maze;
+    }
+
     void continueGame() {
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
             gameLoopThread = new Thread(this::gameLoop);
@@ -102,28 +117,6 @@ public class LabyrinthView extends View implements SensorEventListener {
                 Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
             }
         }
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        for (RectF w : walls) {
-            canvas.drawRect(w, paint);
-        }
-        canvas.drawCircle(ballx, bally, LabyrinthSquare.SQUARE_SIZE / 4, paint);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        if (maze == null) {
-            reset();
-        }
-    }
-
-    @Override
-    public void onSensorChanged(SensorEvent sensorEvent) {
-        xSpeed = sensorEvent.values[0];
-        ySpeed = sensorEvent.values[1];
     }
 
     boolean updateBall() {
@@ -146,9 +139,9 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     private boolean checkCollision(Iterable<RectF> observableList) {
-        RectF bounds = getBounds();
+        RectF boundSqr = getBounds();
         for (RectF p : observableList) {
-            if (RectF.intersects(p, bounds)) {
+            if (RectF.intersects(p, boundSqr)) {
                 return true;
             }
         }
@@ -156,12 +149,19 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     RectF getBounds() {
-        bounds.set(ballx - LabyrinthSquare.SQUARE_SIZE / 4, bally - LabyrinthSquare.SQUARE_SIZE / 4, ballx + LabyrinthSquare.SQUARE_SIZE / 4, bally + LabyrinthSquare.SQUARE_SIZE / 4);
+        bounds.set(ballx - LabyrinthSquare.SQUARE_SIZE / 4, bally - LabyrinthSquare.SQUARE_SIZE / 4,
+                ballx + LabyrinthSquare.SQUARE_SIZE / 4, bally + LabyrinthSquare.SQUARE_SIZE / 4);
         return bounds;
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        xSpeed = sensorEvent.values[0];
+        ySpeed = sensorEvent.values[1];
+    }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // DOES NOTHING
     }
 }

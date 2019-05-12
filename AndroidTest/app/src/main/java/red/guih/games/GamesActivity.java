@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.ImageButton;
 
 import red.guih.games.dots.DotsActivity;
@@ -36,29 +35,41 @@ public class GamesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_games);
 
         ImageButton minesweeperButton = findViewById(R.id.minesweeperButton);
-        minesweeperButton.setOnClickListener((View v) -> startActivity(new Intent(this, MinesweeperActivity.class)));
+        minesweeperButton.setOnClickListener(
+                v -> startActivity(new Intent(this, MinesweeperActivity.class)));
         ImageButton dotsButton = findViewById(R.id.dotsButton);
-        dotsButton.setOnClickListener((View v) -> startActivity(new Intent(this, DotsActivity.class)));
+        dotsButton.setOnClickListener(
+                v -> startActivity(new Intent(this, DotsActivity.class)));
         ImageButton pacmanButton = findViewById(R.id.pacmanButton);
-        pacmanButton.setOnClickListener((View v) -> startActivity(new Intent(this, PacmanActivity.class)));
+        pacmanButton.setOnClickListener(
+                v -> startActivity(new Intent(this, PacmanActivity.class)));
         ImageButton tetrisButton = findViewById(R.id.tetrisButton);
-        tetrisButton.setOnClickListener((View v) -> startActivity(new Intent(this, TetrisActivity.class)));
+        tetrisButton.setOnClickListener(
+                v -> startActivity(new Intent(this, TetrisActivity.class)));
         ImageButton labyrinthButton = findViewById(R.id.labyrinthButton);
-        labyrinthButton.setOnClickListener((View v) -> startActivity(new Intent(this, MadMazeActivity.class)));
+        labyrinthButton.setOnClickListener(
+                v -> startActivity(new Intent(this, MadMazeActivity.class)));
         ImageButton puzzleButton = findViewById(R.id.puzzleButton);
-        puzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, PuzzleActivity.class)));
+        puzzleButton.setOnClickListener(
+                v -> startActivity(new Intent(this, PuzzleActivity.class)));
         ImageButton slidingPuzzleButton = findViewById(R.id.slidingPuzzleButton);
-        slidingPuzzleButton.setOnClickListener((View v) -> startActivity(new Intent(this, SlidingPuzzleActivity.class)));
+        slidingPuzzleButton.setOnClickListener(
+                v -> startActivity(new Intent(this, SlidingPuzzleActivity.class)));
         ImageButton solitaire = findViewById(R.id.solitaireButton);
-        solitaire.setOnClickListener((View v) -> startActivity(new Intent(this, SolitaireActivity.class)));
+        solitaire.setOnClickListener(
+                v -> startActivity(new Intent(this, SolitaireActivity.class)));
         ImageButton square2048 = findViewById(R.id.square2048Button);
-        square2048.setOnClickListener((View v) -> startActivity(new Intent(this, Square2048Activity.class)));
+        square2048.setOnClickListener(
+                v -> startActivity(new Intent(this, Square2048Activity.class)));
         ImageButton freeCell = findViewById(R.id.freecellButton);
-        freeCell.setOnClickListener((View v) -> startActivity(new Intent(this, FreeCellActivity.class)));
+        freeCell.setOnClickListener(
+                v -> startActivity(new Intent(this, FreeCellActivity.class)));
         ImageButton japaneseButton = findViewById(R.id.japaneseButton);
-        japaneseButton.setOnClickListener((View v) -> startActivity(new Intent(this, JapaneseActivity.class)));
+        japaneseButton.setOnClickListener(
+                v -> startActivity(new Intent(this, JapaneseActivity.class)));
         ImageButton sudoku = findViewById(R.id.sudokuButton);
-        sudoku.setOnClickListener((View v) -> startActivity(new Intent(this, SudokuActivity.class)));
+        sudoku.setOnClickListener(
+                v -> startActivity(new Intent(this, SudokuActivity.class)));
 
     }
 

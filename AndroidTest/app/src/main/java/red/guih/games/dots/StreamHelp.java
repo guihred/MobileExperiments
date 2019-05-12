@@ -1,5 +1,7 @@
 package red.guih.games.dots;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,16 +14,6 @@ import java.util.Set;
 
 @SuppressWarnings("unchecked")
 class StreamHelp {
-    @FunctionalInterface
-    interface Funct<T, R> {
-        R apply(T t);
-    }
-
-    @FunctionalInterface
-    interface Pred<T> {
-        boolean test(T t);
-    }
-
     static <T, E extends Comparable<E>> Comparator<T> comparing(Funct<T, E> funct) {
 
         return (t, t1) -> {
@@ -43,7 +35,7 @@ class StreamHelp {
             }
             return newInstance;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("STREAM ", "ERRO IN FILTER", e);
         }
         if (filter instanceof Set) {
             return (T) new HashSet<>();
@@ -69,7 +61,7 @@ class StreamHelp {
             }
             return newInstance;
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("STREAM ", "ERRO IN FILTER", e);
         }
         if (filter instanceof Set) {
             return (T) new HashSet<>();
@@ -91,11 +83,8 @@ class StreamHelp {
         return hashMap;
     }
 
-
     static <E, T extends Collection<E>> Set<E> toSet(T filter) {
-        Set<E> a = new HashSet<>();
-        a.addAll(filter);
-        return a;
+        return new HashSet<>(filter);
     }
 
     static int min(Iterable<Integer> a, int orElse) {
@@ -164,13 +153,23 @@ class StreamHelp {
         return new ArrayList<>(new LinkedHashSet<>(filter));
     }
 
-
     public static <E, Z, T extends Collection<E>> List<Z> map(T filter, Funct<E, Z> function) {
         List<Z> a = new ArrayList<>();
         for (E e : filter) {
             a.add(function.apply(e));
         }
         return a;
+    }
+
+    @FunctionalInterface
+    interface Funct<T, R> {
+        R apply(T t);
+    }
+
+
+    @FunctionalInterface
+    interface Pred<T> {
+        boolean test(T t);
     }
 
 }

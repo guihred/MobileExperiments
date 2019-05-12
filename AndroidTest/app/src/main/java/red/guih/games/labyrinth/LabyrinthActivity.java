@@ -37,13 +37,13 @@ public class LabyrinthActivity extends AppCompatActivity {
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
-
+    @Override
     protected void onPause() {
         super.onPause();
         senSensorManager.unregisterListener(labyrinthView);
     }
 
-
+    @Override
     protected void onResume() {
         super.onResume();
         senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);

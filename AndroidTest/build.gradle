@@ -5,21 +5,35 @@ buildscript {
     repositories {
         google()
         jcenter()
+		maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
-    dependencies {
+	dependencies {
         classpath 'com.android.tools.build:gradle:3.4.0'
-        
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+	
 }
+apply plugin: "org.sonarqube"
 
+sonarqube {
+    properties {
+        property "sonar.projectName", "MobileExperiments"
+        property "sonar.projectKey", "red.guih.games"
+        property "sonar.host.url", "http://localhost:9000"
+
+        property "sonar.sources", "app/java/"
+    }
+}   
 allprojects {
     repositories {
         google()
         jcenter()
-    }
+    }	
 }
 
 task clean(type: Delete) {

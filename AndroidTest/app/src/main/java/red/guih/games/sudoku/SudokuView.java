@@ -44,19 +44,16 @@ public class SudokuView extends BaseView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (resetStarted)
-            return true;
+        if (resetStarted) {
+            return false;
+        }
         int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                handleMousePressed(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                handleMouseMoved(event);
-                break;
-            case MotionEvent.ACTION_UP:
-                handleMouseReleased(event);
-                break;
+        if (action == MotionEvent.ACTION_DOWN) {
+            handleMousePressed(event);
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            handleMouseMoved(event);
+        } else if (action == MotionEvent.ACTION_UP) {
+            handleMouseReleased(event);
         }
         invalidate();
         return true;
@@ -66,7 +63,7 @@ public class SudokuView extends BaseView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int squareSize = getWidth() / MAP_N_SQUARED;
-        float layoutY = (getHeight() - squareSize * MAP_N_SQUARED) / 2;
+        float layoutY = (getHeight() - squareSize * MAP_N_SQUARED) / 2f;
         SudokuSquare.setSquareSize(squareSize, layoutY);
         blank();
         spinButton.setBounds(0, 0, getWidth(), getHeight());
@@ -108,9 +105,11 @@ public class SudokuView extends BaseView {
         if (pressedSquare != null) {
             RectF boundsInParent = pressedSquare.getBounds();
             int halfTheSize = MAP_N_SQUARED / 2;
-            float maxY = pressedSquare.getCol() > halfTheSize ? boundsInParent.top - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
+            float maxY = pressedSquare.getCol() > halfTheSize ?
+                    boundsInParent.top - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
                     : boundsInParent.bottom;
-            float maxX = pressedSquare.getRow() > halfTheSize ? boundsInParent.left - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
+            float maxX = pressedSquare.getRow() > halfTheSize ?
+                    boundsInParent.left - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
                     : boundsInParent.right;
             numberOptions.forEach(e -> e.draw(canvas, maxX, maxY));
         }
@@ -130,7 +129,8 @@ public class SudokuView extends BaseView {
         for (int i = 0; i < MAP_NUMBER; i++) {
             for (int j = 0; j < MAP_NUMBER; j++) {
                 int sqSize = SudokuSquare.SQUARE_SIZE * MAP_NUMBER;
-                canvas.drawRect(i * sqSize, j * sqSize + SudokuSquare.LAYOUT_Y, i * sqSize + sqSize, j * sqSize + sqSize + SudokuSquare.LAYOUT_Y, black);
+                canvas.drawRect(i * sqSize, j * sqSize + SudokuSquare.LAYOUT_Y, i * sqSize + sqSize,
+                        j * sqSize + sqSize + SudokuSquare.LAYOUT_Y, black);
             }
         }
     }
@@ -142,7 +142,8 @@ public class SudokuView extends BaseView {
                 int row = i;
                 int col = j;
                 Collections.shuffle(numbers);
-                Optional<Integer> fitNumbers = numbers.stream().filter(n -> isNumberFit(n, row, col)).findFirst();
+                Optional<Integer> fitNumbers =
+                        numbers.stream().filter(n -> isNumberFit(n, row, col)).findFirst();
                 getMapAt(i, j).setPermanent(true);
                 if (fitNumbers.isPresent()) {
                     getMapAt(i, j).setNumber(fitNumbers.get());
@@ -163,21 +164,27 @@ public class SudokuView extends BaseView {
 
 
     private boolean isNumberFit(int n, int row, int col) {
-        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInRow(row))
-                .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
-                .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInCol(col))
-                .noneMatch(s -> s.getNumber() == n);
+        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                            .filter(s -> s.isInRow(row))
+                            .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                                .filter(s -> s.isInArea(row, col))
+                                .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                                .filter(s -> s.isInCol(col))
+                                .noneMatch(s -> s.getNumber() == n);
     }
 
     private boolean isNumberFitExtrictly(int n, int row, int col) {
-        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInRow(row))
-                .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInArea(row, col))
-                .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col)).filter(s -> s.isInCol(col))
-                .noneMatch(s -> s.getNumber() == n);
+        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                            .filter(s -> s.isInRow(row))
+                            .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                                .filter(s -> s.isInArea(row, col))
+                                .noneMatch(s -> s.getNumber() == n)
+                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                                .filter(s -> s.isInCol(col))
+                                .noneMatch(s -> s.getNumber() == n);
     }
 
 
@@ -188,11 +195,12 @@ public class SudokuView extends BaseView {
     public void reset() {
         resetStarted = true;
         Log.i("Reset", "0");
-        List<Integer> numbers = IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
+        List<Integer> numbers =
+                IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
         Collections.shuffle(numbers);
         createRandomNumbers(numbers);
         List<SudokuSquare> all = sudokuSquares.stream().filter(SudokuSquare::isNotEmpty)
-                .collect(Collectors.toList());
+                                              .collect(Collectors.toList());
         Collections.shuffle(all);
         for (int i = 0; i < all.size(); i++) {
             SudokuSquare sudokuSquare = all.get(i);
@@ -212,7 +220,9 @@ public class SudokuView extends BaseView {
     private void updatePossibilities() {
         for (SudokuSquare sq : sudokuSquares) {
             sq.setPossibilities(IntStream
-                    .rangeClosed(1, MAP_N_SQUARED).filter(n -> isNumberFitExtrictly(n, sq.getRow(), sq.getCol())).boxed().collect(Collectors.toList()));
+                    .rangeClosed(1, MAP_N_SQUARED)
+                    .filter(n -> isNumberFitExtrictly(n, sq.getRow(), sq.getCol())).boxed()
+                    .collect(Collectors.toList()));
             sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber()));
         }
 
@@ -268,50 +278,59 @@ public class SudokuView extends BaseView {
     }
 
     private void setSquareWithOnePossibility() {
-        while (sudokuSquares.stream().anyMatch(e -> e.isEmpty() && e.getPossibilities().size() == 1)) {
-            sudokuSquares.stream().filter(e -> e.isEmpty() && e.getPossibilities().size() == 1).forEach(sq -> {
-                Integer number = sq.getPossibilities().get(0);
-                sq.setNumber(number);
-            });
+        while (sudokuSquares.stream()
+                            .anyMatch(e -> e.isEmpty() && e.getPossibilities().size() == 1)) {
+            sudokuSquares.stream().filter(e -> e.isEmpty() && e.getPossibilities().size() == 1)
+                         .forEach(sq -> {
+                             Integer number = sq.getPossibilities().get(0);
+                             sq.setNumber(number);
+                         });
             updatePossibilities();
         }
     }
 
     private List<SudokuSquare> getArea(int row) {
         return sudokuSquares.stream()
-                .filter(e -> e.isEmpty() && e.isInArea(row % MAP_NUMBER * MAP_NUMBER, row / MAP_NUMBER * MAP_NUMBER))
-                .collect(Collectors.toList());
+                            .filter(e -> e.isEmpty() && e.isInArea(row % MAP_NUMBER * MAP_NUMBER,
+                                    row / MAP_NUMBER * MAP_NUMBER))
+                            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getArea(int i, int number) {
         return sudokuSquares.stream()
-                .filter(e1 -> e1.isEmpty() && e1.isInArea(i % MAP_NUMBER * MAP_NUMBER, i / MAP_NUMBER * MAP_NUMBER))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+                            .filter(e1 -> e1.isEmpty() && e1.isInArea(i % MAP_NUMBER * MAP_NUMBER,
+                                    i / MAP_NUMBER * MAP_NUMBER))
+                            .filter(e -> e.getPossibilities().contains(number))
+                            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getCol(int row) {
-        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInCol(row)).collect(Collectors.toList());
+        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInCol(row))
+                            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getCol(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInCol(i))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+                            .filter(e -> e.getPossibilities().contains(number))
+                            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getRow(int row) {
-        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInRow(row)).collect(Collectors.toList());
+        return sudokuSquares.stream().filter(e -> e.isEmpty() && e.isInRow(row))
+                            .collect(Collectors.toList());
     }
 
     private List<SudokuSquare> getRow(int i, int number) {
         return sudokuSquares.stream().filter(e1 -> e1.isEmpty() && e1.isInRow(i))
-                .filter(e -> e.getPossibilities().contains(number)).collect(Collectors.toList());
+                            .filter(e -> e.getPossibilities().contains(number))
+                            .collect(Collectors.toList());
     }
 
     public void handleMousePressed(MotionEvent ev) {
         Optional<SudokuSquare> pressed = sudokuSquares.stream()
-                .filter(e -> !e.isPermanent())
-                .filter(s -> s.contains(ev.getX(), ev.getY()))
-                .findFirst();
+                                                      .filter(e -> !e.isPermanent())
+                                                      .filter(s -> s.contains(ev.getX(), ev.getY()))
+                                                      .findFirst();
         if (!pressed.isPresent()) {
             pressedSquare = null;
             return;
@@ -326,7 +345,8 @@ public class SudokuView extends BaseView {
 
     public void handleMouseReleased(MotionEvent s) {
         Optional<NumberButton> findFirst = numberOptions.stream()
-                .filter(e -> e.contains(s.getX(), s.getY())).findFirst();
+                                                        .filter(e -> e.contains(s.getX(), s.getY()))
+                                                        .findFirst();
         if (pressedSquare != null && findFirst.isPresent()) {
             NumberButton node = findFirst.get();
             pressedSquare.setNumber(node.getNumber());

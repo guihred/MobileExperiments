@@ -10,12 +10,10 @@ import java.util.Collection;
 import java.util.List;
 
 class FreeCellStack {
-
-
     public enum StackType {
         SIMPLE,
         ASCENDING,
-        SUPPORT,;
+        SUPPORT
     }
 
     public final StackType type;
@@ -72,7 +70,8 @@ class FreeCellStack {
             boundsF = new RectF();
         }
         int right = FreeCellCard.getCardWidth();
-        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards().getBoundsF().bottom;
+        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards()
+                .getBoundsF().bottom;
 
 
         boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
@@ -116,8 +115,9 @@ class FreeCellStack {
     }
 
     float adjust(int cards) {
-        if (type != StackType.SIMPLE)
+        if (type != StackType.SIMPLE) {
             return 0;
+        }
         int layout = 0;
         for (int i = 0; i < this.cards.size(); i++) {
             FreeCellCard solitaireCard = this.cards.get(i);
@@ -125,7 +125,7 @@ class FreeCellStack {
             layout += FreeCellCard.getCardWidth() / 3;
         }
         float spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3;
-        if (FreeCellCard.getCardWidth() / 3*cards <= spaceToDisplay) {
+        if (FreeCellCard.getCardWidth() / 3 * cards <= spaceToDisplay) {
             return layout - FreeCellCard.getCardWidth() / 3;
         }
         float newGap = spaceToDisplay / cards;
@@ -156,7 +156,9 @@ class FreeCellStack {
     public void draw(Canvas canvas) {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRoundRect(getLayoutX(), getLayoutY(), FreeCellCard.getCardWidth() + layoutX, FreeCellCard.getCardWidth() + layoutY, 5, 5, paint);
+        canvas.drawRoundRect(getLayoutX(), getLayoutY(),
+                FreeCellCard.getCardWidth() + layoutX,
+                FreeCellCard.getCardWidth() + layoutY, 5, 5, paint);
         for (FreeCellCard card : cards) {
             card.draw(canvas, layoutX, layoutY);
         }
@@ -166,9 +168,7 @@ class FreeCellStack {
 
     public void removeCards(FreeCellCard... cards) {
         for (FreeCellCard solitaireCard : cards) {
-            if (this.cards.contains(solitaireCard)) {
-                this.cards.remove(solitaireCard);
-            }
+            this.cards.remove(solitaireCard);
         }
     }
 
@@ -179,7 +179,6 @@ class FreeCellStack {
     public int getShownCards() {
         return (int) cards.stream().filter(FreeCellCard::isShown).count();
     }
-
 
 
     public void setMaxHeight(int maxHeight) {

@@ -18,26 +18,29 @@ public final class SlidingPuzzleSquare {
     private Paint stroke;
     private Bitmap image;
     private BitmapShader imagePattern;
-    Rect src = new Rect();
-    RectF dst = new RectF();
+    private Rect src = new Rect();
+    private RectF dst = new RectF();
 
-    public SlidingPuzzleSquare(int number, int i, int j, int squareSize) {
+     SlidingPuzzleSquare(int number, int i, int j, int squareSize) {
         this.number = number;
-        paint.setTextSize(squareSize / 2);
+        paint.setTextSize(squareSize / 2F);
         src.set(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj.getClass() == SlidingPuzzleSquare.class && ((SlidingPuzzleSquare) obj).number == number;
+        return obj != null && obj.getClass() == SlidingPuzzleSquare.class &&
+                ((SlidingPuzzleSquare) obj).number == number;
 
     }
 
-    public void drawSquare(Canvas canvas, int i, int j, int squareSize) {
-        canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize, getStroke());
+     void drawSquare(Canvas canvas, int i, int j, float squareSize) {
+        canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize,
+                getStroke());
         if (!this.isEmpty()) {
             String text = "" + this.getNumber();
-            canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(), i * squareSize + squareSize * 2 / 3, getPaint());
+            canvas.drawText(text, j * squareSize + squareSize / 3 / text.length(),
+                    i * squareSize + squareSize * 2 / 3, getPaint());
         }
     }
 
@@ -50,7 +53,7 @@ public final class SlidingPuzzleSquare {
         return number;
     }
 
-    public final boolean isEmpty() {
+    public boolean isEmpty() {
         return number == SlidingPuzzleView.MAP_WIDTH * SlidingPuzzleView.MAP_HEIGHT;
     }
 
@@ -69,13 +72,14 @@ public final class SlidingPuzzleSquare {
 
     public void setImage(Bitmap image) {
         this.image = image;
-        if (image != null)
+        if (image != null) {
             getPaint().setShader(getImagePattern());
+        }
     }
 
     private Matrix mTranslationMatrix = new Matrix();
 
-    public BitmapShader getImagePattern() {
+     private BitmapShader getImagePattern() {
         if (imagePattern == null) {
 
             imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);

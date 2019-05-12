@@ -33,10 +33,9 @@ import java.util.stream.Stream;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 
-import static red.guih.games.freecell.FreeCellStack.StackType.ASCENDING;
+import static red.guih.games.freecell.FreeCellStack.StackType.*;
 import static red.guih.games.freecell.FreeCellStack.StackType.SIMPLE;
 import static red.guih.games.freecell.FreeCellStack.StackType.SUPPORT;
-
 
 /**
  * @author Note
@@ -51,8 +50,8 @@ public class FreeCellView extends BaseView {
     private final List<MotionHistory> history = new ArrayList<>();
     private final FreeCellStack[] simpleStacks = new FreeCellStack[8];
     private final Drawable returnButtonIcon;
-    boolean youwin;
     private final Drawable crown;
+    private boolean youwin;
     private Rect returnButton;
 
     public FreeCellView(Context c, AttributeSet attrs) {
@@ -65,10 +64,6 @@ public class FreeCellView extends BaseView {
         reset();
     }
 
-    private static boolean isNullOrEmpty(Collection<?> cards) {
-        return cards == null || cards.isEmpty();
-    }
-
     public void reset() {
         youwin = false;
         cardStackList.clear();
@@ -76,24 +71,24 @@ public class FreeCellView extends BaseView {
         int yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
 
         int xOffset = FreeCellCard.getCardWidth() / 10;
-        crown.setBounds(4 * getWidth() / 9 + xOffset, yOffset, 4 * getWidth() / 9 + xOffset + FreeCellCard.getCardWidth(), yOffset + FreeCellCard.getCardWidth());
+        crown.setBounds(4 * getWidth() / 9 + xOffset, yOffset,
+                4 * getWidth() / 9 + xOffset + FreeCellCard.getCardWidth(),
+                yOffset + FreeCellCard.getCardWidth());
         for (int i = 0; i < 4; i++) {
-            supportingStacks[i] = new FreeCellStack(FreeCellStack.StackType.SUPPORT, 0);
+            supportingStacks[i] = new FreeCellStack(SUPPORT, 0);
             supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
             supportingStacks[i].setLayoutY(yOffset);
-
             cardStackList.add(supportingStacks[i]);
         }
         for (int i = 0; i < 4; i++) {
             ascendingStacks[i] = new FreeCellStack(ASCENDING, 0);
             ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
             ascendingStacks[i].setLayoutY(yOffset);
-
             cardStackList.add(ascendingStacks[i]);
         }
 
         for (int i = 0; i < 8; i++) {
-            simpleStacks[i] = new FreeCellStack(FreeCellStack.StackType.SIMPLE, i + 1);
+            simpleStacks[i] = new FreeCellStack(SIMPLE, i + 1);
             simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
             simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
             simpleStacks[i].setMaxHeight(getHeight());
@@ -114,44 +109,33 @@ public class FreeCellView extends BaseView {
         Log.i("SOLITAIRE", "RESETED");
     }
 
-    public void rescale() {
-        Log.i("SOLITAIRE", "RESCALED");
-        youwin = false;
-
-        int yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
-        int xOffset = FreeCellCard.getCardWidth() / 10;
-        crown.setBounds(4 * getWidth() / 9 + xOffset, yOffset, 4 * getWidth() / 9 + xOffset + FreeCellCard.getCardWidth(), yOffset + FreeCellCard.getCardWidth());
-        for (int i = 0; i < 4; i++) {
-            supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
-            supportingStacks[i].setLayoutY(yOffset);
+    private List<FreeCellCard> getAllCards() {
+        FreeCellNumber[] solitaireNumbers = FreeCellNumber.values();
+        FreeCellSuit[] solitaireSuits = FreeCellSuit.values();
+        List<FreeCellCard> allCards = new ArrayList<>();
+        for (FreeCellNumber number : solitaireNumbers) {
+            for (FreeCellSuit suit : solitaireSuits) {
+                FreeCellCard solitaireCard = new FreeCellCard(number, suit, getContext());
+                allCards.add(solitaireCard);
+            }
         }
-        for (int i = 0; i < 4; i++) {
-            ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
-            ascendingStacks[i].setLayoutY(yOffset);
-        }
-        for (int i = 0; i < 8; i++) {
-            simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
-            simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
-            simpleStacks[i].setMaxHeight(getHeight());
-            simpleStacks[i].adjust();
-        }
-        returnButton = new Rect(getWidth() - FreeCellCard.getCardWidth(),
-                getHeight() - FreeCellCard.getCardWidth(),
-                getWidth(),
-                getHeight());
-        returnButtonIcon.setBounds(returnButton);
-        invalidate();
+        Collections.shuffle(allCards);
+        return allCards;
     }
 
     @Override
     public boolean performClick() {
+        // DOES NOTHING
         return super.performClick();
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action) {
+            case MotionEvent.ACTION_BUTTON_PRESS:
+                performClick();
             case MotionEvent.ACTION_DOWN:
                 handleMousePressed(event);
                 break;
@@ -160,9 +144,8 @@ public class FreeCellView extends BaseView {
                 break;
             case MotionEvent.ACTION_UP:
                 handleMouseReleased();
-
-
                 break;
+            default:
         }
         invalidate();
         return true;
@@ -185,6 +168,10 @@ public class FreeCellView extends BaseView {
 
     }
 
+    private static boolean isNullOrEmpty(Collection<?> cards) {
+        return cards == null || cards.isEmpty();
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -197,18 +184,35 @@ public class FreeCellView extends BaseView {
         }
     }
 
-    private List<FreeCellCard> getAllCards() {
-        FreeCellNumber[] solitaireNumbers = FreeCellNumber.values();
-        FreeCellSuit[] solitaireSuits = FreeCellSuit.values();
-        List<FreeCellCard> allCards = new ArrayList<>();
-        for (FreeCellNumber number : solitaireNumbers) {
-            for (FreeCellSuit suit : solitaireSuits) {
-                FreeCellCard solitaireCard = new FreeCellCard(number, suit, getContext());
-                allCards.add(solitaireCard);
-            }
+    public void rescale() {
+        Log.i("SOLITAIRE", "RESCALED");
+        youwin = false;
+
+        int yOffset = FreeCellCard.getCardWidth() / (getWidth() > getHeight() ? 10 : 2);
+        int xOffset = FreeCellCard.getCardWidth() / 10;
+        crown.setBounds(4 * getWidth() / 9 + xOffset, yOffset,
+                4 * getWidth() / 9 + xOffset + FreeCellCard.getCardWidth(),
+                yOffset + FreeCellCard.getCardWidth());
+        for (int i = 0; i < 4; i++) {
+            supportingStacks[i].setLayoutX(i * getWidth() / 9 + xOffset);
+            supportingStacks[i].setLayoutY(yOffset);
         }
-        Collections.shuffle(allCards);
-        return allCards;
+        for (int i = 0; i < 4; i++) {
+            ascendingStacks[i].setLayoutX(getWidth() / 9 * (i + 5) + xOffset);
+            ascendingStacks[i].setLayoutY(yOffset);
+        }
+        for (int i = 0; i < 8; i++) {
+            simpleStacks[i].setLayoutX(getWidth() / 8 * i + xOffset);
+            simpleStacks[i].setLayoutY(FreeCellCard.getCardWidth() + xOffset + yOffset);
+            simpleStacks[i].setMaxHeight(getHeight());
+            simpleStacks[i].adjust();
+        }
+        returnButton = new Rect(getWidth() - FreeCellCard.getCardWidth(),
+                getHeight() - FreeCellCard.getCardWidth(),
+                getWidth(),
+                getHeight());
+        returnButtonIcon.setBounds(returnButton);
+        invalidate();
     }
 
     private void handleMouseDragged(MotionEvent event) {
@@ -218,12 +222,10 @@ public class FreeCellView extends BaseView {
         }
         float offsetX = event.getX() + dragContext.x;
         float offsetY = event.getY() + dragContext.y;
-        if (dragContext.cards != null) {
-            int i = 0;
-            for (FreeCellCard c : dragContext.cards) {
-                c.relocate(offsetX, offsetY + i * FreeCellCard.getCardWidth() / 3);
-                i++;
-            }
+        int i = 0;
+        for (FreeCellCard c : dragContext.cards) {
+            c.relocate(offsetX, offsetY + i * FreeCellCard.getCardWidth() / 3F);
+            i++;
         }
     }
 
@@ -232,26 +234,30 @@ public class FreeCellView extends BaseView {
         float y = event.getY();
         if (returnButton.contains((int) x, (int) y) && !history.isEmpty()) {
             MotionHistory remove = history.remove(history.size() - 1);
-            remove.cards.forEach(e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
+            remove.cards.forEach(
+                    e -> createMovingCardAnimation(remove.targetStack, remove.originStack, e));
 
             dragContext.reset();
             return;
         }
 
         FreeCellStack stack =
-                cardStackList.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst().orElse(null);
+                cardStackList.stream().filter(e -> e.getBoundsF().contains(x, y)).findFirst()
+                             .orElse(null);
         if (stack == null) {
             dragContext.reset();
             return;
         }
         dragContext.x = stack.getLayoutX() - event.getX();
         dragContext.y = stack.getLayoutY() - event.getY();
-        if (stack.type == FreeCellStack.StackType.SIMPLE || stack.type == FreeCellStack.StackType.SUPPORT) {
+        if (stack.type == SIMPLE || stack.type == SUPPORT) {
             List<FreeCellCard> cards = stack.getCards();
             List<FreeCellCard> lastCards = new ArrayList<>();
-            List<FreeCellCard> showCards = cards.stream().filter(FreeCellCard::isShown).collect(Collectors.toList());
+            List<FreeCellCard> showCards = cards.stream().filter(FreeCellCard::isShown)
+                                                .collect(Collectors.toList());
             for (FreeCellCard solitaireCard : showCards) {
-                if (solitaireCard.getLayoutY() + stack.getLayoutY() < event.getY() || !lastCards.isEmpty() && !isStackContinuous(lastCards)) {
+                if (solitaireCard.getLayoutY() + stack.getLayoutY() < event.getY() || !lastCards
+                        .isEmpty() && !isStackContinuous(lastCards)) {
                     lastCards.clear();
                 }
 
@@ -272,25 +278,20 @@ public class FreeCellView extends BaseView {
             }
 
         }
-//        FreeCellCard lastCards = stack.removeLastCards();
-//        if (stack.type == FreeCellStack.StackType.FINAL && lastCards != null) {
-//            dragContext.cards.clear();
-//            dragContext.cards.add(lastCards);
-//            dragContext.stack = stack;
-//            handleMouseDragged(event);
-//        }
     }
 
     void automaticCard() {
 
         int solitaireNumber =
 
-                Stream.of(ascendingStacks).map(e -> e.getLastCards() != null ? e.getLastCards().getNumber().getNumber() : 0)
-                        .min(Comparator.comparing(e -> e))
-                        .orElse(1);
-
-
-        List<FreeCellStack> collect = Stream.concat(Stream.of(simpleStacks), Stream.of(supportingStacks)).collect(Collectors.toList());
+                Stream.of(ascendingStacks)
+                      .map(e -> e.getLastCards() != null ? e.getLastCards().getNumber()
+                                                            .getNumber() : 0)
+                      .min(Comparator.comparing(e -> e))
+                      .orElse(1);
+        List<FreeCellStack> collect = Stream
+                .concat(Stream.of(simpleStacks), Stream.of(supportingStacks))
+                .collect(Collectors.toList());
         for (FreeCellStack stack : collect) {
 
             for (FreeCellStack cardStack : ascendingStacks) {
@@ -302,19 +303,22 @@ public class FreeCellView extends BaseView {
                         && solitaireCard.getNumber().getNumber() <= solitaireNumber + 2) {
                     solitaireCard.autoMoved = true;
                     createMovingCardAnimation(stack, cardStack, solitaireCard);
-                    MotionHistory motionHistory = new MotionHistory(solitaireCard, stack, cardStack);
+                    MotionHistory motionHistory = new MotionHistory(solitaireCard, stack,
+                            cardStack);
                     history.add(motionHistory);
                     return;
                 }
             }
         }
-        if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
+        if (!youwin && Stream.of(ascendingStacks).allMatch(
+                e -> e.getCards().size() == FreeCellNumber.values().length)) {
             showDialogWinning();
         }
 
     }
 
-    private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack, FreeCellCard solitaireCard) {
+    private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack,
+            FreeCellCard solitaireCard) {
 
         cardStackList.remove(targetStack);
         cardStackList.add(targetStack);
@@ -323,19 +327,16 @@ public class FreeCellView extends BaseView {
         float x = -targetStack.getLayoutX() + originStack.getLayoutX();
         float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
         targetStack.addCards(solitaireCard);
-        
-        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
+
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder
+                .ofKeyframe("layoutX", Keyframe.ofFloat(0, x),
+                        Keyframe.ofFloat(1, 0));
 
         float value = targetStack.adjust();
-//        if (targetStack.type == FreeCellStack.StackType.SIMPLE) {
-//            value = (targetStack.getShownCards() - 1) * FreeCellCard.getCardWidth() / 3;
-//            if (targetStack.getNotShownCards() > 0) {
-//                value += targetStack.getNotShownCards() * FreeCellCard.getCardWidth() / 8;
-//            }
-//        }
-
-        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, value));
-        ObjectAnimator eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder
+                .ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, value));
+        ObjectAnimator eatingAnimation = ObjectAnimator
+                .ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
 
         eatingAnimation.setDuration(ANIMATION_DURATION);
         originStack.adjust();
@@ -344,7 +345,8 @@ public class FreeCellView extends BaseView {
         eatingAnimation.start();
     }
 
-    private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack, FreeCellCard solitaireCard, boolean first, int cards) {
+    private void createMovingCardAnimation(FreeCellStack originStack, FreeCellStack targetStack,
+            FreeCellCard solitaireCard, boolean first, int cards) {
         cardStackList.remove(targetStack);
         cardStackList.add(targetStack);
         solitaireCard.setShown(true);
@@ -354,10 +356,13 @@ public class FreeCellView extends BaseView {
         float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
         targetStack.addCards(solitaireCard);
         float adjust = targetStack.adjust(cards);
-        PropertyValuesHolder pvhRotation = PropertyValuesHolder.ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
+        PropertyValuesHolder pvhRotation = PropertyValuesHolder
+                .ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
 
-        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder.ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, adjust));
-        ObjectAnimator eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
+        PropertyValuesHolder pvhRotation2 = PropertyValuesHolder
+                .ofKeyframe("layoutY", Keyframe.ofFloat(0, y), Keyframe.ofFloat(1, adjust));
+        ObjectAnimator eatingAnimation = ObjectAnimator
+                .ofPropertyValuesHolder(solitaireCard, pvhRotation, pvhRotation2);
 
         eatingAnimation.setDuration(ANIMATION_DURATION);
 
@@ -369,7 +374,8 @@ public class FreeCellView extends BaseView {
     }
 
     private void handleMouseReleased() {
-        if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
+        if (!youwin && Stream.of(ascendingStacks).allMatch(
+                e -> e.getCards().size() == FreeCellNumber.values().length)) {
             showDialogWinning();
         }
         if (isNullOrEmpty(dragContext.cards)) {
@@ -385,18 +391,23 @@ public class FreeCellView extends BaseView {
             Collection<FreeCellStack> hoveredStacks = getHoveredStacks(ascendingStacks);
             hoveredStacks.addAll(getHoveredStacks(supportingStacks));
             for (FreeCellStack cardStack : hoveredStacks) {
-                if (Objects.equals(cardStack, dragContext.stack) || cardStack.type == ASCENDING && isNotAscendingStackCompatible(cardStack, first)) {
+                if (Objects.equals(cardStack,
+                        dragContext.stack) ||
+                        cardStack.type == ASCENDING && isNotAscendingStackCompatible(
+                                cardStack, first)) {
                     continue;
                 }
                 if (cardStack.type == SUPPORT && !cardStack.getCards().isEmpty()) {
                     continue;
                 }
-                MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, cardStack);
+                MotionHistory motionHistory = new MotionHistory(dragContext.cards,
+                        dragContext.stack, cardStack);
                 history.add(motionHistory);
                 cardStack.addCards(dragContext.cards);
                 dragContext.reset();
                 automaticCard();
-                if (!youwin && Stream.of(ascendingStacks).allMatch(e -> e.getCards().size() == FreeCellNumber.values().length)) {
+                if (!youwin && Stream.of(ascendingStacks).allMatch(
+                        e -> e.getCards().size() == FreeCellNumber.values().length)) {
                     showDialogWinning();
                 }
                 return;
@@ -408,65 +419,87 @@ public class FreeCellView extends BaseView {
                 FreeCellCard remove = dragContext.cards.remove(0);
                 dragContext.stack.addCards(remove);
             }
-            if (cardStack.getCards().isEmpty()
-                    || first.getSuit().getColor() == cardStack.getLastCards().getSuit().getColor()
-                    || first.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1
-                    || Objects.equals(cardStack, dragContext.stack)) {
+            if (notAcceptsCard(first, cardStack)) {
                 continue;
             }
 
-            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, cardStack);
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack,
+                    cardStack);
             history.add(motionHistory);
             cardStack.addCards(dragContext.cards);
             dragContext.reset();
             automaticCard();
             return;
         }
-        cardStackList.sort(Comparator.comparing((FreeCellStack e) -> e.type).thenComparing((FreeCellStack e) -> -e.getCards().size()));
+        cardStackList.sort(Comparator.comparing((FreeCellStack e) -> e.type)
+                                     .thenComparing((FreeCellStack e) -> -e.getCards().size()));
 
         for (FreeCellStack e : cardStackList) {
             if (Objects.equals(e, dragContext.stack)) {
                 continue;
             }
-            if (e.type == SIMPLE && isSimpleStackCompatible(first, e) && isStackContinuous(dragContext.cards)) {
-                while (dragContext.cards.size() > pileMaxSize(e)) {
-                    FreeCellCard remove = dragContext.cards.remove(0);
-                    dragContext.stack.addCards(remove);
-                }
-                dragContext.stack.addCards(dragContext.cards);
-                boolean firstCard = true;
-                int finalSize = dragContext.cards.size() + e.getShownCards();
-                for (FreeCellCard c : dragContext.cards) {
-                    createMovingCardAnimation(dragContext.stack, e, c, firstCard, finalSize);
-                    firstCard = false;
-                }
-                MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, e);
-                history.add(motionHistory);
-                dragContext.reset();
-                return;
-            }
-
-            if (e.type == ASCENDING && dragContext.cards.size() == 1 && isCompatibleAscending(first, e)) {
-                dragContext.stack.addCards(dragContext.cards);
-                createMovingCardAnimation(dragContext.stack, e, first);
-                MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, e);
-                history.add(motionHistory);
-                dragContext.reset();
-                return;
-            }
-            if (dragContext.stack.type == SIMPLE && e.type == SUPPORT && e.getCards().isEmpty() && dragContext.cards.size() == 1) {
-                dragContext.stack.addCards(dragContext.cards);
-                createMovingCardAnimation(dragContext.stack, e, first);
-                MotionHistory motionHistory = new MotionHistory(dragContext.cards, dragContext.stack, e);
-                history.add(motionHistory);
-                dragContext.reset();
+            if (placeCard(first, e)) {
                 return;
             }
         }
-
-
         dragContext.stack.addCards(dragContext.cards);
         dragContext.reset();
+    }
+
+    private boolean notAcceptsCard(FreeCellCard first, FreeCellStack cardStack) {
+        return cardStack.getCards().isEmpty()
+                || first.getSuit().getColor() == cardStack.getLastCards().getSuit().getColor()
+                || first.getNumber().getNumber() != cardStack.getLastCards().getNumber()
+                                                             .getNumber() - 1
+                || Objects.equals(cardStack, dragContext.stack);
+    }
+
+    private boolean placeCard(FreeCellCard first, FreeCellStack currentStack) {
+        if (currentStack.type == SIMPLE && isSimpleStackCompatible(first, currentStack) &&
+                isStackContinuous(
+                        dragContext.cards)) {
+            while (dragContext.cards.size() > pileMaxSize(currentStack)) {
+                FreeCellCard remove = dragContext.cards.remove(0);
+                dragContext.stack.addCards(remove);
+            }
+            dragContext.stack.addCards(dragContext.cards);
+            boolean firstCard = true;
+            int finalSize = dragContext.cards.size() + currentStack.getShownCards();
+            for (FreeCellCard c : dragContext.cards) {
+                createMovingCardAnimation(dragContext.stack, currentStack, c, firstCard, finalSize);
+                firstCard = false;
+            }
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards,
+                    dragContext.stack, currentStack);
+            history.add(motionHistory);
+            dragContext.reset();
+            return true;
+        }
+
+        if (currentStack.type == ASCENDING && dragContext.cards.size() == 1 &&
+                isCompatibleAscending(first,
+                        currentStack)) {
+            dragContext.stack.addCards(dragContext.cards);
+            createMovingCardAnimation(dragContext.stack, currentStack, first);
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards,
+                    dragContext.stack, currentStack);
+            history.add(motionHistory);
+            dragContext.reset();
+            return true;
+        }
+        if (dragContext.stack.type == SIMPLE && currentStack.type == SUPPORT &&
+                currentStack.getCards()
+                            .isEmpty() && dragContext.cards
+                .size() == 1) {
+            dragContext.stack.addCards(dragContext.cards);
+            createMovingCardAnimation(dragContext.stack, currentStack, first);
+            MotionHistory motionHistory = new MotionHistory(dragContext.cards,
+                    dragContext.stack, currentStack);
+            history.add(motionHistory);
+            dragContext.reset();
+            return true;
+        }
+        return false;
     }
 
     private boolean isSimpleStackCompatible(FreeCellCard first, FreeCellStack e) {
@@ -500,16 +533,17 @@ public class FreeCellView extends BaseView {
     }
 
     long pileMaxSize(FreeCellStack cardStack) {
-        long supporting = Stream.of(supportingStacks).filter(e -> e.getCards().isEmpty()).count() + 1;
-        supporting *= Stream.of(simpleStacks).filter(e -> e.getCards().isEmpty() && !Objects.equals(cardStack, e)).count() + 1;
-
+        long supporting = Stream.of(supportingStacks).filter(e -> e.getCards().isEmpty())
+                                .count() + 1;
+        supporting *= Stream.of(simpleStacks)
+                            .filter(e -> e.getCards().isEmpty() && !Objects.equals(cardStack, e))
+                            .count() + 1;
         return supporting;
     }
 
     long pileMaxSize() {
         return pileMaxSize(null);
     }
-
 
     private boolean isCompatibleAscending(FreeCellCard first, FreeCellStack e) {
         return first.getNumber() == FreeCellNumber.ACE && e.getCards().isEmpty()
@@ -537,27 +571,30 @@ public class FreeCellView extends BaseView {
         invalidate();
     }
 
-    private boolean isNotAscendingStackCompatible(FreeCellStack cardStack, FreeCellCard solitaireCard) {
+    private boolean isNotAscendingStackCompatible(FreeCellStack cardStack,
+            FreeCellCard solitaireCard) {
         return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
-                || !cardStack.getCards().isEmpty() && (solitaireCard.getSuit() != cardStack.getLastCards().getSuit()
-                || solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() + 1);
+                || !cardStack.getCards().isEmpty() && (solitaireCard.getSuit() != cardStack
+                .getLastCards().getSuit()
+                || solitaireCard.getNumber().getNumber() != cardStack.getLastCards().getNumber()
+                                                                     .getNumber() + 1);
     }
-
 
     private Collection<FreeCellStack> getHoveredStacks(FreeCellStack[] stacks) {
         FreeCellCard next = dragContext.cards.iterator().next();
         return Stream.of(stacks)
-                .filter(s -> RectF.intersects(s.getBoundsF(), next.getBounds()))
-                .collect(Collectors.toList());
+                     .filter(s -> RectF.intersects(s.getBoundsF(), next.getBounds()))
+                     .collect(Collectors.toList());
     }
 
-    private boolean isStackEmptyAndCardIsNotAce(FreeCellStack cardStack, FreeCellCard solitaireCard) {
+    private boolean isStackEmptyAndCardIsNotAce(FreeCellStack cardStack,
+            FreeCellCard solitaireCard) {
         return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != FreeCellNumber.ACE;
     }
 
     private static class DragContext {
-        protected final List<FreeCellCard> cards = new ArrayList<>();
-        protected FreeCellStack stack;
+        final List<FreeCellCard> cards = new ArrayList<>();
+        FreeCellStack stack;
         protected float x;
         protected float y;
 
@@ -568,12 +605,12 @@ public class FreeCellView extends BaseView {
     }
 
     private static class MotionHistory {
-        protected final List<FreeCellCard> cards = new ArrayList<>();
-        protected FreeCellStack originStack;
-        protected FreeCellStack targetStack;
+        final List<FreeCellCard> cards = new ArrayList<>();
+        FreeCellStack originStack;
+        FreeCellStack targetStack;
 
-
-        MotionHistory(Collection<FreeCellCard> cards, FreeCellStack originStack, FreeCellStack targetStack) {
+        MotionHistory(Collection<FreeCellCard> cards, FreeCellStack originStack,
+                FreeCellStack targetStack) {
             this.originStack = originStack;
             this.targetStack = targetStack;
             this.cards.addAll(cards);
@@ -584,16 +621,13 @@ public class FreeCellView extends BaseView {
             this.targetStack = targetStack;
             this.cards.add(cards);
         }
-
-
     }
-
 
     private class AutomaticCardsListener implements Animator.AnimatorListener {
 
         @Override
         public void onAnimationStart(Animator animation) {
-
+            // DOES NOTHING
         }
 
         @Override
@@ -603,12 +637,12 @@ public class FreeCellView extends BaseView {
 
         @Override
         public void onAnimationCancel(Animator animation) {
-
+            // DOES NOTHING
         }
 
         @Override
         public void onAnimationRepeat(Animator animation) {
-
+            // DOES NOTHING
         }
     }
 }

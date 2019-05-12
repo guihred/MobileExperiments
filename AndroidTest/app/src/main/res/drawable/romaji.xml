@@ -4,12 +4,7 @@
     android:height="64dp"
     android:viewportHeight="600"
     android:viewportWidth="600">
-    <!--<path-->
 
-        <!--android:fillColor="#00FF00"-->
-        <!--android:pathData="M 0,0 h600 v600 h-600 z "-->
-        <!--android:strokeColor="#00FF00"-->
-        <!--android:strokeWidth="2" />-->
     <group android:translateY="0" android:translateX="-0" android:scaleX="2" android:scaleY="2">
     <group
 

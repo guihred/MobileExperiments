@@ -7,13 +7,14 @@ import java.util.Random;
 
 class CreateLabyrinth {
 
-    public static void createLabyrinth(LabyrinthSquare[][] maze){
+    final Random random = new Random();
+    int r = 0, c = 0;
+
+    public static void createLabyrinth(LabyrinthSquare[][] maze) {
         new CreateLabyrinth().handle(maze);
     }
 
-    int r = 0, c = 0;
     void handle(LabyrinthSquare[][] maze) {
-        final Random random = new Random();
         final List<LabyrinthSquare> history = new ArrayList<>();
         final List<String> check = new ArrayList<>();
         history.add(maze[0][0]);

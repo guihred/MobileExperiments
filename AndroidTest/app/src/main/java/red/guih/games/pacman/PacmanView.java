@@ -30,17 +30,15 @@ public class PacmanView extends BaseView {
     public static final int MAZE_WIDTH = 5;
     public static final int GHOST_AFRAID_TIME = 200;
     public static int MAZE_HEIGHT = 5;
-    private int lifeCount = 3;
     private final Pacman pacman;
-    float startX, startY;
-    List<RectF>
-            walls = new ArrayList<>();
-
-
-    Thread gameLoopThread;
-
-    private List<PacmanBall> balls = new ArrayList<>();
     private final List<PacmanGhost> ghosts;
+    boolean gamePaused;
+    Random random = new Random();
+    private int lifeCount = 3;
+    private float startX, startY;
+    private List<RectF> walls = new ArrayList<>();
+    private Thread gameLoopThread;
+    private List<PacmanBall> balls = new ArrayList<>();
     private Integer points = 0;
     private long time;
     private MazeSquare[][] maze;
@@ -53,6 +51,19 @@ public class PacmanView extends BaseView {
                         .map((GhostColor color) -> new PacmanGhost(color, context))
                         .collect(Collectors.toList());
         createBalls();
+    }
+
+    private void createBalls() {
+        balls = DoubleStream
+                .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
+                .limit(MAZE_WIDTH * 2)
+                .boxed()
+                .flatMap(
+                        d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2,
+                                e -> e + MazeSquare.SQUARE_SIZE)
+                                         .limit(MAZE_HEIGHT * 2)
+                                         .mapToObj((double e) -> new PacmanBall(d, e)))
+                .collect(Collectors.toList());
     }
 
     private static MazeSquare[][] initializeMaze() {
@@ -77,39 +88,41 @@ public class PacmanView extends BaseView {
         return maze;
     }
 
+    private static void adjustDimensions(int width, int height) {
+        MazeSquare.SQUARE_SIZE = width / MAZE_WIDTH / 2;
+        MAZE_HEIGHT = height / MazeSquare.SQUARE_SIZE / 2;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                startX = event.getX();
-                startY = event.getY();
-
-                return true;
-            case MotionEvent.ACTION_MOVE:
-                float x = event.getX();
-                float y = event.getY();
-                if (Math.abs(startX - x) > Math.abs(startY - y)) {
-                    if (startX - x > 0) {
-                        pacman.turn(PacmanDirection.LEFT);
-                    } else {
-                        pacman.turn(PacmanDirection.RIGHT);
-                    }
-                } else {
-                    if (startY - y > 0) {
-                        pacman.turn(PacmanDirection.UP);
-                    } else {
-                        pacman.turn(PacmanDirection.DOWN);
-                    }
-                }
-                return true;
-            default:
-                break;
+        if (action == MotionEvent.ACTION_DOWN) {
+            startX = event.getX();
+            startY = event.getY();
+            return true;
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            setDirection(event);
+            return true;
         }
+        return false;
+    }
 
-
-        return true;
+    private void setDirection(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+        if (Math.abs(startX - x) > Math.abs(startY - y)) {
+            if (startX - x > 0) {
+                pacman.turn(PacmanDirection.LEFT);
+            } else {
+                pacman.turn(PacmanDirection.RIGHT);
+            }
+        } else {
+            if (startY - y > 0) {
+                pacman.turn(PacmanDirection.UP);
+            } else {
+                pacman.turn(PacmanDirection.DOWN);
+            }
+        }
     }
 
     @Override
@@ -137,8 +150,9 @@ public class PacmanView extends BaseView {
     private void drawLives(Canvas canvas) {
         float y = MAZE_HEIGHT * 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE / 8;
         for (int i = 0; i < lifeCount; i++) {
-            float x = MAZE_WIDTH * 0.6f * MazeSquare.SQUARE_SIZE + i * MazeSquare.SQUARE_SIZE;
-            canvas.drawArc(x, y, x + pacman.getPacmanWidth() / 1.5f, y + pacman.getPacmanWidth() / 1.5f, 45, 270, true, pacman.paint);
+            float x = MAZE_WIDTH * 3 / 5 * MazeSquare.SQUARE_SIZE + i * MazeSquare.SQUARE_SIZE;
+            canvas.drawArc(x, y, x + pacman.getPacmanWidth() / 1.5f,
+                    y + pacman.getPacmanWidth() / 1.5f, 45, 270, true, pacman.paint);
         }
     }
 
@@ -165,7 +179,6 @@ public class PacmanView extends BaseView {
         }
         createBalls();
 
-        Random random = new Random();
         for (int i = 0; i < 5; i++) {
             int nextInt = random.nextInt(balls.size());
             PacmanBall pacmanBall = balls.get(nextInt);
@@ -179,7 +192,8 @@ public class PacmanView extends BaseView {
             ghost.setStatus(GhostStatus.ALIVE);
 
             if (i == 0) {
-                ghost.setStartPosition(MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1), MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
+                ghost.setStartPosition(MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1),
+                        MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
             } else {
                 ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_WIDTH - 1),
                         i / 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_HEIGHT - 1));
@@ -187,23 +201,6 @@ public class PacmanView extends BaseView {
         }
         continueGame();
         lifeCount = 3;
-    }
-
-    private void createBalls() {
-        balls = DoubleStream
-                .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
-                .limit(MAZE_WIDTH * 2)
-                .boxed()
-                .flatMap(
-                        d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2, e -> e + MazeSquare.SQUARE_SIZE)
-                                .limit(MAZE_HEIGHT * 2)
-                                .mapToObj((double e) -> new PacmanBall(d, e)))
-                .collect(Collectors.toList());
-    }
-
-    private static void adjustDimensions(int width, int height) {
-        MazeSquare.SQUARE_SIZE = width / MAZE_WIDTH / 2;
-        MAZE_HEIGHT = height / MazeSquare.SQUARE_SIZE / 2;
     }
 
     void continueGame() {
@@ -248,11 +245,10 @@ public class PacmanView extends BaseView {
         gamePaused = true;
     }
 
-    boolean gamePaused;
-
     private boolean gameLoop(long now) {
-        if (gamePaused)
+        if (gamePaused) {
             return false;
+        }
         postInvalidate();
         if (balls.isEmpty()) {
             post(this::showDialog);
@@ -260,19 +256,22 @@ public class PacmanView extends BaseView {
         }
         ghosts.forEach(g -> g.move(now, walls, pacman, maze));
         pacman.move(walls);
-        List<PacmanBall> bal = balls.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds())).collect(Collectors.toList());
+        List<PacmanBall> bal =
+                balls.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds()))
+                     .collect(Collectors.toList());
         if (!bal.isEmpty()) {
 
             setPoints(getPoints() + bal.size());
             balls.removeAll(bal);
             if (bal.stream().anyMatch(PacmanBall::isSpecial)) {
                 ghosts.stream().filter(g -> g.getStatus() == GhostStatus.ALIVE)
-                        .forEach(g -> g.setStatus(GhostStatus.AFRAID));
+                      .forEach(g -> g.setStatus(GhostStatus.AFRAID));
                 time = GHOST_AFRAID_TIME;
             }
         }
-        List<PacmanGhost> gh = ghosts.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds()))
-                .collect(Collectors.toList());
+        List<PacmanGhost> gh =
+                ghosts.stream().filter(b -> RectF.intersects(b.getBounds(), pacman.getBounds()))
+                      .collect(Collectors.toList());
         if (!gh.isEmpty()) {
             if (gh.stream().anyMatch(g -> g.getStatus() == GhostStatus.ALIVE)) {
                 if (lifeCount > 0) {
@@ -295,7 +294,7 @@ public class PacmanView extends BaseView {
             time--;
             if (time == 0) {
                 ghosts.stream().filter(g -> g.getStatus() == GhostStatus.AFRAID)
-                        .forEach(g -> g.setStatus(GhostStatus.ALIVE));
+                      .forEach(g -> g.setStatus(GhostStatus.ALIVE));
             }
         }
 

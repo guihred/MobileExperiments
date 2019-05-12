@@ -15,7 +15,10 @@ import java.nio.channels.FileChannel;
 /**
  * Created by guilherme.hmedeiros on 16/03/2018.
  */
-public class FileHelper {
+public final class FileHelper {
+    private FileHelper() {
+    }
+
     /**
      * Creates the specified <i><b>toFile</b></i> that is a byte for byte a copy
      * of <i><b>fromFile</b></i>. If <i><b>toFile</b></i> already existed, then
@@ -24,10 +27,8 @@ public class FileHelper {
      * <i><b>fromFile</b></i> and <i><b>toFile</b></i> will be closed by this
      * operation.
      *
-     * @param fromFile
-     *            - InputStream for the file to copy from.
-     * @param toFile
-     *            - InputStream for the file to copy to.
+     * @param fromFile - InputStream for the file to copy from.
+     * @param toFile   - InputStream for the file to copy to.
      */
     public static void copyFile(InputStream fromFile, OutputStream toFile) throws IOException {
         // transfer bytes from the inputfile to the outputfile
@@ -35,8 +36,10 @@ public class FileHelper {
         int length;
 
         try {
-            while ((length = fromFile.read(buffer)) > 0) {
-                toFile.write(buffer, 0, length);
+            if (fromFile != null) {
+                while ((length = fromFile.read(buffer)) > 0) {
+                    toFile.write(buffer, 0, length);
+                }
             }
         }
         // Close the streams
@@ -65,10 +68,8 @@ public class FileHelper {
      * <i><b>fromFile</b></i> and <i><b>toFile</b></i> will be closed by this
      * operation.
      *
-     * @param fromFile
-     *            - String specifying the path of the file to copy from.
-     * @param toFile
-     *            - String specifying the path of the file to copy to.
+     * @param fromFile - String specifying the path of the file to copy from.
+     * @param toFile   - String specifying the path of the file to copy to.
      */
     public static void copyFile(String fromFile, String toFile) throws IOException {
         copyFile(new FileInputStream(fromFile), new FileOutputStream(toFile));
@@ -82,34 +83,18 @@ public class FileHelper {
      * <i><b>fromFile</b></i> and <i><b>toFile</b></i> will be closed by this
      * operation.
      *
-     * @param fromFile
-     *            - File for the file to copy from.
-     * @param toFile
-     *            - File for the file to copy to.
+     * @param fromFile - FileInputStream for the file to copy from.
+     * @param toFile   - FileInputStream for the file to copy to.
      */
-    public static void copyFile(File fromFile, File toFile) throws IOException {
-        copyFile(new FileInputStream(fromFile), new FileOutputStream(toFile));
-    }
+    public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws
+            IOException {
 
-    /**
-     * Creates the specified <i><b>toFile</b></i> that is a byte for byte a copy
-     * of <i><b>fromFile</b></i>. If <i><b>toFile</b></i> already existed, then
-     * it will be replaced with a copy of <i><b>fromFile</b></i>. The name and
-     * path of <i><b>toFile</b></i> will be that of <i><b>toFile</b></i>. Both
-     * <i><b>fromFile</b></i> and <i><b>toFile</b></i> will be closed by this
-     * operation.
-     *
-     * @param fromFile
-     *            - FileInputStream for the file to copy from.
-     * @param toFile
-     *            - FileInputStream for the file to copy to.
-     */
-    public static void copyFile(FileInputStream fromFile, FileOutputStream toFile) throws IOException {
         FileChannel fromChannel = fromFile.getChannel();
         FileChannel toChannel = toFile.getChannel();
-
         try {
-            fromChannel.transferTo(0, fromChannel.size(), toChannel);
+            if (toChannel != null && fromChannel != null) {
+                fromChannel.transferTo(0, fromChannel.size(), toChannel);
+            }
         } finally {
             try {
                 if (fromChannel != null) {
@@ -124,6 +109,21 @@ public class FileHelper {
     }
 
     /**
+     * Creates the specified <i><b>toFile</b></i> that is a byte for byte a copy
+     * of <i><b>fromFile</b></i>. If <i><b>toFile</b></i> already existed, then
+     * it will be replaced with a copy of <i><b>fromFile</b></i>. The name and
+     * path of <i><b>toFile</b></i> will be that of <i><b>toFile</b></i>. Both
+     * <i><b>fromFile</b></i> and <i><b>toFile</b></i> will be closed by this
+     * operation.
+     *
+     * @param fromFile - File for the file to copy from.
+     * @param toFile   - File for the file to copy to.
+     */
+    public static void copyFile(File fromFile, File toFile) throws IOException {
+        copyFile(new FileInputStream(fromFile), new FileOutputStream(toFile));
+    }
+
+    /**
      * Parses a file containing sql statements into a String array that contains
      * only the sql statements. Comments and white spaces in the file are not
      * parsed into the String array. Note the file must not contained malformed
@@ -131,13 +131,11 @@ public class FileHelper {
      * for the file to be parsed correctly. The sql statements in the String
      * array will not end with a semi-colon ";".
      *
-     * @param sqlFile
-     *            - String containing the path for the file that contains sql
-     *            statements.
-     *
+     * @param sqlFile - String containing the path for the file that contains sql
+     *                statements.
      * @return String array containing the sql statements.
      */
-    public static String[]  parseSqlFile(String sqlFile) throws IOException {
+    public static String[] parseSqlFile(String sqlFile) throws IOException {
         return parseSqlFile(new BufferedReader(new FileReader(sqlFile)));
     }
 
@@ -149,43 +147,7 @@ public class FileHelper {
      * for the file to be parsed correctly. The sql statements in the String
      * array will not end with a semi-colon ";".
      *
-     * @param sqlFile
-     *            - InputStream for the file that contains sql statements.
-     *
-     * @return String array containing the sql statements.
-     */
-    public static String[] parseSqlFile(InputStream sqlFile) throws IOException {
-        return parseSqlFile(new BufferedReader(new InputStreamReader(sqlFile)));
-    }
-
-    /**
-     * Parses a file containing sql statements into a String array that contains
-     * only the sql statements. Comments and white spaces in the file are not
-     * parsed into the String array. Note the file must not contained malformed
-     * comments and all sql statements must end with a semi-colon ";" in order
-     * for the file to be parsed correctly. The sql statements in the String
-     * array will not end with a semi-colon ";".
-     *
-     * @param sqlFile
-     *            - Reader for the file that contains sql statements.
-     *
-     * @return String array containing the sql statements.
-     */
-    public static String[] parseSqlFile(Reader sqlFile) throws IOException {
-        return parseSqlFile(new BufferedReader(sqlFile));
-    }
-
-    /**
-     * Parses a file containing sql statements into a String array that contains
-     * only the sql statements. Comments and white spaces in the file are not
-     * parsed into the String array. Note the file must not contained malformed
-     * comments and all sql statements must end with a semi-colon ";" in order
-     * for the file to be parsed correctly. The sql statements in the String
-     * array will not end with a semi-colon ";".
-     *
-     * @param sqlFile
-     *            - BufferedReader for the file that contains sql statements.
-     *
+     * @param sqlFile - BufferedReader for the file that contains sql statements.
      * @return String array containing the sql statements.
      */
     public static String[] parseSqlFile(BufferedReader sqlFile) throws IOException {
@@ -209,7 +171,7 @@ public class FileHelper {
                         multiLineComment = "{";
                     }
                     // Append line if line is not empty or a single line comment
-                } else if (!line.startsWith("--") && !line.equals("")) {
+                } else if (!line.startsWith("--") && !line.isEmpty()) {
                     sql.append(line);
                 } // Check for matching end comment
             } else if ("/*".equals(multiLineComment)) {
@@ -217,10 +179,9 @@ public class FileHelper {
                     multiLineComment = null;
                 }
                 // Check for matching end comment
-            } else if ("{".equals(multiLineComment)) {
-                if (line.endsWith("}")) {
-                    multiLineComment = null;
-                }
+            } else if ("{".equals(multiLineComment) && line.endsWith("}")) {
+                multiLineComment = null;
+
             }
 
         }
@@ -228,6 +189,36 @@ public class FileHelper {
         sqlFile.close();
 
         return sql.toString().split(";");
+    }
+
+    /**
+     * Parses a file containing sql statements into a String array that contains
+     * only the sql statements. Comments and white spaces in the file are not
+     * parsed into the String array. Note the file must not contained malformed
+     * comments and all sql statements must end with a semi-colon ";" in order
+     * for the file to be parsed correctly. The sql statements in the String
+     * array will not end with a semi-colon ";".
+     *
+     * @param sqlFile - InputStream for the file that contains sql statements.
+     * @return String array containing the sql statements.
+     */
+    public static String[] parseSqlFile(InputStream sqlFile) throws IOException {
+        return parseSqlFile(new BufferedReader(new InputStreamReader(sqlFile)));
+    }
+
+    /**
+     * Parses a file containing sql statements into a String array that contains
+     * only the sql statements. Comments and white spaces in the file are not
+     * parsed into the String array. Note the file must not contained malformed
+     * comments and all sql statements must end with a semi-colon ";" in order
+     * for the file to be parsed correctly. The sql statements in the String
+     * array will not end with a semi-colon ";".
+     *
+     * @param sqlFile - Reader for the file that contains sql statements.
+     * @return String array containing the sql statements.
+     */
+    public static String[] parseSqlFile(Reader sqlFile) throws IOException {
+        return parseSqlFile(new BufferedReader(sqlFile));
     }
 
 }

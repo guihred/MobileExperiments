@@ -86,40 +86,42 @@ public class JapaneseView extends BaseView {
 
     public List<JapaneseLesson> loadLessons() {
 
-        new Thread(() -> {
-            Log.e("JAPANESE VIEW", "LOADING LESSONS");
-            lessons.clear();
-            List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
-            Log.e("JAPANESE VIEW", db.toString());
-            lessons.addAll(all);
-            if (!lessons.isEmpty()) {
-                points = getUserPreferenceFloat(R.string.punctuation, 0);
-                currentLesson = getUserPreference(R.string.lesson, 0);
-                configureCurrentLesson();
-            }
-            Log.e("JAPANESE VIEW", "NO LESSONS");
-            String nao = getUserPreference(R.string.executed, "NAO");
-            if ("NAO".equals(nao)) {
-                new Thread(() -> {
-                    Log.e("DATABASE", "INITIALIZING DATABASE");
-                    DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
-                    addUserPreference(R.string.executed, "SIM");
-                }).start();
-            }
-
-            postInvalidate();
-            loadTips();
-        }).start();
+        new Thread(this::migrateLessons).start();
         return lessons;
+    }
+
+    private void migrateLessons() {
+        Log.e("JAPANESE VIEW", "LOADING LESSONS");
+        lessons.clear();
+        List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
+        Log.e("JAPANESE VIEW", db.toString());
+        lessons.addAll(all);
+        if (!lessons.isEmpty()) {
+            points = getUserPreferenceFloat(R.string.punctuation, 0);
+            currentLesson = getUserPreference(R.string.lesson, 0);
+            configureCurrentLesson();
+        }
+        Log.e("JAPANESE VIEW", "NO LESSONS");
+        String nao = getUserPreference(R.string.executed, "NAO");
+        if ("NAO".equals(nao)) {
+            new Thread(() -> {
+                Log.e("DATABASE", "INITIALIZING DATABASE");
+                DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
+                addUserPreference(R.string.executed, "SIM");
+            }).start();
+        }
+
+        postInvalidate();
+        loadTips();
     }
 
     public List<String> loadTips() {
         tips.clear();
         tips.addAll(lessons.stream().filter(e -> e != null && e.getRomaji() != null)
-                .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
-                .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
-                .flatMap(e -> Stream.of(e.split("\\).*\\(")))
-                .collect(Collectors.toList())
+                           .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
+                           .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
+                           .flatMap(e -> Stream.of(e.split("\\).*\\(")))
+                           .collect(Collectors.toList())
         );
         postInvalidate();
 
@@ -127,13 +129,16 @@ public class JapaneseView extends BaseView {
     }
 
     private void configureCurrentLesson() {
-        if (lessons.isEmpty())
+        if (lessons.isEmpty()) {
             return;
+        }
 
         JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
         letters.clear();
         answer.clear();
-        List<String> split = Objects.toString(japaneseLesson.getJapanese(), "").chars().mapToObj(value -> (char) value).map(Object::toString).collect(Collectors.toList());
+        List<String> split = Objects.toString(japaneseLesson.getJapanese(), "").chars()
+                                    .mapToObj(value -> (char) value).map(Object::toString)
+                                    .collect(Collectors.toList());
         Collections.shuffle(split);
         int h = getLettersLayout();
         int w = getWidth();
@@ -150,16 +155,19 @@ public class JapaneseView extends BaseView {
         tp.setTextSize(characterSize);
         tp.setTextAlign(Paint.Align.CENTER);
         tp.setAntiAlias(true);
-        englishLayout = new DynamicLayout(getContext().getString(R.string.english, japaneseLesson.getEnglish()), tp,
+        englishLayout = new DynamicLayout(
+                getContext().getString(R.string.english, japaneseLesson.getEnglish()), tp,
                 getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         englishLayout.getOffsetToRightOf(characterSize);
         String romaji = japaneseLesson.getRomaji();
 
 
-        romajiLayout = new DynamicLayout(getContext().getString(R.string.romaji, Objects.toString(romaji, "").replaceAll("\\(.+\\)", "")), tp,
+        romajiLayout = new DynamicLayout(getContext().getString(R.string.romaji,
+                Objects.toString(romaji, "").replaceAll("\\(.+\\)", "")), tp,
                 getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         romajiLayout.getOffsetToRightOf(characterSize);
-        answerLayout = new DynamicLayout(getContext().getString(R.string.answer, Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", "")), tp,
+        answerLayout = new DynamicLayout(getContext().getString(R.string.answer,
+                Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", "")), tp,
                 getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         answerLayout.getOffsetToRightOf(characterSize);
         if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
@@ -193,7 +201,8 @@ public class JapaneseView extends BaseView {
         }
 
 
-        String chapterFormat = getContext().getString(R.string.chapter_format, CHAPTER, currentLesson, lessons.size());
+        String chapterFormat = getContext()
+                .getString(R.string.chapter_format, CHAPTER, currentLesson, lessons.size());
         canvas.drawText(chapterFormat, characterSize, characterSize, paint);
         String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
         canvas.drawText(punctuationFormat, getWidth() / 2, characterSize, paint);
@@ -206,8 +215,11 @@ public class JapaneseView extends BaseView {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
             canvas.drawRoundRect(okButton, 10, 10, greenPaint);
             String singleScore = getContext().getString(R.string.percent, currentScore);
-            canvas.drawText(singleScore, okButton.centerX() - characterSize * singleScore.length() / 4, okButton.centerY(), paint);
-            canvas.drawText("Ok", okButton.centerX() - characterSize / 2, okButton.centerY() + characterSize, paint);
+            canvas.drawText(singleScore,
+                    okButton.centerX() - characterSize * singleScore.length() / 4,
+                    okButton.centerY(), paint);
+            canvas.drawText("Ok", okButton.centerX() - characterSize / 2,
+                    okButton.centerY() + characterSize, paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
         drawLetters(canvas, this.letters);
@@ -238,65 +250,71 @@ public class JapaneseView extends BaseView {
     }
 
     private void drawLetters(Canvas canvas, List<Letter> l) {
-        if (lessons.isEmpty())
+        if (lessons.isEmpty()) {
             return;
-        if (currentLesson >= lessons.size())
+        }
+        if (currentLesson >= lessons.size()) {
             currentLesson = 0;
+        }
 
 
         JapaneseLesson japaneseLesson = lessons.get(currentLesson);
         for (int i = 0; i < l.size(); i++) {
             Letter rc = l.get(i);
 
-            if (letters.isEmpty() && Objects.toString(japaneseLesson.getJapanese(), "").length() > i) {
-                Paint p = Objects.equals(Character.toString(japaneseLesson.getJapanese().charAt(i)), rc.character) ? greenPaint : redPaint;
+            if (letters.isEmpty() && Objects.toString(japaneseLesson.getJapanese(), "")
+                                            .length() > i) {
+                Paint p = Objects.equals(Character.toString(japaneseLesson.getJapanese().charAt(i)),
+                        rc.character) ? greenPaint : redPaint;
 
                 canvas.drawRoundRect(rc.bound, 10, 10, p);
             }
             canvas.drawRoundRect(rc.bound, 10, 10, paint);
-            canvas.drawText(rc.character, rc.bound.left + characterSize / 2, rc.bound.top + characterSize * 5 / 4, this.paint);
+            canvas.drawText(rc.character, rc.bound.left + characterSize / 2,
+                    rc.bound.top + characterSize * 5 / 4, this.paint);
         }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                if (lessons.isEmpty()) {
-                    loadLessons();
+        if (action == MotionEvent.ACTION_DOWN) {
+            if (lessons.isEmpty()) {
+                loadLessons();
+                return true;
+            }
+            JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
+            if (letters.isEmpty() && okButton.contains(event.getX(), event.getY())) {
+                currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(),
+                        answer.stream().map(e -> e.character)
+                              .collect(Collectors.joining())) * 100;
+                points += currentScore;
+                currentLesson = (currentLesson + 1) % lessons.size();
+                if (currentLesson == 0) {
+
+                    showDialogWinning();
                     return true;
                 }
-                JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
-                if (letters.isEmpty() && okButton.contains(event.getX(), event.getY())) {
-                    currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining())) * 100;
-                    points += currentScore;
-                    currentLesson = (currentLesson + 1) % lessons.size();
-                    if (currentLesson == 0) {
+                addUserPreference(R.string.punctuation, points);
+                addUserPreference(R.string.lesson, currentLesson);
+                configureCurrentLesson();
+                invalidate();
+            }
 
-                        showDialogWinning();
-                        return true;
-                    }
-                    addUserPreference(R.string.punctuation, points);
-                    addUserPreference(R.string.lesson, currentLesson);
-                    configureCurrentLesson();
-                    invalidate();
+            if (exchangeLetter(event, getLettersLayout(), this.letters, getAnswerLayout(),
+                    this.answer)) {
+                if (letters.isEmpty()) {
+                    currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(),
+                            answer.stream().map(e -> e.character)
+                                  .collect(Collectors.joining())) * 100;
                 }
+                return true;
+            }
 
-                if (exchangeLetter(event, getLettersLayout(), this.letters, getAnswerLayout(), this.answer)) {
-                    if (letters.isEmpty()) {
-                        currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(), answer.stream().map(e -> e.character).collect(Collectors.joining())) * 100;
-                    }
-                    return true;
-                }
-
-                if (!letters.isEmpty() && exchangeLetter(event, getAnswerLayout(), this.answer, getLettersLayout(), this.letters)) {
-                    return true;
-                }
-
-                break;
-            default:
-                break;
+            if (!letters.isEmpty() && exchangeLetter(event, getAnswerLayout(), this.answer,
+                    getLettersLayout(), this.letters)) {
+                return true;
+            }
         }
         invalidate();
 
@@ -316,7 +334,8 @@ public class JapaneseView extends BaseView {
         String description = getContext().getString(R.string.punctuation, score);
         currentLesson = 0;
         if (isRecordSuitable((long) score * 100, UserRecord.JAPANESE, CHAPTER, false)) {
-            createRecordIfSuitable((long) score * 100, description, UserRecord.JAPANESE, CHAPTER, false);
+            createRecordIfSuitable((long) score * 100, description, UserRecord.JAPANESE, CHAPTER,
+                    false);
             showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
             return;
         }
@@ -329,7 +348,8 @@ public class JapaneseView extends BaseView {
 
     private void nextChapter() {
         setChapter((CHAPTER + 1) % MAX_CHAPTERS);
-        addUserPreference("japanese." + JapaneseActivity.class.getSimpleName(), R.string.chapter, JapaneseView.CHAPTER);
+        addUserPreference("japanese." + JapaneseActivity.class.getSimpleName(), R.string.chapter,
+                JapaneseView.CHAPTER);
         loadLessons();
     }
 
@@ -341,7 +361,8 @@ public class JapaneseView extends BaseView {
         return getHeight() * 4 / 6;
     }
 
-    private boolean exchangeLetter(MotionEvent event, int sourceOffset, List<Letter> source, int targetOffset, List<Letter> target) {
+    private boolean exchangeLetter(MotionEvent event, int sourceOffset, List<Letter> source,
+            int targetOffset, List<Letter> target) {
         int w2 = getWidth();
         for (int i = 0; i < source.size(); i++) {
             Letter rc = source.get(i);

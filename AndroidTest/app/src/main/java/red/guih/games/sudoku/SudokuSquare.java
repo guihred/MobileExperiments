@@ -31,48 +31,27 @@ public class SudokuSquare {
     public SudokuSquare(int i, int j) {
         row = i;
         col = j;
-//        setPadding(new Insets(10));
-//        setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, new Insets(1))));
-
-//        Text text = new Text();
-//        text.textProperty().bind(Bindings.when(number.isNotEqualTo(0)).then(number.asString()).otherwise(""));
-//        text.wrappingWidthProperty().bind(widthProperty());
-//        text.setTextOrigin(VPos.CENTER);
-//        Font default1 = Font.getDefault();
 //
-//        text.setFont(Font.font(default1.getFamily(), FontWeight.BOLD, default1.getSize()));
-//        text.layoutYProperty().bind(heightProperty().divide(2));
-//        text.setTextAlignment(TextAlignment.CENTER);
-//        getChildren().add(text);
-//        setPrefSize(50, 50);
-//        text.fillProperty().bind(Bindings.when(wrong).then(Color.RED).otherwise(Color.BLACK));
-//        Text possibilitiesText = new Text();
-//        possibilitiesText.setTextAlignment(TextAlignment.CENTER);
-//        possibilitiesText.setFont(Font.font(default1.getFamily(), FontWeight.THIN, default1.getSize() * 3 / 4));
-//        possibilitiesText.setTextOrigin(VPos.TOP);
-//        possibilitiesText.visibleProperty().bind(Bindings.createBooleanBinding(this::isEmpty, number));
-//        possibilitiesText.textProperty().bind(Bindings.createStringBinding(
-//                () -> possibilities.stream().map(Objects::toString).collect(Collectors.joining(" ", " ", " ")),
-//                possibilities));
-//        getChildren().add(possibilitiesText);
-
     }
-
 
     public void draw(Canvas canvas) {
         float top = col * SQUARE_SIZE + LAYOUT_Y;
         if (permanent) {
-            canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE, GRAY);
+            canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE,
+                    top + SQUARE_SIZE, GRAY);
         } else {
-            canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE, WHITE);
+            canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE,
+                    top + SQUARE_SIZE, WHITE);
         }
 
         if (!isEmpty()) {
             BLACK.setStyle(Paint.Style.FILL);
-            canvas.drawText(Integer.toString(number), row * SQUARE_SIZE + SQUARE_SIZE / 2, top + SQUARE_SIZE / 2 + NumberButton.TEXT_SIZE *2/ 5, wrong ? RED : BLACK);
+            canvas.drawText(Integer.toString(number), row * SQUARE_SIZE + SQUARE_SIZE / 2,
+                    top + SQUARE_SIZE / 2 + NumberButton.TEXT_SIZE * 2 / 5, wrong ? RED : BLACK);
         }
         BLACK.setStyle(Paint.Style.STROKE);
-        canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE, BLACK);
+        canvas.drawRect(row * SQUARE_SIZE, top, row * SQUARE_SIZE + SQUARE_SIZE, top + SQUARE_SIZE,
+                BLACK);
     }
 
     public boolean contains(float x, float y) {
@@ -80,8 +59,10 @@ public class SudokuSquare {
     }
 
     public RectF getBounds() {
-        if (rect == null)
-            rect = new RectF(row * SQUARE_SIZE, col * SQUARE_SIZE + LAYOUT_Y, row * SQUARE_SIZE + SQUARE_SIZE, col * SQUARE_SIZE + SQUARE_SIZE + LAYOUT_Y);
+        if (rect == null) {
+            rect = new RectF(row * SQUARE_SIZE, col * SQUARE_SIZE + LAYOUT_Y,
+                    row * SQUARE_SIZE + SQUARE_SIZE, col * SQUARE_SIZE + SQUARE_SIZE + LAYOUT_Y);
+        }
         return rect;
     }
 
@@ -105,7 +86,6 @@ public class SudokuSquare {
     public void setNumber(int value) {
         number = (value);
     }
-
 
     public int setEmpty() {
         int k = number;
@@ -148,7 +128,11 @@ public class SudokuSquare {
         if (super.equals(obj)) {
             return true;
         }
-        return obj instanceof SudokuSquare && ((SudokuSquare) obj).getRow() == getRow() && ((SudokuSquare) obj).getCol() == getCol();
+        if (!this.getClass().isInstance(obj)) {
+            return true;
+        }
+        return ((SudokuSquare) obj).getRow() == getRow() &&
+                ((SudokuSquare) obj).getCol() == getCol();
     }
 
     @Override

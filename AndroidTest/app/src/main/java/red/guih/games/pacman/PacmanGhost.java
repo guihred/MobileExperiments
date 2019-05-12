@@ -18,12 +18,13 @@ import red.guih.games.R;
 
 @SuppressLint("ViewConstructor")
 public class PacmanGhost extends View {
-    final int speed = 10;
-    int x, y;
+    static final int SPEED = 10;
+    private int xPosition, yPosition;
     Drawable drawable;
     Paint paint = new Paint(Color.BLACK);
     GhostDirection[] ghostDirections = GhostDirection.values();
-    RectF bounds = new RectF(x, y, x + getGhostWidth(), y + getGhostWidth());
+    RectF bounds = new RectF(xPosition, yPosition, xPosition + getGhostWidth(),
+            yPosition + getGhostWidth());
     private MazeSquare ghostSquare;
 
     private int getGhostWidth() {
@@ -50,8 +51,9 @@ public class PacmanGhost extends View {
     }
 
     boolean checkColision(RectF boundsInParent, Collection<RectF> walls) {
-        if (walls == null)
+        if (walls == null) {
             return false;
+        }
         for (RectF b : walls) {
             if (RectF.intersects(b, boundsInParent)) {
                 return true;
@@ -74,17 +76,17 @@ public class PacmanGhost extends View {
             shortestMovement(now, observableList, pacman, maze);
         } else if (status == GhostStatus.DEAD) {
 
-            if (startX > x) {
-                x += speed;
-            } else if (startX < x) {
-                x -= speed;
+            if (startX > xPosition) {
+                xPosition += SPEED;
+            } else if (startX < xPosition) {
+                xPosition -= SPEED;
             }
-            if (startY > y) {
-                y += speed;
-            } else if (startY < y) {
-                y -= speed;
+            if (startY > yPosition) {
+                yPosition += SPEED;
+            } else if (startY < yPosition) {
+                yPosition -= SPEED;
             }
-            if (Math.abs(startX - x) < 3 && Math.abs(startY - y) < 3) {
+            if (Math.abs(startX - xPosition) < 3 && Math.abs(startY - yPosition) < 3) {
                 setStatus(GhostStatus.ALIVE);
             }
         } else {
@@ -92,14 +94,15 @@ public class PacmanGhost extends View {
         }
     }
 
-
     void shortestMovement(long now, List<RectF> otherNodes, Pacman pacman, MazeSquare[][] maze) {
         if (pacman == null) {
             randomMovement(now, otherNodes);
             return;
         }
-        float hx = -getX() - MazeSquare.SQUARE_SIZE / 2 + (ghostSquare != null ? readjustedX(ghostSquare.i) : pacman.getX());
-        float hy = -getY() - MazeSquare.SQUARE_SIZE / 2 + (ghostSquare != null ? readjustedY(ghostSquare.j) : pacman.getY());
+        float hx = -getX() - MazeSquare.SQUARE_SIZE / 2F +
+                (ghostSquare != null ? readjustedX(ghostSquare.i) : pacman.getX());
+        float hy = -getY() - MazeSquare.SQUARE_SIZE / 2F +
+                (ghostSquare != null ? readjustedY(ghostSquare.j) : pacman.getY());
         if (pacmanSquare != null) {
             hx = (int) (-getX() - MazeSquare.SQUARE_SIZE / 2 + readjustedX(pacmanSquare.i));
             hy = (int) (-getY() - MazeSquare.SQUARE_SIZE / 2 + readjustedY(pacmanSquare.j));
@@ -110,22 +113,16 @@ public class PacmanGhost extends View {
                 hx = (int) (-getX() - getGhostWidth() / 2 + readjustedX(pacmanSquare.i));
                 hy = (int) (-getY() - getGhostWidth() / 2 + readjustedY(pacmanSquare.j));
                 GhostDirection changeDirection = changeDirection(hx, hy);
-//                if (ghostSquare != null) {
-//                    Log.i("GHOST", color + " (" + ghostSquare.i + "," + ghostSquare.j + ") ");
-//                }
-//                Log.i("GHOST", color + " GOING TO (" + pacmanSquare.i + "," + pacmanSquare.j + ") " + "(" + hx + "," + hy + ") " + changeDirection);
                 setDirection(changeDirection);
             }
         }
-
-
-        addTranslate(speed);
+        addTranslate(SPEED);
         if (checkColision(getBounds(), otherNodes)) {
-            addTranslate(-speed);
+            addTranslate(-SPEED);
             setDirection(changeDirection(hx, hy));
-            addTranslate(speed);
+            addTranslate(SPEED);
             if (checkColision(getBounds(), otherNodes)) {
-                addTranslate(-speed);
+                addTranslate(-SPEED);
                 randomMovement(now, otherNodes);
             }
 
@@ -140,18 +137,24 @@ public class PacmanGhost extends View {
 
     private float readjustedX(int i) {
 
-        return MazeSquare.SQUARE_SIZE / 2 + (getX() > MazeSquare.SQUARE_SIZE * PacmanView.MAZE_WIDTH ? PacmanView.MAZE_WIDTH * 2 - i - 1 : i) * MazeSquare.SQUARE_SIZE;
+        return MazeSquare.SQUARE_SIZE / 2F +
+                (getX() > MazeSquare.SQUARE_SIZE * PacmanView.MAZE_WIDTH ?
+                        PacmanView.MAZE_WIDTH * 2 - i - 1 : i) * MazeSquare.SQUARE_SIZE;
     }
 
     private float readjustedY(int i) {
 
-        return MazeSquare.SQUARE_SIZE / 2 + (getY() > MazeSquare.SQUARE_SIZE * PacmanView.MAZE_HEIGHT ? PacmanView.MAZE_HEIGHT * 2 - i - 1 : i) * MazeSquare.SQUARE_SIZE;
+        return MazeSquare.SQUARE_SIZE / 2F +
+                (getY() > MazeSquare.SQUARE_SIZE * PacmanView.MAZE_HEIGHT ?
+                        PacmanView.MAZE_HEIGHT * 2 - i - 1 : i) * MazeSquare.SQUARE_SIZE;
     }
 
     private void extracted(Pacman pacman, MazeSquare[][] maze) {
         int hxg = adjustedX(getX());
         int hyg = adjustedY(getY());
-        ghostSquare = getSquareInBounds(maze, getX() + getGhostWidth() / 2, getY() + getGhostWidth() / 2);
+        ghostSquare =
+                getSquareInBounds(maze, getX() + getGhostWidth() / 2F,
+                        getY() + getGhostWidth() / 2F);
         if (ghostSquare != null) {
             hxg = ghostSquare.i;
             hyg = ghostSquare.j;
@@ -160,24 +163,26 @@ public class PacmanGhost extends View {
 
         int hx = adjustedX(pacman.getX());
         int hy = adjustedY(pacman.getY());
-        MazeSquare pacmanSquare = getSquareInBounds(maze, pacman.getX() + pacman.getPacmanWidth() / 2, pacman.getY() + pacman.getPacmanWidth() / 2);
-        if (pacmanSquare != null) {
-            hx = pacmanSquare.i;
-            hy = pacmanSquare.j;
-            if ((hx == 0 || hx == PacmanView.MAZE_WIDTH - 1) && (hy == 0 || hy == PacmanView.MAZE_HEIGHT - 1)) {
+        MazeSquare pacmanSquare1 =
+                getSquareInBounds(maze, pacman.getX() + pacman.getPacmanWidth() / 2,
+                        pacman.getY() + pacman.getPacmanWidth() / 2);
+        if (pacmanSquare1 != null) {
+            hx = pacmanSquare1.i;
+            hy = pacmanSquare1.j;
+            if ((hx == 0 || hx == PacmanView.MAZE_WIDTH - 1) &&
+                    (hy == 0 || hy == PacmanView.MAZE_HEIGHT - 1)) {
                 hx = PacmanView.MAZE_WIDTH - 1;
                 hy = PacmanView.MAZE_HEIGHT - 1;
             }
         }
 
         this.pacmanSquare = getBestMaze(maze, hx, hy, hxg, hyg);
-
-
     }
 
     private MazeSquare getSquareInBounds(MazeSquare[][] maze, float x, float y) {
-        if (maze == null)
+        if (maze == null) {
             return null;
+        }
 
         for (MazeSquare[] aMaze : maze) {
             for (MazeSquare anAMaze : aMaze) {
@@ -230,33 +235,34 @@ public class PacmanGhost extends View {
 
     @Override
     public float getX() {
-        return x;
+        return xPosition;
     }
 
     @Override
     public void setX(float x) {
-        this.x = (int) x;
+        this.xPosition = (int) x;
     }
 
     @Override
     public float getY() {
-        return y;
+        return yPosition;
     }
 
     @Override
     public void setY(float y) {
-        this.y = (int) y;
+        this.yPosition = (int) y;
     }
 
     public void setStartPosition(int startX, int startY) {
-        x = startX;
-        y = startY;
+        xPosition = startX;
+        yPosition = startY;
         this.startX = startX;
         this.startY = startY;
     }
 
     private GhostDirection changeDirection(float hx, float hy) {
-        if (Math.abs(hx) < MazeSquare.SQUARE_SIZE / 4 && Math.abs(hy) < MazeSquare.SQUARE_SIZE / 4) {
+        if (Math.abs(hx) < MazeSquare.SQUARE_SIZE / 4 &&
+                Math.abs(hy) < MazeSquare.SQUARE_SIZE / 4) {
             if (hx > 0) {
                 return hy < 0 ? GhostDirection.NORTHEAST : GhostDirection.SOUTHEAST;
             }
@@ -270,46 +276,37 @@ public class PacmanGhost extends View {
 
     private void addTranslate(final int step) {
         if (getDirection() != null) {
-            y += getDirection().y * step;
-            x += getDirection().x * step;
+            yPosition += getDirection().y * step;
+            xPosition += getDirection().x * step;
         }
     }
 
     private void randomMovement(long now,
-                                List<RectF> walls) {
+            List<RectF> walls) {
 
-        addTranslate(speed);
+        addTranslate(SPEED);
         if (checkColision(getBounds(), walls)) {
-            addTranslate(-speed);
+            addTranslate(-SPEED);
             setDirection(ghostDirections[random.nextInt(ghostDirections.length)]);
-            addTranslate(speed);
+            addTranslate(SPEED);
             if (checkColision(getBounds(), walls)) {
-                addTranslate(-speed);
+                addTranslate(-SPEED);
             }
         }
-
-
         if (now % 500 == 0) {
             setDirection(ghostDirections[random.nextInt(ghostDirections.length)]);
         }
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
-        drawable.setBounds(x, y, x + getGhostWidth(), y + getGhostWidth());
+        drawable.setBounds(xPosition, yPosition, xPosition + getGhostWidth(),
+                yPosition + getGhostWidth());
         drawable.draw(canvas);
-//        if (pacmanSquare != null) {
-//            canvas.drawCircle(readjustedX(pacmanSquare.i), readjustedY(pacmanSquare.j), 5, paint);
-//        }
-//        if (ghostSquare != null) {
-//            canvas.drawCircle(readjustedX(ghostSquare.i), readjustedY(ghostSquare.j), 5, paint);
-//        }
-
     }
 
     public RectF getBounds() {
-        bounds.set(x, y, x + getGhostWidth(), y + getGhostWidth());
+        bounds.set(xPosition, yPosition, xPosition + getGhostWidth(), yPosition + getGhostWidth());
 
         return bounds;
     }

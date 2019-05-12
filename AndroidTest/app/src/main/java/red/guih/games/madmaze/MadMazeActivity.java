@@ -40,9 +40,15 @@ public class MadMazeActivity extends BaseActivity {
         senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         senSensorManager.unregisterListener(labyrinthView);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -89,10 +95,5 @@ public class MadMazeActivity extends BaseActivity {
         });
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
-    }
-
-    protected void onResume() {
-        super.onResume();
-        senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 }

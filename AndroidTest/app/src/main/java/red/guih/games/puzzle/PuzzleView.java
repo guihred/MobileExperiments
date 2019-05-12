@@ -29,18 +29,56 @@ public class PuzzleView extends BaseView {
     public static int PUZZLE_WIDTH = 4;
     public static int PUZZLE_HEIGHT = 6;
     private static Bitmap SELECTED_IMAGE;
-
+    private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
+    Random random = new Random();
     private PuzzlePiece[][] puzzle;
     private int width;
     private int height;
     private Point2D intersectedPoint;
-    private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
     private List<PuzzlePiece> chosenPuzzleGroup;
     private long startTime;
 
-
     public PuzzleView(Context c, AttributeSet v) {
         super(c, v);
+    }
+
+    public static void setPuzzleDimensions(int progress) {
+        PuzzleView.PUZZLE_WIDTH = progress;
+        PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
+    }
+
+    public static void setImage(int image) {
+        PuzzleView.PUZZLE_IMAGE = image;
+    }
+
+    public static void setImage(Bitmap selectedImage) {
+        PuzzleView.SELECTED_IMAGE = selectedImage;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        int action = e.getAction();
+
+        switch (action) {
+            case MotionEvent.ACTION_MOVE:
+                if (handleDrag(e)) {
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+
+                if (handleRelease()) {
+                    return true;
+                }
+                break;
+            case MotionEvent.ACTION_DOWN:
+                handleFirstTouch(e);
+                break;
+            default:
+        }
+
+        invalidate();
+        return true;
     }
 
     @Override
@@ -58,95 +96,6 @@ public class PuzzleView extends BaseView {
         reset();
     }
 
-    private void reset() {
-        puzzle = initializePieces();
-        linkedPieces.clear();
-        for (int i = 0; i < PUZZLE_WIDTH; i++) {
-            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
-                List<PuzzlePiece> e = new ArrayList<>();
-                e.add(puzzle[i][j]);
-                linkedPieces.add(e);
-            }
-        }
-        startTime = System.currentTimeMillis();
-        invalidate();
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        int action = e.getAction();
-
-        switch (action) {
-            case MotionEvent.ACTION_MOVE:
-                if (handleDrag(e)) return true;
-                break;
-            case MotionEvent.ACTION_UP:
-
-                if (handleRelease()) return true;
-                break;
-            case MotionEvent.ACTION_DOWN:
-                handleFirstTouch(e);
-                break;
-            default:
-        }
-
-        invalidate();
-        return true;
-    }
-
-    private void handleFirstTouch(MotionEvent e) {
-        if (intersectedPoint == null) {
-            intersectedPoint = Point2D.getIntersectedPoint(e);
-            List<PuzzlePiece> contains = groupWhichContains();
-            if (contains != null) {
-                chosenPuzzleGroup = contains;
-                toFront(chosenPuzzleGroup);
-            }
-        }
-    }
-
-    private boolean handleRelease() {
-        List<PuzzlePiece> containsP = chosenPuzzleGroup;
-        if (containsP != null) {
-            List<List<PuzzlePiece>> collect = linkedPieces.stream().filter(l -> l != containsP).collect(toList());
-            for (PuzzlePiece piece : containsP) {
-                for (int i = 0; i < collect.size(); i++) {
-                    for (int j = 0; j < collect.get(i).size(); j++) {
-                        PuzzlePiece puzzlePiece = collect.get(i).get(j);
-                        if (checkNeighbours(piece, puzzlePiece)) {
-                            if (distance(puzzlePiece, piece) < width * width / 16) {
-
-                                List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
-                                if (containsPuzzle != null
-                                        && !containsP.equals(containsPuzzle)) {
-                                    containsPuzzle.addAll(containsP);
-                                    linkedPieces.remove(containsP);
-                                    float a = xDistance(puzzlePiece, piece);
-                                    float b = yDistance(puzzlePiece, piece);
-                                    toFront(containsPuzzle);
-                                    containsP.forEach(z -> z.move(a, b));
-                                    chosenPuzzleGroup = null;
-                                    intersectedPoint = null;
-                                    if (linkedPieces.size() == 1) {
-                                        float x = -puzzle[0][0].getLayoutX();
-                                        float y = -puzzle[0][0].getLayoutY();
-                                        containsPuzzle.forEach(z -> z.move(x, y));
-                                        showDialogWinning();
-                                    }
-                                    invalidate();
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        chosenPuzzleGroup = null;
-        intersectedPoint = null;
-        return false;
-    }
-
     private boolean handleDrag(MotionEvent e) {
         if (intersectedPoint == null || chosenPuzzleGroup == null) {
             return true;
@@ -160,6 +109,112 @@ public class PuzzleView extends BaseView {
 
         intersectedPoint = Point2D.getIntersectedPoint(e);
         return false;
+    }
+
+    private boolean handleRelease() {
+        List<PuzzlePiece> containsP = chosenPuzzleGroup;
+        if (containsP != null) {
+            List<List<PuzzlePiece>> pieces =
+                    linkedPieces.stream().filter(l -> l != containsP).collect(toList());
+            for (PuzzlePiece piece : containsP) {
+                if (addPieceToRightGroup(containsP, pieces, piece)) {
+                    return true;
+                }
+            }
+        }
+        chosenPuzzleGroup = null;
+        intersectedPoint = null;
+        return false;
+    }
+
+    private void handleFirstTouch(MotionEvent e) {
+        if (intersectedPoint == null) {
+            intersectedPoint = Point2D.getIntersectedPoint(e);
+            List<PuzzlePiece> contains = groupWhichContains();
+            if (contains != null) {
+                chosenPuzzleGroup = contains;
+                toFront(chosenPuzzleGroup);
+            }
+        }
+    }
+
+    private boolean addPieceToRightGroup(List<PuzzlePiece> containsP,
+            List<List<PuzzlePiece>> pieces, PuzzlePiece piece) {
+        for (int i = 0; i < pieces.size(); i++) {
+            for (int j = 0; j < pieces.get(i).size(); j++) {
+                PuzzlePiece puzzlePiece = pieces.get(i).get(j);
+                if (!checkNeighbours(piece, puzzlePiece)) {
+                    continue;
+                }
+                if (distance(puzzlePiece, piece) < width * width / 16) {
+                    List<PuzzlePiece> containsPuzzle = groupWhichContains(puzzlePiece);
+                    if (containsPuzzle != null
+                            && !containsP.equals(containsPuzzle)) {
+                        containsPuzzle.addAll(containsP);
+                        linkedPieces.remove(containsP);
+                        float a = xDistance(puzzlePiece, piece);
+                        float b = yDistance(puzzlePiece, piece);
+                        toFront(containsPuzzle);
+                        containsP.forEach(z -> z.move(a, b));
+                        chosenPuzzleGroup = null;
+                        intersectedPoint = null;
+                        if (linkedPieces.size() == 1) {
+                            float x = -puzzle[0][0].getLayoutX();
+                            float y = -puzzle[0][0].getLayoutY();
+                            containsPuzzle.forEach(z -> z.move(x, y));
+                            showDialogWinning();
+                        }
+                        invalidate();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private List<PuzzlePiece> groupWhichContains() {
+
+        for (int i = linkedPieces.size() - 1; i >= 0; i--) {
+            List<PuzzlePiece> group = linkedPieces.get(i);
+            if (group.stream().anyMatch(this::containsPoint)) {
+                return group;
+            }
+        }
+
+
+        return null;
+    }
+
+    private void toFront(List<PuzzlePiece> containsPuzzle) {
+        linkedPieces.remove(containsPuzzle);
+        linkedPieces.add(containsPuzzle);
+    }
+
+    private boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
+        return Math.abs(puzzlePiece.getX() - p.getX()) == 1 && puzzlePiece.getY() - p.getY() == 0
+                ||
+                Math.abs(puzzlePiece.getY() - p.getY()) == 1 && puzzlePiece.getX() - p.getX() == 0;
+    }
+
+    private float distance(PuzzlePiece a, PuzzlePiece b) {
+        float d = xDistance(a, b);
+        float e = yDistance(a, b);
+        return d * d + e * e;
+    }
+
+    private List<PuzzlePiece> groupWhichContains(PuzzlePiece p1) {
+        return linkedPieces.stream().filter(l -> l.contains(p1))
+                           .findAny().orElse(null);
+    }
+
+    private float xDistance(PuzzlePiece a, PuzzlePiece b) {
+        return (-a.getX() + b.getX()) * width + a.getLayoutX() - b.getLayoutX();
+    }
+
+    private float yDistance(PuzzlePiece puzzlePiece, PuzzlePiece p) {
+        return (-puzzlePiece.getY() + p.getY()) * height + puzzlePiece.getLayoutY() -
+                p.getLayoutY();
     }
 
     private void showDialogWinning() {
@@ -190,31 +245,6 @@ public class PuzzleView extends BaseView {
         dialog.show();
     }
 
-
-    private void toFront(List<PuzzlePiece> containsPuzzle) {
-        linkedPieces.remove(containsPuzzle);
-        linkedPieces.add(containsPuzzle);
-    }
-
-
-    private List<PuzzlePiece> groupWhichContains() {
-
-        for (int i = linkedPieces.size() - 1; i >= 0; i--) {
-            List<PuzzlePiece> group = linkedPieces.get(i);
-            if (group.stream().anyMatch(this::containsPoint)) {
-                return group;
-            }
-        }
-
-
-        return null;
-    }
-
-    private List<PuzzlePiece> groupWhichContains(PuzzlePiece p1) {
-        return linkedPieces.stream().filter(l -> l.contains(p1))
-                .findAny().orElse(null);
-    }
-
     private boolean containsPoint(PuzzlePiece p1) {
         RectF rectF = new RectF();
         p1.getTranslatedPath().computeBounds(rectF, true);
@@ -222,41 +252,37 @@ public class PuzzleView extends BaseView {
 
     }
 
-    private float yDistance(PuzzlePiece puzzlePiece, PuzzlePiece p) {
-        return (-puzzlePiece.getY() + p.getY()) * height + puzzlePiece.getLayoutY() - p.getLayoutY();
-    }
-
-    private boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
-        return Math.abs(puzzlePiece.getX() - p.getX()) == 1 && puzzlePiece.getY() - p.getY() == 0
-                || Math.abs(puzzlePiece.getY() - p.getY()) == 1 && puzzlePiece.getX() - p.getX() == 0;
-    }
-
-    private float distance(PuzzlePiece a, PuzzlePiece b) {
-        float d = xDistance(a, b);
-        float e = yDistance(a, b);
-        return d * d + e * e;
-    }
-
-    private float xDistance(PuzzlePiece a, PuzzlePiece b) {
-        return (-a.getX() + b.getX()) * width + a.getLayoutX() - b.getLayoutX();
+    private void reset() {
+        puzzle = initializePieces();
+        linkedPieces.clear();
+        for (int i = 0; i < PUZZLE_WIDTH; i++) {
+            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
+                List<PuzzlePiece> e = new ArrayList<>();
+                e.add(puzzle[i][j]);
+                linkedPieces.add(e);
+            }
+        }
+        startTime = System.currentTimeMillis();
+        invalidate();
     }
 
     private PuzzlePiece[][] initializePieces() {
-
-
-        Bitmap image = SELECTED_IMAGE != null ? SELECTED_IMAGE : BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
-        if (image == null)
+        Bitmap image = SELECTED_IMAGE != null ? SELECTED_IMAGE :
+                BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        if (image == null) {
             image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        }
 
         if (image.getWidth() > image.getHeight()) {
             Matrix matrix = new Matrix();
             matrix.postRotate(90);
-            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix, true);
+            image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix,
+                    true);
         }
         width = getWidth() / PUZZLE_WIDTH;
         height = getHeight() / PUZZLE_HEIGHT;
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.PUZZLE_WIDTH, height * PuzzleView.PUZZLE_HEIGHT, false);
-        Random random = new Random();
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.PUZZLE_WIDTH,
+                height * PuzzleView.PUZZLE_HEIGHT, false);
         PuzzlePiece[][] puzzlePieces = new PuzzlePiece[PUZZLE_WIDTH][PUZZLE_HEIGHT];
         for (int i = 0; i < PUZZLE_WIDTH; i++) {
             for (int j = 0; j < PUZZLE_HEIGHT; j++) {
@@ -281,18 +307,5 @@ public class PuzzleView extends BaseView {
             }
         }
         return puzzlePieces;
-    }
-
-    public static void setPuzzleDimensions(int progress) {
-        PuzzleView.PUZZLE_WIDTH = progress;
-        PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
-    }
-
-    public static void setImage(int image) {
-        PuzzleView.PUZZLE_IMAGE = image;
-    }
-
-    public static void setImage(Bitmap selectedImage) {
-        PuzzleView.SELECTED_IMAGE = selectedImage;
     }
 }

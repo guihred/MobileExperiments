@@ -27,6 +27,8 @@ import red.guih.games.db.UserRecord;
 
 public class PuzzleActivity extends BaseActivity {
 
+    public static final String SELECT_PHOTO_TAG = "SELECT_PHOTO";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,30 +123,29 @@ public class PuzzleActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
 
-        switch (requestCode) {
-            case SELECT_PHOTO:
-                if (resultCode == RESULT_OK) {
-                    loadURI(imageReturnedIntent.getData());
-                }
-            default:
+        if (requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
+            loadURI(imageReturnedIntent.getData());
         }
     }
 
     private void loadURI(Uri uri) {
         if (uri != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, SELECT_PHOTO);
+            if (ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, SELECT_PHOTO);
             }
-            Log.i("SELECT_PHOTO", uri.toString());
-            Log.i("SELECT_PHOTO", uri.getEncodedPath());
-            Log.i("SELECT_PHOTO", uri.getPath().replaceAll(".+:", ""));
+            Log.i(SELECT_PHOTO_TAG, uri.toString());
+            Log.i(SELECT_PHOTO_TAG, uri.getEncodedPath());
+            Log.i(SELECT_PHOTO_TAG, uri.getPath().replaceAll(".+:", ""));
             try (InputStream imageStream = getContentResolver().openInputStream(uri)) {
                 Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
                 PuzzleView.setImage(selectedImage);
                 addUserPreference(R.string.photo, "file:" + uri.getPath().replaceAll(".+:", ""));
                 recreate();
             } catch (Exception e) {
-                Log.e("SELECT_PHOTO", e.getMessage(), e);
+                Log.e(SELECT_PHOTO_TAG, e.getMessage(), e);
             }
         }
     }

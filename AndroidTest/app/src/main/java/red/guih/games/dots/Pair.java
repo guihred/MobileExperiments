@@ -10,11 +10,11 @@ public class Pair {
         this.b = b;
     }
 
-     DotsSquare getKey() {
+    DotsSquare getKey() {
         return a;
     }
 
-     DotsSquare getValue() {
+    DotsSquare getValue() {
         return b;
     }
 
@@ -25,8 +25,12 @@ public class Pair {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Pair pair = (Pair) o;
         return Objects.equals(a, pair.a) &&
                 Objects.equals(b, pair.b) || Objects.equals(b, pair.a) &&

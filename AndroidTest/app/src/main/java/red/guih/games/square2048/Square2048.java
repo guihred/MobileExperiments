@@ -25,7 +25,9 @@ public class Square2048 {
     private final Paint paint = new Paint();
     private final Paint color = new Paint();
 
-    private static final List<Integer> COLORS = Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80, 0xFF00ffff, 0xFF0080ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
+    private static final List<Integer> COLORS =
+            Arrays.asList(0, 0xFFff0000, 0xFFff8000, 0xFFffff00, 0xFF80ff00, 0xFF00ff00, 0xFF00ff80,
+                    0xFF00ffff, 0xFF0080ff, 0xFF0000ff, 0xFF8000ff, 0xFFff00ff);
 
     private float layoutX, layoutY;
 
@@ -42,19 +44,28 @@ public class Square2048 {
     }
 
     void draw(Canvas canvas) {
-        canvas.drawRoundRect(i * SQUARE_SIZE + 10, j * SQUARE_SIZE + 10 + PADDING, (i + 1) * SQUARE_SIZE - 10, (j + 1) * SQUARE_SIZE - 10 + PADDING, 20, 20, paint);
+        canvas.drawRoundRect(i * SQUARE_SIZE + 10, j * SQUARE_SIZE + 10 + PADDING,
+                (i + 1) * SQUARE_SIZE - 10, (j + 1) * SQUARE_SIZE - 10 + PADDING, 20, 20, paint);
         if (number > 0) {
 //            Color.
             String text = "" + number;
-            canvas.drawRoundRect(i * SQUARE_SIZE + 10 + layoutX, j * SQUARE_SIZE + 10 + PADDING + layoutY, (i + 1) * SQUARE_SIZE - 10 + layoutX, (j + 1) * SQUARE_SIZE - 10 + PADDING + layoutY, 20, 20, color);
-            canvas.drawText(text, i * SQUARE_SIZE + SQUARE_SIZE / 2 - 20 * text.length() - 10 + layoutX, j * SQUARE_SIZE + SQUARE_SIZE / 2 + layoutY + 10 + PADDING, paint);
+            canvas.drawRoundRect(i * SQUARE_SIZE + 10 + layoutX,
+                    j * SQUARE_SIZE + 10 + PADDING + layoutY, (i + 1) * SQUARE_SIZE - 10 + layoutX,
+                    (j + 1) * SQUARE_SIZE - 10 + PADDING + layoutY, 20, 20, color);
+            canvas.drawText(text,
+                    i * SQUARE_SIZE + SQUARE_SIZE / 2 - 20 * text.length() - 10 + layoutX,
+                    j * SQUARE_SIZE + SQUARE_SIZE / 2 + layoutY + 10 + PADDING, paint);
         }
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Square2048)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!this.getClass().isInstance(o)) {
+            return false;
+        }
         Square2048 that = (Square2048) o;
         return i == that.i && j == that.j;
     }
@@ -70,8 +81,8 @@ public class Square2048 {
 
         if (number > 0) {
             int v = (int) (Math.log(number) / Math.log(2));
-            Integer color = COLORS.get(v % COLORS.size());
-            this.color.setColor(color);
+            Integer color1 = COLORS.get(v % COLORS.size());
+            this.color.setColor(color1);
         }
 
     }

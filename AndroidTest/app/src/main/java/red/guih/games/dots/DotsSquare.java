@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 class DotsSquare {
-    static int SQUARE_SIZE ;
+    static int SQUARE_SIZE;
 
     final int i, j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
@@ -35,10 +35,11 @@ class DotsSquare {
     }
 
     float[] getCenter() {
-        if (center != null)
-            return center;
-
-        return center = new float[]{i * SQUARE_SIZE + SQUARE_SIZE / 2f, j * SQUARE_SIZE + SQUARE_SIZE / 2f};
+        if (center == null) {
+            center = new float[]{i * SQUARE_SIZE + SQUARE_SIZE / 2f,
+                    j * SQUARE_SIZE + SQUARE_SIZE / 2f};
+        }
+        return center;
     }
 
 
@@ -50,7 +51,7 @@ class DotsSquare {
     @Override
     public boolean equals(Object obj) {
 
-        if (!(obj instanceof DotsSquare)) {
+        if (!this.getClass().isInstance(obj)) {
             return false;
         }
         final DotsSquare other = (DotsSquare) obj;
@@ -73,8 +74,9 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != DotsSquare.this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && c.contains(DotsSquare.this))
+                        if (a != c && c.contains(DotsSquare.this)) {
                             pontos.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
+                        }
                     }
                 }
             }
@@ -89,7 +91,8 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) && Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
+                        if (a != c && !c.contains(this) &&
+                                Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             objects.add(c);
                         }
                     }
@@ -104,7 +107,8 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) && Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
+                        if (a != c && !c.contains(this) &&
+                                Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             return true;
                         }
                     }
@@ -122,7 +126,8 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) && Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
+                        if (a != c && !c.contains(this) &&
+                                Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             return false;
                         }
                     }

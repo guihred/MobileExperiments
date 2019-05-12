@@ -13,11 +13,15 @@ public final class Point2D {
     float x, y;
 
     public static Point2D getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new Point2D();
+        }
         return instance;
     }
-    private Point2D(){}
+
+    private Point2D() {
+    }
+
     public static Point2D getIntersectedPoint(MotionEvent e) {
         Point2D point3D = Point2D.getInstance();
         point3D.x = e.getX();
@@ -42,8 +46,8 @@ public final class Point2D {
     }
 
     public Point2D subtract(MotionEvent intersectedPoint) {
-        x = intersectedPoint.getX()-x;
-        y = intersectedPoint.getY()-y;
+        x = intersectedPoint.getX() - x;
+        y = intersectedPoint.getY() - y;
         return this;
 
     }

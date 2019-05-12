@@ -21,17 +21,6 @@ public final class NumberButton {
         black.setColor(Color.BLACK);
         black.setStyle(Paint.Style.STROKE);
         black.setTextSize(TEXT_SIZE);
-//        styleProperty().bind(Bindings.when(over).then("-fx-background-color: white;")
-//                .otherwise("-fx-background-color: lightgray;"));
-//        setEffect(new InnerShadow());
-//        Text text = new Text(i == 0 ? "X" : Integer.toString(i));
-//        text.wrappingWidthProperty().bind(widthProperty());
-//        text.setTextOrigin(VPos.CENTER);
-//        text.layoutYProperty().bind(heightProperty().divide(2));
-//        text.setTextAlignment(TextAlignment.CENTER);
-//        getChildren().add(text);
-//        setPrefSize(30, 30);
-
     }
 
     RectF bounds = new RectF();
@@ -39,10 +28,12 @@ public final class NumberButton {
     public void draw(Canvas canvas, float x, float y) {
         paint.setColor(over ? Color.LTGRAY : Color.WHITE);
         int n = number - 1;
-        float left = number == 0 ? SudokuSquare.SQUARE_SIZE * SudokuView.MAP_NUMBER : n % SudokuView.MAP_NUMBER * SudokuSquare.SQUARE_SIZE;
+        float left = number == 0 ? SudokuSquare.SQUARE_SIZE * SudokuView.MAP_NUMBER :
+                n % SudokuView.MAP_NUMBER * SudokuSquare.SQUARE_SIZE;
         float top = number == 0 ? 0 : n / SudokuView.MAP_NUMBER * SudokuSquare.SQUARE_SIZE;
 
-        bounds.set(x + left, y + top, x + left + SudokuSquare.SQUARE_SIZE, y + top + SudokuSquare.SQUARE_SIZE);
+        bounds.set(x + left, y + top, x + left + SudokuSquare.SQUARE_SIZE,
+                y + top + SudokuSquare.SQUARE_SIZE);
 
         canvas.drawRoundRect(bounds, 5, 5, paint);
         black.setStyle(Paint.Style.STROKE);

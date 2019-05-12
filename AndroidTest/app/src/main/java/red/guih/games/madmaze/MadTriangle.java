@@ -2,7 +2,7 @@ package red.guih.games.madmaze;
 
 import java.util.Arrays;
 
-public class MadTriangle {
+public class MadTriangle{
 
     private final MadPoint a;
 
@@ -85,8 +85,18 @@ public class MadTriangle {
 
     public boolean isNeighbour(MadLine edge) {
 
-        return (a == edge.a || b == edge.a || c == edge.a) && (a == edge.b || b == edge.b || c == edge.b);
+        return isEqual(edge.a, a, b, c) && isEqual(edge.b, a, b, c);
     }
+
+    boolean isEqual(MadPoint p, MadPoint... arr) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == p) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public boolean isOrientedCCW() {
         float a11 = a.x - c.x;
@@ -113,7 +123,8 @@ public class MadTriangle {
         float a23 = (b.x - point.x) * (b.x - point.x) + (b.y - point.y) * (b.y - point.y);
         float a33 = (c.x - point.x) * (c.x - point.x) + (c.y - point.y) * (c.y - point.y);
 
-        float det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33
+        float det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 -
+                a12 * a21 * a33
                 - a11 * a23 * a32;
 
         if (isOrientedCCW()) {
@@ -149,7 +160,7 @@ public class MadTriangle {
     }
 
     public void setDeadEnd() {
-        deadEnd=true;
+        deadEnd = true;
     }
 
     public boolean isDeadEnd() {
