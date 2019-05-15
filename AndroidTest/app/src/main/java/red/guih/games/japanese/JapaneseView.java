@@ -65,10 +65,14 @@ public class JapaneseView extends BaseView {
         super(context, attrs);
         paint.setTextSize(characterSize);
         paint.setStyle(Paint.Style.STROKE);
+        paint.setTextAlign(Paint.Align.CENTER);
+
         greenPaint.setColor(LIGHT_GREEN);
         greenPaint.setStyle(Paint.Style.FILL);
+        greenPaint.setTextAlign(Paint.Align.CENTER);
         redPaint.setColor(LIGHT_RED);
         redPaint.setStyle(Paint.Style.FILL);
+        redPaint.setTextAlign(Paint.Align.CENTER);
         loadLessons();
     }
 
@@ -258,9 +262,9 @@ public class JapaneseView extends BaseView {
 
         String chapterFormat = getContext()
                 .getString(R.string.chapter_format, chapter, currentLesson, lessons.size());
-        canvas.drawText(chapterFormat, characterSize, characterSize, paint);
+        canvas.drawText(chapterFormat, getWidth() / 3F, characterSize, paint);
         String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
-        canvas.drawText(punctuationFormat, getWidth() / 2F, characterSize, paint);
+        canvas.drawText(punctuationFormat, getWidth() *2/ 3F, characterSize, paint);
 
         drawTextLayout(canvas, getWidth() / 2, getHeight() / 12, this.englishLayout);
         if (showRomaji || letters.isEmpty()) {
@@ -271,9 +275,9 @@ public class JapaneseView extends BaseView {
             canvas.drawRoundRect(okButton, 10, 10, greenPaint);
             String singleScore = getContext().getString(R.string.percent, currentScore);
             canvas.drawText(singleScore,
-                    okButton.centerX() - characterSize * singleScore.length() / 4F,
+                    okButton.centerX(),
                     okButton.centerY(), paint);
-            canvas.drawText("Ok", okButton.centerX() - characterSize / 2F,
+            canvas.drawText("Ok", okButton.centerX() ,
                     okButton.centerY() + characterSize, paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
@@ -285,7 +289,8 @@ public class JapaneseView extends BaseView {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        characterSize = getWidth() / 20;
+        final int letterFraction = 24;
+        characterSize = getWidth() / letterFraction;
         int h = getHeight() * 3 / 4;
         int w = getWidth();
         okButton.set(w / 3F, h, w * 2F / 3, h + characterSize * 4F);
@@ -335,7 +340,7 @@ public class JapaneseView extends BaseView {
                 canvas.drawRoundRect(rc.bound, 10, 10, p);
             }
             canvas.drawRoundRect(rc.bound, 10, 10, paint);
-            canvas.drawText(rc.character, rc.bound.left + characterSize / 2F,
+            canvas.drawText(rc.character, rc.bound.left + rc.bound.width()/2,
                     rc.bound.top + characterSize * 5F / 4, this.paint);
         }
     }
