@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 import red.guih.games.BaseActivity;
 import red.guih.games.R;
+import red.guih.games.db.JapaneseLesson;
 import red.guih.games.db.UserRecord;
 
 public class JapaneseActivity extends BaseActivity {
@@ -33,6 +35,7 @@ public class JapaneseActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setChapter(getUserPreference(R.string.chapter, JapaneseView.chapter));
+        JapaneseView.setNightMode(getUserPreference(R.string.night_mode, 0) == 1);
         setContentView(R.layout.activity_japanese);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
@@ -75,9 +78,16 @@ public class JapaneseActivity extends BaseActivity {
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog));
         dialog.show();
     }
+
     @SuppressLint("InflateParams")
     private void showTips() {
         JapaneseView viewById = findViewById(R.id.japaneseView);
+        JapaneseLesson lessons = viewById.getLesson();
+        String tip = lessons.getTip();
+        if (tip != null) {
+            Toast.makeText(this, tip, Toast.LENGTH_LONG).show();
+            return;
+        }
         List<String> japaneseLessons = viewById.loadTips();
         String[] names = japaneseLessons.toArray(new String[0]);
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -104,7 +114,6 @@ public class JapaneseActivity extends BaseActivity {
                 seekBar.refreshDrawableState();
             } catch (Exception ex) {
                 Log.e("DATABASE", "DATABASE ERROR", ex);
-
             }
         }).start();
     }
@@ -119,6 +128,7 @@ public class JapaneseActivity extends BaseActivity {
         CheckBox nightMode = dialog.findViewById(R.id.nightMode);
         JapaneseView.setNightMode(nightMode.isChecked());
 
+        addUserPreference(R.string.night_mode, JapaneseView.nightMode ? 1 : 0);
         addUserPreference(R.string.chapter, JapaneseView.chapter);
         dialog.dismiss();
         recreate();

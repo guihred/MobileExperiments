@@ -87,4 +87,12 @@ public class JapaneseLesson {
                 ", romaji='" + romaji + '\'' +
                 '}';
     }
+
+    public String getTip() {
+        if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
+            return romaji.replaceAll(".+\\((.+)\\)", "$1");
+        }
+        return null;
+    }
+
 }

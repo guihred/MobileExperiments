@@ -110,7 +110,7 @@ public class JapaneseView extends BaseView {
             return;
         }
 
-        JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
+        JapaneseLesson japaneseLesson = getLesson();
         letters.clear();
         answer.clear();
         List<String> split = Objects.toString(japaneseLesson.getJapanese(), "").chars()
@@ -154,6 +154,10 @@ public class JapaneseView extends BaseView {
             });
         }
 
+    }
+
+    public JapaneseLesson getLesson() {
+        return lessons.get(currentLesson % lessons.size());
     }
 
     public List<String> loadTips() {
@@ -211,7 +215,7 @@ public class JapaneseView extends BaseView {
                 loadLessons();
                 return true;
             }
-            JapaneseLesson japaneseLesson = lessons.get(currentLesson % lessons.size());
+            JapaneseLesson japaneseLesson = getLesson();
             if (letters.isEmpty() && okButton.contains(event.getX(), event.getY())) {
                 currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(),
                         answer.stream().map(e -> e.character)
@@ -229,12 +233,11 @@ public class JapaneseView extends BaseView {
                 invalidate();
             }
 
-            if (exchangeLetter(event, getLettersLayout(), this.letters, getAnswerLayout(),
-                    this.answer)) {
+            if (exchangeLetter(event, getLettersLayout(), letters, getAnswerLayout(), answer)) {
                 if (letters.isEmpty()) {
                     currentScore = CompareAnswers.compare(japaneseLesson.getJapanese(),
-                            answer.stream().map(e -> e.character)
-                                  .collect(Collectors.joining())) * 100;
+                            answer.stream().map(e -> e.character).collect(Collectors.joining())) *
+                            100;
                 }
                 return true;
             }
@@ -264,7 +267,7 @@ public class JapaneseView extends BaseView {
                 .getString(R.string.chapter_format, chapter, currentLesson, lessons.size());
         canvas.drawText(chapterFormat, getWidth() / 3F, characterSize, paint);
         String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
-        canvas.drawText(punctuationFormat, getWidth() *2/ 3F, characterSize, paint);
+        canvas.drawText(punctuationFormat, getWidth() * 2 / 3F, characterSize, paint);
 
         drawTextLayout(canvas, getWidth() / 2, getHeight() / 12, this.englishLayout);
         if (showRomaji || letters.isEmpty()) {
@@ -274,15 +277,12 @@ public class JapaneseView extends BaseView {
             drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
             canvas.drawRoundRect(okButton, 10, 10, greenPaint);
             String singleScore = getContext().getString(R.string.percent, currentScore);
-            canvas.drawText(singleScore,
-                    okButton.centerX(),
-                    okButton.centerY(), paint);
-            canvas.drawText("Ok", okButton.centerX() ,
-                    okButton.centerY() + characterSize, paint);
+            canvas.drawText(singleScore, okButton.centerX(), okButton.centerY(), paint);
+            canvas.drawText("Ok", okButton.centerX(), okButton.centerY() + characterSize, paint);
             canvas.drawRoundRect(okButton, 10, 10, paint);
         }
-        drawLetters(canvas, this.letters);
-        drawLetters(canvas, this.answer);
+        drawLetters(canvas, letters);
+        drawLetters(canvas, answer);
 
     }
 
@@ -340,7 +340,7 @@ public class JapaneseView extends BaseView {
                 canvas.drawRoundRect(rc.bound, 10, 10, p);
             }
             canvas.drawRoundRect(rc.bound, 10, 10, paint);
-            canvas.drawText(rc.character, rc.bound.left + rc.bound.width()/2,
+            canvas.drawText(rc.character, rc.bound.left + rc.bound.width() / 2,
                     rc.bound.top + characterSize * 5F / 4, this.paint);
         }
     }
@@ -378,7 +378,7 @@ public class JapaneseView extends BaseView {
     }
 
     private int getAnswerLayout() {
-        return getHeight() * 2 / 6;
+        return getHeight() / 3;
     }
 
     private boolean exchangeLetter(MotionEvent event, int sourceOffset, List<Letter> source,
