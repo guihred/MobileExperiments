@@ -2,10 +2,11 @@ package red.guih.games.madmaze;
 
 public class MadCell {
 
-    int id;
-    float x, y;
+    private int id;
+    float x;
+    float y;
 
-    public MadCell(int id) {
+    MadCell(int id) {
         this.id = id;
     }
 
@@ -21,7 +22,7 @@ public class MadCell {
         return y;
     }
 
-    public void relocate(float x, float y) {
+    void relocate(float x, float y) {
         this.x = x;
         this.y = y;
     }

@@ -7,14 +7,15 @@ import java.util.Random;
 
 class CreateLabyrinth {
 
-    final Random random = new Random();
-    int r = 0, c = 0;
+    private final Random random = new Random();
+    private int r;
+    private int c;
 
-    public static void createLabyrinth(LabyrinthSquare[][] maze) {
+    static void createLabyrinth(LabyrinthSquare[][] maze) {
         new CreateLabyrinth().handle(maze);
     }
 
-    void handle(LabyrinthSquare[][] maze) {
+    private void handle(LabyrinthSquare[][] maze) {
         final List<LabyrinthSquare> history = new ArrayList<>();
         final List<String> check = new ArrayList<>();
         history.add(maze[0][0]);
@@ -55,16 +56,16 @@ class CreateLabyrinth {
     }
 
     private void addPossibleDirections(LabyrinthSquare[][] maze, Collection<String> check) {
-        if (c > 0 && !maze[r][c - 1].isVisited()) {
+        if (c > 0 && maze[r][c - 1].isNotVisited()) {
             check.add("L");
         }
-        if (r > 0 && !maze[r - 1][c].isVisited()) {
+        if (r > 0 && maze[r - 1][c].isNotVisited()) {
             check.add("U");
         }
-        if (c < LabyrinthView.MAZE_HEIGHT - 1 && !maze[r][c + 1].isVisited()) {
+        if (c < LabyrinthView.mazeHeight - 1 && maze[r][c + 1].isNotVisited()) {
             check.add("R");
         }
-        if (r < LabyrinthView.MAZE_WIDTH - 1 && !maze[r + 1][c].isVisited()) {
+        if (r < LabyrinthView.MAZE_WIDTH - 1 && maze[r + 1][c].isNotVisited()) {
             check.add("D");
         }
     }

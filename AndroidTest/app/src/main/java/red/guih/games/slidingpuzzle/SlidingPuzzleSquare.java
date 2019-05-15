@@ -20,11 +20,17 @@ public final class SlidingPuzzleSquare {
     private BitmapShader imagePattern;
     private Rect src = new Rect();
     private RectF dst = new RectF();
+    private Matrix mTranslationMatrix = new Matrix();
 
-     SlidingPuzzleSquare(int number, int i, int j, int squareSize) {
+    SlidingPuzzleSquare(int number, int i, int j, int squareSize) {
         this.number = number;
         paint.setTextSize(squareSize / 2F);
         src.set(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize);
+    }
+
+    @Override
+    public int hashCode() {
+        return number;
     }
 
     @Override
@@ -34,7 +40,21 @@ public final class SlidingPuzzleSquare {
 
     }
 
-     void drawSquare(Canvas canvas, int i, int j, float squareSize) {
+    public void draw(Canvas canvas, int i, int j, int squareSize) {
+        float size = (float) squareSize;
+        if (image == null) {
+            drawSquare(canvas, i, j, size);
+            return;
+        }
+
+        dst.set(j * size, i * size, (j + 1) * size, (i + 1) * size);
+        if (!isEmpty()) {
+            canvas.drawBitmap(image, src, dst, getPaint());
+        }
+        canvas.drawRect(dst, getStroke());
+    }
+
+    void drawSquare(Canvas canvas, int i, int j, float squareSize) {
         canvas.drawRect(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize,
                 getStroke());
         if (!this.isEmpty()) {
@@ -44,50 +64,8 @@ public final class SlidingPuzzleSquare {
         }
     }
 
-    public Integer getNumber() {
-        return number;
-    }
-
-    @Override
-    public int hashCode() {
-        return number;
-    }
-
     public boolean isEmpty() {
-        return number == SlidingPuzzleView.MAP_WIDTH * SlidingPuzzleView.MAP_HEIGHT;
-    }
-
-    public void draw(Canvas canvas, int i, int j, int squareSize) {
-        if (image == null) {
-            drawSquare(canvas, i, j, squareSize);
-            return;
-        }
-
-        dst.set(j * squareSize, i * squareSize, (j + 1) * squareSize, (i + 1) * squareSize);
-        if (!isEmpty()) {
-            canvas.drawBitmap(image, src, dst, getPaint());
-        }
-        canvas.drawRect(dst, getStroke());
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-        if (image != null) {
-            getPaint().setShader(getImagePattern());
-        }
-    }
-
-    private Matrix mTranslationMatrix = new Matrix();
-
-     private BitmapShader getImagePattern() {
-        if (imagePattern == null) {
-
-            imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
-
-            imagePattern.setLocalMatrix(mTranslationMatrix);
-        }
-
-        return imagePattern;
+        return number == SlidingPuzzleView.mapWidth * SlidingPuzzleView.mapHeight;
     }
 
     public Paint getPaint() {
@@ -109,6 +87,28 @@ public final class SlidingPuzzleSquare {
 
         }
         return stroke;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
+        if (image != null) {
+            getPaint().setShader(getImagePattern());
+        }
+    }
+
+    private BitmapShader getImagePattern() {
+        if (imagePattern == null) {
+
+            imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+
+            imagePattern.setLocalMatrix(mTranslationMatrix);
+        }
+
+        return imagePattern;
     }
 
 

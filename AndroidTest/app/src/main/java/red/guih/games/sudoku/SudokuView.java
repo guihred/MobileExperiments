@@ -1,5 +1,6 @@
 package red.guih.games.sudoku;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -42,6 +43,7 @@ public class SudokuView extends BaseView {
         spinButton = getResources().getDrawable(R.drawable.return_button, null);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (resetStarted) {
@@ -60,10 +62,36 @@ public class SudokuView extends BaseView {
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        if (resetStarted) {
+
+            spinButton.draw(canvas);
+            return;
+        }
+        for (SudokuSquare sq : sudokuSquares) {
+            sq.draw(canvas);
+        }
+        paintDarkerSquares(canvas);
+        if (pressedSquare != null) {
+            RectF boundsInParent = pressedSquare.getBounds();
+            int halfTheSize = MAP_N_SQUARED / 2;
+            float maxY = pressedSquare.getCol() > halfTheSize ?
+                    boundsInParent.top - SudokuSquare.getSquareSize() * MAP_NUMBER
+                    : boundsInParent.bottom;
+            float maxX = pressedSquare.getRow() > halfTheSize ?
+                    boundsInParent.left - SudokuSquare.getSquareSize() * MAP_NUMBER
+                    : boundsInParent.right;
+            numberOptions.forEach(e -> e.draw(canvas, maxX, maxY));
+        }
+
+    }
+
+    @SuppressLint("DrawAllocation")
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int squareSize = getWidth() / MAP_N_SQUARED;
-        float layoutY = (getHeight() - squareSize * MAP_N_SQUARED) / 2f;
+        float layoutY = (getHeight() - squareSize * MAP_N_SQUARED) / 2F;
         SudokuSquare.setSquareSize(squareSize, layoutY);
         blank();
         spinButton.setBounds(0, 0, getWidth(), getHeight());
@@ -72,6 +100,25 @@ public class SudokuView extends BaseView {
             initialize();
             invalidate();
         }).start();
+    }
+
+    private void paintDarkerSquares(Canvas canvas) {
+        if (black == null) {
+            black = new Paint();
+            black.setStyle(Paint.Style.STROKE);
+            black.setColor(Color.BLACK);
+            black.setStrokeWidth(4);
+            black.setTextSize(NumberButton.TEXT_SIZE);
+            black.setTextAlign(Paint.Align.CENTER);
+        }
+
+        for (int i = 0; i < MAP_NUMBER; i++) {
+            for (int j = 0; j < MAP_NUMBER; j++) {
+                float sqSize = (float) SudokuSquare.getSquareSize() * MAP_NUMBER;
+                canvas.drawRect(i * sqSize, j * sqSize + SudokuSquare.layoutY, i * sqSize + sqSize,
+                        j * sqSize + sqSize + SudokuSquare.layoutY, black);
+            }
+        }
     }
 
     private void initialize() {
@@ -91,98 +138,58 @@ public class SudokuView extends BaseView {
         reset();
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        if (resetStarted) {
-
-            spinButton.draw(canvas);
-            return;
-        }
-        for (SudokuSquare sq : sudokuSquares) {
-            sq.draw(canvas);
-        }
-        paintDarkerSquares(canvas);
-        if (pressedSquare != null) {
-            RectF boundsInParent = pressedSquare.getBounds();
-            int halfTheSize = MAP_N_SQUARED / 2;
-            float maxY = pressedSquare.getCol() > halfTheSize ?
-                    boundsInParent.top - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
-                    : boundsInParent.bottom;
-            float maxX = pressedSquare.getRow() > halfTheSize ?
-                    boundsInParent.left - SudokuSquare.SQUARE_SIZE * MAP_NUMBER
-                    : boundsInParent.right;
-            numberOptions.forEach(e -> e.draw(canvas, maxX, maxY));
-        }
-
-    }
-
-    private void paintDarkerSquares(Canvas canvas) {
-        if (black == null) {
-            black = new Paint();
-            black.setStyle(Paint.Style.STROKE);
-            black.setColor(Color.BLACK);
-            black.setStrokeWidth(4);
-            black.setTextSize(NumberButton.TEXT_SIZE);
-            black.setTextAlign(Paint.Align.CENTER);
-        }
-
-        for (int i = 0; i < MAP_NUMBER; i++) {
-            for (int j = 0; j < MAP_NUMBER; j++) {
-                int sqSize = SudokuSquare.SQUARE_SIZE * MAP_NUMBER;
-                canvas.drawRect(i * sqSize, j * sqSize + SudokuSquare.LAYOUT_Y, i * sqSize + sqSize,
-                        j * sqSize + sqSize + SudokuSquare.LAYOUT_Y, black);
-            }
-        }
-    }
-
     private void createRandomNumbers(List<Integer> numbers) {
         int nTries = 0;
         for (int i = 0; i < MAP_N_SQUARED; i++) {
             for (int j = 0; j < MAP_N_SQUARED; j++) {
-                int row = i;
-                int col = j;
-                Collections.shuffle(numbers);
-                Optional<Integer> fitNumbers =
-                        numbers.stream().filter(n -> isNumberFit(n, row, col)).findFirst();
-                getMapAt(i, j).setPermanent(true);
-                if (fitNumbers.isPresent()) {
-                    getMapAt(i, j).setNumber(fitNumbers.get());
-                    continue;
-                }
-                nTries++;
-                j = -1;
-                sudokuSquares.stream().filter(e -> e.isInRow(row)).forEach(SudokuSquare::setEmpty);
-                if (nTries > 100) {
-                    i = -1;
-                    nTries = 0;
-                    sudokuSquares.forEach(SudokuSquare::setEmpty);
-                    break;
+                if (tryToSetNumbers(i, j, numbers)) {
+                    j = -1;
+                    nTries++;
+                    if (nTries > 100) {
+                        sudokuSquares.forEach(SudokuSquare::setEmpty);
+                        i = -1;
+                        nTries = 0;
+                        break;
+                    }
                 }
             }
         }
     }
 
+    boolean tryToSetNumbers(int i, int j, List<Integer> numbers) {
+        Collections.shuffle(numbers);
+        Optional<Integer> fitNumbers =
+                numbers.stream().filter(n -> isNumberFit(n, i, j)).findFirst();
+        getMapAt(i, j).setPermanent(true);
+        if (fitNumbers.isPresent()) {
+            getMapAt(i, j).setNumber(fitNumbers.get());
+            return false;
+        }
+        sudokuSquares.stream().filter(e -> e.isInRow(i)).forEach(SudokuSquare::setEmpty);
+        return true;
+    }
+
 
     private boolean isNumberFit(int n, int row, int col) {
-        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+        return sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                             .filter(s -> s.isInRow(row))
                             .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                && sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                                 .filter(s -> s.isInArea(row, col))
                                 .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                && sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                                 .filter(s -> s.isInCol(col))
                                 .noneMatch(s -> s.getNumber() == n);
     }
 
-    private boolean isNumberFitExtrictly(int n, int row, int col) {
-        return sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+    private boolean isNumberFitStrictly(int n, int row, int col) {
+        return sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                             .filter(s -> s.isInRow(row))
                             .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                && sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                                 .filter(s -> s.isInArea(row, col))
                                 .noneMatch(s -> s.getNumber() == n)
-                && sudokuSquares.stream().filter(e -> !e.isInPosition(row, col))
+                && sudokuSquares.stream().filter(e -> e.isNotInPosition(row, col))
                                 .filter(s -> s.isInCol(col))
                                 .noneMatch(s -> s.getNumber() == n);
     }
@@ -212,7 +219,8 @@ public class SudokuView extends BaseView {
             } else {
                 sudokuSquare.setNumber(previousN);
             }
-            sudokuSquares.stream().filter(t -> !t.isPermanent()).forEach(SudokuSquare::setEmpty);
+            sudokuSquares.stream().filter(SudokuSquare::isNotPermanent)
+                         .forEach(SudokuSquare::setEmpty);
         }
         resetStarted = false;
     }
@@ -221,7 +229,7 @@ public class SudokuView extends BaseView {
         for (SudokuSquare sq : sudokuSquares) {
             sq.setPossibilities(IntStream
                     .rangeClosed(1, MAP_N_SQUARED)
-                    .filter(n -> isNumberFitExtrictly(n, sq.getRow(), sq.getCol())).boxed()
+                    .filter(n -> isNumberFitStrictly(n, sq.getRow(), sq.getCol())).boxed()
                     .collect(Collectors.toList()));
             sq.setWrong(!sq.isEmpty() && !sq.getPossibilities().contains(sq.getNumber()));
         }
@@ -328,7 +336,7 @@ public class SudokuView extends BaseView {
 
     public void handleMousePressed(MotionEvent ev) {
         Optional<SudokuSquare> pressed = sudokuSquares.stream()
-                                                      .filter(e -> !e.isPermanent())
+                                                      .filter(SudokuSquare::isNotPermanent)
                                                       .filter(s -> s.contains(ev.getX(), ev.getY()))
                                                       .findFirst();
         if (!pressed.isPresent()) {

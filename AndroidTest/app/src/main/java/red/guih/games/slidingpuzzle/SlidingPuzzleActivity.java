@@ -42,9 +42,9 @@ public class SlidingPuzzleActivity extends BaseActivity {
 
     private void setUserPreferences() {
         SlidingPuzzleView.setPuzzleDimensions(
-                getUserPreference(R.string.size, SlidingPuzzleView.MAP_HEIGHT));
+                getUserPreference(R.string.size, SlidingPuzzleView.mapHeight));
         SlidingPuzzleView
-                .setPuzzleImage(getUserPreference(R.string.image, SlidingPuzzleView.PUZZLE_IMAGE));
+                .setPuzzleImage(getUserPreference(R.string.image, SlidingPuzzleView.puzzleImage));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class SlidingPuzzleActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(SlidingPuzzleView.MAP_WIDTH, UserRecord.SLIDING_PUZZLE);
+                showRecords(SlidingPuzzleView.mapWidth, UserRecord.SLIDING_PUZZLE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -80,7 +80,7 @@ public class SlidingPuzzleActivity extends BaseActivity {
         spinner.setAdapter(
                 new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, testArray));
         NumberPicker seekBar = dialog.findViewById(R.id.number);
-        seekBar.setValue(SlidingPuzzleView.MAP_HEIGHT);
+        seekBar.setValue(SlidingPuzzleView.mapHeight);
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog, spinner));
@@ -95,12 +95,12 @@ public class SlidingPuzzleActivity extends BaseActivity {
         SlidingPuzzleView.setPuzzleImage(image);
         SlidingPuzzleView.setPuzzleDimensions(progress);
         addUserPreference(R.string.size, progress);
-        addUserPreference(R.string.image, SlidingPuzzleView.PUZZLE_IMAGE);
+        addUserPreference(R.string.image, SlidingPuzzleView.puzzleImage);
         recreate();
         dialog.dismiss();
     }
 
-    private int getImage(int selectedItemPosition) {
+    private static int getImage(int selectedItemPosition) {
         if (selectedItemPosition == 0) {
             return 0;
         } else if (selectedItemPosition == 1) {

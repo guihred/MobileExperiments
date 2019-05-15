@@ -11,26 +11,27 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import java.util.List;
-
+@SuppressWarnings("unused")
 public class Pacman {
 
-    public static final float PACMAN_RATIO = 0.5f;
-    private float startAngle = 0;
-    private float length = 0;
+    private static final float PACMAN_RATIO = 0.5F;
     private final ObjectAnimator eatingAnimation;
-    Paint paint = new Paint(Color.YELLOW);
-    private float x, y;
-    private PacmanDirection direction = PacmanDirection.RIGHT;
     private final RectF bounds = new RectF();
+    Paint paint = new Paint(Color.YELLOW);
+    private float startAngle;
+    private float length;
+    private float x;
+    private float y;
+    private PacmanDirection direction = PacmanDirection.RIGHT;
 
-    public Pacman(PacmanView pacmanView) {
+    Pacman(PacmanView pacmanView) {
         paint.setColor(Color.YELLOW);
         PropertyValuesHolder pvhRotation = PropertyValuesHolder
                 .ofKeyframe("startAngle", Keyframe.ofFloat(0, 0),
-                        Keyframe.ofFloat(1, 45));
+                        Keyframe.ofFloat(1, PacmanView.START_ANGLE));
         PropertyValuesHolder pvhRotation2 = PropertyValuesHolder
                 .ofKeyframe("length", Keyframe.ofFloat(0, 360),
-                        Keyframe.ofFloat(1, 270));
+                        Keyframe.ofFloat(1, PacmanView.SWEEP_ANGLE));
         eatingAnimation = ObjectAnimator.ofPropertyValuesHolder(this, pvhRotation, pvhRotation2);
         eatingAnimation.setDuration(500);
         eatingAnimation.addUpdateListener(animation -> pacmanView.invalidate());
@@ -46,26 +47,27 @@ public class Pacman {
                 paint);
     }
 
-    public float getPacmanWidth() {
-        return MazeSquare.SQUARE_SIZE * PACMAN_RATIO;
+    float getPacmanWidth() {
+        return MazeSquare.squareSize * PACMAN_RATIO;
     }
 
-    public RectF getBounds() {
-        bounds.set(x, y, x + getPacmanWidth(), y + getPacmanWidth());
-        return bounds;
+    public float getStartAngle() {
+        return startAngle;
     }
 
-    private boolean checkCollision(List<RectF> observableList) {
-        for (int i = 0; i < observableList.size(); i++) {
-            RectF p = observableList.get(i);
-            if (RectF.intersects(p, getBounds())) {
-                return true;
-            }
-        }
-        return false;
+    public void setStartAngle(float startAngle) {
+        this.startAngle = startAngle;
     }
 
-    public void move(List<RectF> walls) {
+    public float getLength() {
+        return length;
+    }
+
+    public void setLength(float length) {
+        this.length = length;
+    }
+
+    void move(List<RectF> walls) {
         if (direction == null) {
             return;
         }
@@ -103,16 +105,31 @@ public class Pacman {
         }
     }
 
-    public void turn(PacmanDirection direction) {
-        Log.i("PACMAN", "TURNED " + direction);
-
-        this.direction = direction;
+    private boolean checkCollision(List<RectF> observableList) {
+        for (int i = 0; i < observableList.size(); i++) {
+            RectF p = observableList.get(i);
+            if (RectF.intersects(p, getBounds())) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    public void die() {
+    public RectF getBounds() {
+        bounds.set(x, y, x + getPacmanWidth(), y + getPacmanWidth());
+        return bounds;
+    }
+
+    void die() {
         if (eatingAnimation.isRunning()) {
             turn(null);
         }
+    }
+
+    void turn(PacmanDirection direction) {
+        Log.i("PACMAN", "TURNED " + direction);
+
+        this.direction = direction;
     }
 
     public float getX() {
@@ -129,22 +146,6 @@ public class Pacman {
 
     public void setY(float y) {
         this.y = y;
-    }
-
-    public float getStartAngle() {
-        return startAngle;
-    }
-
-    public void setStartAngle(float startAngle) {
-        this.startAngle = startAngle;
-    }
-
-    public float getLength() {
-        return length;
-    }
-
-    public void setLength(float length) {
-        this.length = length;
     }
 
 }

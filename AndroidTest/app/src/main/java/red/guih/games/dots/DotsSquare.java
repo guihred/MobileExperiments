@@ -10,11 +10,12 @@ import java.util.Objects;
 import java.util.Set;
 
 class DotsSquare {
-    static int SQUARE_SIZE;
+    static int squareSize;
 
-    final int i, j;
+    final int i;
+    final int j;
     private final Set<DotsSquare> adjacencies = new HashSet<>();
-    float[] center;
+    private float[] center;
 
     DotsSquare(int i, int j) {
         this.i = i;
@@ -29,19 +30,13 @@ class DotsSquare {
         return adjacencies;
     }
 
-    @Override
-    public String toString() {
-        return "(" + i + "," + j + ")";
-    }
-
     float[] getCenter() {
         if (center == null) {
-            center = new float[]{i * SQUARE_SIZE + SQUARE_SIZE / 2f,
-                    j * SQUARE_SIZE + SQUARE_SIZE / 2f};
+            center = new float[]{i * squareSize + squareSize / 2F,
+                    j * squareSize + squareSize / 2F};
         }
         return center;
     }
-
 
     @Override
     public int hashCode() {
@@ -51,11 +46,16 @@ class DotsSquare {
     @Override
     public boolean equals(Object obj) {
 
-        if (!this.getClass().isInstance(obj)) {
+        if (obj == null || !this.getClass().isInstance(obj)) {
             return false;
         }
         final DotsSquare other = (DotsSquare) obj;
         return i == other.i && j == other.j;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + i + "," + j + ")";
     }
 
     void addAdj(DotsSquare selected) {
@@ -63,25 +63,25 @@ class DotsSquare {
         selected.adjacencies.add(this);
     }
 
-    boolean contains(DotsSquare selected) {
-        return adjacencies.contains(selected);
-    }
-
     Set<Set<DotsSquare>> check() {
-        Set<Set<DotsSquare>> pontos = new HashSet<>();
+        Set<Set<DotsSquare>> points = new HashSet<>();
         for (DotsSquare a : adjacencies) {
 
             for (DotsSquare b : a.adjacencies) {
                 if (b != DotsSquare.this) {
                     for (DotsSquare c : b.adjacencies) {
                         if (a != c && c.contains(DotsSquare.this)) {
-                            pontos.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
+                            points.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
                         }
                     }
                 }
             }
         }
-        return pontos;
+        return points;
+    }
+
+    boolean contains(DotsSquare selected) {
+        return adjacencies.contains(selected);
     }
 
     List<DotsSquare> almostSquare() {

@@ -10,49 +10,45 @@ package red.guih.games.minesweeper;
  */
 public class MinesweeperSquare {
 
-    public enum State {
-        HIDDEN,
-        SHOWN,
-        FLAGGED
-    }
-
-    private final int i, j;
+    private final int i;
+    private final int j;
     private MinesweeperImage minesweeperImage = MinesweeperImage.BLANK;
     private int num;
     private State state = State.HIDDEN;
 
-    public MinesweeperSquare(int i, int j) {
+    MinesweeperSquare(int i, int j) {
         this.i = i;
         this.j = j;
     }
 
     @Override
     public String toString() {
-        return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage + ", num=" + num
+        return "MinesweeperSquare [i=" + i + ", j=" + j + ", minesweeperImage=" + minesweeperImage +
+                ", num=" + num
                 + ", state=" + state + "]";
     }
 
-    public final MinesweeperImage getMinesweeperImage() {
+    final MinesweeperImage getMinesweeperImage() {
         return minesweeperImage;
     }
 
-    public int getNum() {
-        return num;
-    }
-
-    public final State getState() {
-        return state;
-    }
-
-    public final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
+    final void setMinesweeperImage(final MinesweeperImage minesweeperImage) {
         this.minesweeperImage = minesweeperImage;
     }
 
-    public void setNum(int num) {
+    int getNum() {
+        return num;
+    }
+
+    void setNum(int num) {
         this.num = num;
     }
 
-    public final void setState(final State state) {
+    final State getState() {
+        return state;
+    }
+
+    final void setState(final State state) {
         this.state = state;
     }
 
@@ -62,6 +58,12 @@ public class MinesweeperSquare {
 
     public int getI() {
         return i;
+    }
+
+    public enum State {
+        HIDDEN,
+        SHOWN,
+        FLAGGED
     }
 
 }

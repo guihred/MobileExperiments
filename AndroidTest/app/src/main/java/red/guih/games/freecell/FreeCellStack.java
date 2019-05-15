@@ -10,22 +10,16 @@ import java.util.Collection;
 import java.util.List;
 
 class FreeCellStack {
-    public enum StackType {
-        SIMPLE,
-        ASCENDING,
-        SUPPORT
-    }
-
-    public final StackType type;
+    final StackType type;
     private final int n;
     private final List<FreeCellCard> cards = new ArrayList<>();
-    private int layoutX, layoutY;
-    private float maxHeight;
-
     private final Paint paint = new Paint();
+    private int layoutX;
+    private int layoutY;
+    private float maxHeight;
     private RectF boundsF;
 
-    public FreeCellStack(StackType type, int n) {
+    FreeCellStack(StackType type, int n) {
         this.type = type;
         this.n = n;
         paint.setColor(Color.BLACK);
@@ -38,6 +32,27 @@ class FreeCellStack {
                 "type=" + type +
                 ", n=" + n +
                 ')';
+    }
+
+    RectF getBoundsF() {
+
+        if (boundsF == null) {
+            boundsF = new RectF();
+        }
+        float right = FreeCellCard.getCardWidth();
+        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards()
+                .getBoundsF().bottom;
+
+
+        boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
+        return boundsF;
+    }
+
+    FreeCellCard getLastCards() {
+        if (cards.isEmpty()) {
+            return null;
+        }
+        return cards.get(cards.size() - 1);
     }
 
     public int getLayoutX() {
@@ -56,30 +71,7 @@ class FreeCellStack {
         this.layoutY = layoutY;
     }
 
-    public FreeCellCard getLastCards() {
-        if (cards.isEmpty()) {
-            return null;
-        }
-        return cards.get(cards.size() - 1);
-    }
-
-
-    public RectF getBoundsF() {
-
-        if (boundsF == null) {
-            boundsF = new RectF();
-        }
-        int right = FreeCellCard.getCardWidth();
-        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards()
-                .getBoundsF().bottom;
-
-
-        boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
-        return boundsF;
-    }
-
-
-    public void removeLastCards() {
+    void removeLastCards() {
         if (cards.isEmpty()) {
             return;
         }
@@ -87,7 +79,7 @@ class FreeCellStack {
         cards.remove(cards.size() - 1);
     }
 
-    public void addCards(Collection<FreeCellCard> cards) {
+    void addCards(Collection<FreeCellCard> cards) {
         if (type == StackType.SIMPLE) {
             addCardsVertically(cards);
         } else {
@@ -99,7 +91,17 @@ class FreeCellStack {
         addCardsVertically(cards.toArray(new FreeCellCard[0]));
     }
 
-    public void addCardsVertically(FreeCellCard... cards) {
+    void addCards(FreeCellCard... cards) {
+        for (FreeCellCard solitaireCard : cards) {
+            if (!this.cards.contains(solitaireCard)) {
+                this.cards.add(solitaireCard);
+                solitaireCard.setLayoutX(0);
+                solitaireCard.setLayoutY(0);
+            }
+        }
+    }
+
+    void addCardsVertically(FreeCellCard... cards) {
         for (FreeCellCard solitaireCard : cards) {
             if (!this.cards.contains(solitaireCard)) {
                 this.cards.add(solitaireCard);
@@ -124,9 +126,9 @@ class FreeCellStack {
             solitaireCard.setLayoutY(layout);
             layout += FreeCellCard.getCardWidth() / 3;
         }
-        float spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3;
+        float spaceToDisplay = maxHeight - layoutY - FreeCellCard.getCardWidth() / 3F;
         if (FreeCellCard.getCardWidth() / 3 * cards <= spaceToDisplay) {
-            return layout - FreeCellCard.getCardWidth() / 3;
+            return layout - FreeCellCard.getCardWidth() / 3F;
         }
         float newGap = spaceToDisplay / cards;
         layout = 0;
@@ -139,49 +141,44 @@ class FreeCellStack {
 
     }
 
-    public void addCards(FreeCellCard... cards) {
-        for (FreeCellCard solitaireCard : cards) {
-            if (!this.cards.contains(solitaireCard)) {
-                this.cards.add(solitaireCard);
-                solitaireCard.setLayoutX(0);
-                solitaireCard.setLayoutY(0);
-            }
-        }
+    void removeCards(List<FreeCellCard> cards) {
+        removeCards(cards.toArray(new FreeCellCard[0]));
     }
 
-    public void removeCards(List<FreeCellCard> cards) {
-        removeCards(cards.toArray(new FreeCellCard[0]));
+    private void removeCards(FreeCellCard... cards) {
+        for (FreeCellCard solitaireCard : cards) {
+            this.cards.remove(solitaireCard);
+        }
     }
 
     public void draw(Canvas canvas) {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
-        canvas.drawRoundRect(getLayoutX(), getLayoutY(),
-                FreeCellCard.getCardWidth() + layoutX,
-                FreeCellCard.getCardWidth() + layoutY, 5, 5, paint);
+        float right = (float) FreeCellCard.getCardWidth() + layoutX;
+        float bottom = (float) FreeCellCard.getCardWidth() + layoutY;
+        canvas.drawRoundRect(getLayoutX(), getLayoutY(), right, bottom, 5, 5, paint);
         for (FreeCellCard card : cards) {
             card.draw(canvas, layoutX, layoutY);
         }
 
     }
 
-
-    public void removeCards(FreeCellCard... cards) {
-        for (FreeCellCard solitaireCard : cards) {
-            this.cards.remove(solitaireCard);
-        }
-    }
-
-    public List<FreeCellCard> getCards() {
+    List<FreeCellCard> getCards() {
         return cards;
     }
 
-    public int getShownCards() {
+    int getShownCards() {
         return (int) cards.stream().filter(FreeCellCard::isShown).count();
     }
 
-
-    public void setMaxHeight(int maxHeight) {
+    void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
+    }
+
+
+    public enum StackType {
+        SIMPLE,
+        ASCENDING,
+        SUPPORT
     }
 }

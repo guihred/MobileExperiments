@@ -9,6 +9,7 @@ import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -34,6 +35,7 @@ import java.util.stream.Stream;
 
 import red.guih.games.BaseView;
 import red.guih.games.R;
+
 /**
  * @author Note
  */
@@ -44,11 +46,12 @@ public class SolitaireView extends BaseView {
     private final DragContext dragContext = new DragContext();
     private final Collection<CardStack> cardStackList = new ArrayList<>();
     private final CardStack[] simpleStacks = new CardStack[7];
+    private final List<MotionHistory> history = new ArrayList<>();
+    private final Drawable returnButtonIcon;
+    private boolean youWin;
     private CardStack mainCardStack;
     private CardStack dropCardStack;
-    private final List<MotionHistory> history = new ArrayList<>();
     private Rect returnButton;
-    private final Drawable returnButtonIcon;
 
     public SolitaireView(Context c, AttributeSet attrs) {
         super(c, attrs);
@@ -58,25 +61,8 @@ public class SolitaireView extends BaseView {
         reset();
     }
 
-    private static boolean isNullOrEmpty(Collection<?> cards) {
-        return cards == null || cards.isEmpty();
-    }
-
-    <T> void copy(T[] destination, T[] origin) {
-        System.arraycopy(origin, 0, destination, 0, origin.length);
-    }
-    void copy(SolitaireView solitaireView) {
-        copy(ascendingStacks, solitaireView.ascendingStacks);
-        copy(simpleStacks, solitaireView.simpleStacks);
-        cardStackList.clear();
-        cardStackList.addAll(solitaireView.cardStackList);
-        mainCardStack = solitaireView.mainCardStack;
-        dropCardStack = solitaireView.dropCardStack;
-        history.clear();
-        history.addAll(solitaireView.history);
-    }
     public void reset() {
-        youwin = false;
+        youWin = false;
         history.clear();
         cardStackList.clear();
         int yOffset = SolitaireCard.getCardWidth() / 2;
@@ -117,13 +103,106 @@ public class SolitaireView extends BaseView {
                 getHeight());
         returnButtonIcon.setBounds(returnButton);
         invalidate();
-        Log.i("SOLITAIRE", "RESETED");
+        Log.i("SOLITAIRE", "RESET");
 
+    }
+
+    private List<SolitaireCard> getAllCards() {
+        SolitaireNumber[] solitaireNumbers = SolitaireNumber.values();
+        SolitaireSuit[] solitaireSuits = SolitaireSuit.values();
+        List<SolitaireCard> allCards = new ArrayList<>();
+        for (SolitaireNumber number : solitaireNumbers) {
+            for (SolitaireSuit suit : solitaireSuits) {
+                SolitaireCard solitaireCard = new SolitaireCard(number, suit, getContext());
+                allCards.add(solitaireCard);
+            }
+        }
+        Collections.shuffle(allCards);
+        return allCards;
+    }
+
+    private static boolean isCardNotCompatibleWithStack(CardStack cardStack,
+            SolitaireCard solitaireCard) {
+        return cardStack.getCards().isEmpty() &&
+                solitaireCard.getNumber() != SolitaireNumber.KING || !cardStack
+                .getCards().isEmpty()
+                && (solitaireCard.getSuit().getColor() ==
+                cardStack.getLastCards().getSuit().getColor() || solitaireCard
+                .getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
+    }
+
+    private static boolean isStackAllHidden(CardStack stack) {
+        return !stack.getCards().isEmpty() &&
+                stack.getCards().stream().noneMatch(SolitaireCard::isShown);
+    }
+
+    private static boolean isStackEmptyAndCardIsNotAce(CardStack cardStack,
+            SolitaireCard solitaireCard) {
+        return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
+    }
+
+    private static boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {
+        return !cardStack.getCards().isEmpty() &&
+                (solitaireCard.getSuit() != cardStack.getLastCards().getSuit()
+                        || solitaireCard.getNumber().getNumber() !=
+                        cardStack.getLastCards().getNumber().getNumber() + 1);
+    }
+
+    private static boolean isNotAscendingStackCompatible(CardStack cardStack,
+            SolitaireCard solitaireCard) {
+        return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
+                || isNotNextCardInStack(cardStack, solitaireCard);
+    }
+
+    @Override
+    @SuppressLint("ClickableViewAccessibility")
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        if (action == MotionEvent.ACTION_DOWN) {
+            handleMousePressed(event);
+        } else if (action == MotionEvent.ACTION_MOVE) {
+            handleMouseDragged(event);
+        } else if (action == MotionEvent.ACTION_UP) {
+            handleMouseReleased(event);
+            automaticCard();
+        }
+        invalidate();
+        return true;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        canvas.drawColor(DARK_GREEN);
+        for (CardStack e : cardStackList) {
+            e.draw(canvas);
+        }
+        if (!isNullOrEmpty(dragContext.cards)) {
+            for (SolitaireCard e : dragContext.cards) {
+                e.draw(canvas, 0, 0);
+            }
+        }
+        returnButtonIcon.draw(canvas);
+    }
+
+    private static boolean isNullOrEmpty(Collection<?> cards) {
+        return cards == null || cards.isEmpty();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        int cardWidth = SolitaireCard.getCardWidth();
+        SolitaireCard.setCardWidth(getWidth() / 7);
+        if (cardWidth == 0) {
+            reset();
+        } else {
+            rescale();
+        }
     }
 
     public void rescale() {
         Log.i("SOLITAIRE", "RESCALED");
-        youwin = false;
+        youWin = false;
 
         int yOffset = SolitaireCard.getCardWidth() / (getWidth() > getHeight() ? 4 : 2);
         mainCardStack.setLayoutX(SolitaireCard.getCardWidth() / 10);
@@ -151,21 +230,6 @@ public class SolitaireView extends BaseView {
         invalidate();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        if (action == MotionEvent.ACTION_DOWN) {
-            handleMousePressed(event);
-        } else if (action == MotionEvent.ACTION_MOVE) {
-            handleMouseDragged(event);
-        } else if (action == MotionEvent.ACTION_UP) {
-            handleMouseReleased(event);
-            automaticCard();
-        }
-        invalidate();
-        return true;
-    }
-
     private void clickMainStack() {
         if (!mainCardStack.getCards().isEmpty()) {
             SolitaireCard lastCards = mainCardStack.removeLastCards();
@@ -188,46 +252,6 @@ public class SolitaireView extends BaseView {
         dragContext.reset();
     }
 
-    @Override
-    protected void onDraw(Canvas canvas) {
-        canvas.drawColor(DARK_GREEN);
-        for (CardStack e : cardStackList) {
-            e.draw(canvas);
-        }
-        if (!isNullOrEmpty(dragContext.cards)) {
-            for (SolitaireCard e : dragContext.cards) {
-                e.draw(canvas, 0, 0);
-            }
-        }
-        returnButtonIcon.draw(canvas);
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        int cardWidth = SolitaireCard.getCardWidth();
-        SolitaireCard.setCardWidth(getWidth() / 7);
-        if (cardWidth == 0) {
-            reset();
-        } else {
-            rescale();
-        }
-    }
-
-    private List<SolitaireCard> getAllCards() {
-        SolitaireNumber[] solitaireNumbers = SolitaireNumber.values();
-        SolitaireSuit[] solitaireSuits = SolitaireSuit.values();
-        List<SolitaireCard> allCards = new ArrayList<>();
-        for (SolitaireNumber number : solitaireNumbers) {
-            for (SolitaireSuit suit : solitaireSuits) {
-                SolitaireCard solitaireCard = new SolitaireCard(number, suit, getContext());
-                allCards.add(solitaireCard);
-            }
-        }
-        Collections.shuffle(allCards);
-        return allCards;
-    }
-
     private void handleMouseDragged(MotionEvent event) {
 
         if (dragContext.stack == null || dragContext.stack.type == CardStack.StackType.MAIN) {
@@ -238,12 +262,10 @@ public class SolitaireView extends BaseView {
                 event.getX() + "," + event.getY() + ")");
         float offsetX = event.getX() + dragContext.x;
         float offsetY = event.getY() + dragContext.y;
-        if (dragContext.cards != null) {
-            int i = 0;
-            for (SolitaireCard c : dragContext.cards) {
-                c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth() / 3);
-                i++;
-            }
+        int i = 0;
+        for (SolitaireCard c : dragContext.cards) {
+            c.relocate(offsetX, offsetY + i * SolitaireCard.getCardWidth() / 3F);
+            i++;
         }
     }
 
@@ -343,7 +365,7 @@ public class SolitaireView extends BaseView {
                 }
             }
         }
-        if (!youwin && Stream.of(ascendingStacks).allMatch(
+        if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == SolitaireNumber.values().length)) {
             showDialogWinning();
         }
@@ -357,8 +379,8 @@ public class SolitaireView extends BaseView {
         cardStackList.add(targetStack);
 
         originStack.removeLastCards();
-        float x = -targetStack.getLayoutX() + originStack.getLayoutX();
-        float y = -targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
+        float x = (float)-targetStack.getLayoutX() + originStack.getLayoutX();
+        float y = (float)-targetStack.getLayoutY() + originStack.getLayoutY() + solitaireCard.getLayoutY();
         targetStack.addCards(solitaireCard);
         PropertyValuesHolder pvhRotation = PropertyValuesHolder
                 .ofKeyframe("layoutX", Keyframe.ofFloat(0, x), Keyframe.ofFloat(1, 0));
@@ -382,10 +404,8 @@ public class SolitaireView extends BaseView {
         eatingAnimation.start();
     }
 
-    boolean youwin;
-
     private void handleMouseReleased(MotionEvent event) {
-        if (!youwin && Stream.of(ascendingStacks).allMatch(
+        if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == SolitaireNumber.values().length)) {
             showDialogWinning();
         }
@@ -415,7 +435,7 @@ public class SolitaireView extends BaseView {
                     motionHistory.shownCard = dragContext.stack.getLastCards();
                 }
                 dragContext.reset();
-                if (!youwin && Stream.of(ascendingStacks).allMatch(
+                if (!youWin && Stream.of(ascendingStacks).allMatch(
                         e -> e.getCards().size() == SolitaireNumber.values().length)) {
                     showDialogWinning();
                 }
@@ -448,7 +468,7 @@ public class SolitaireView extends BaseView {
     }
 
     private void showDialogWinning() {
-        youwin = true;
+        youWin = true;
         final Dialog dialog = new Dialog(getContext());
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.you_win);
@@ -465,11 +485,6 @@ public class SolitaireView extends BaseView {
         invalidate();
     }
 
-    private boolean isNotAscendingStackCompatible(CardStack cardStack,
-            SolitaireCard solitaireCard) {
-        return isStackEmptyAndCardIsNotAce(cardStack, solitaireCard)
-                || isNotNextCardInStack(cardStack, solitaireCard);
-    }
     private Collection<CardStack> getHoveredStacks(CardStack[] stacks) {
         SolitaireCard next = dragContext.cards.iterator().next();
         return Stream.of(stacks)
@@ -477,36 +492,11 @@ public class SolitaireView extends BaseView {
                      .collect(Collectors.toList());
     }
 
-    private boolean isCardNotCompatibleWithStack(CardStack cardStack, SolitaireCard solitaireCard) {
-        return cardStack.getCards().isEmpty() &&
-                solitaireCard.getNumber() != SolitaireNumber.KING || !cardStack
-                .getCards().isEmpty()
-                && (solitaireCard.getSuit().getColor() ==
-                cardStack.getLastCards().getSuit().getColor() || solitaireCard
-                .getNumber().getNumber() != cardStack.getLastCards().getNumber().getNumber() - 1);
-    }
-
-    private boolean isStackAllHidden(CardStack stack) {
-        return !stack.getCards().isEmpty() &&
-                stack.getCards().stream().noneMatch(SolitaireCard::isShown);
-    }
-
-    private boolean isStackEmptyAndCardIsNotAce(CardStack cardStack, SolitaireCard solitaireCard) {
-        return cardStack.getCards().isEmpty() && solitaireCard.getNumber() != SolitaireNumber.ACE;
-    }
-
-    private boolean isNotNextCardInStack(CardStack cardStack, SolitaireCard solitaireCard) {
-        return !cardStack.getCards().isEmpty() &&
-                (solitaireCard.getSuit() != cardStack.getLastCards().getSuit()
-                        || solitaireCard.getNumber().getNumber() !=
-                        cardStack.getLastCards().getNumber().getNumber() + 1);
-    }
-
     private static class DragContext {
-        protected final Set<SolitaireCard> cards = new LinkedHashSet<>();
-        protected CardStack stack;
+        final Set<SolitaireCard> cards = new LinkedHashSet<>();
         protected float x;
         protected float y;
+        CardStack stack;
 
         void reset() {
             cards.clear();
@@ -515,10 +505,10 @@ public class SolitaireView extends BaseView {
     }
 
     private static class MotionHistory {
-        protected final List<SolitaireCard> cards = new ArrayList<>();
-        protected CardStack originStack;
-        protected CardStack targetStack;
-        protected SolitaireCard shownCard;
+        final List<SolitaireCard> cards = new ArrayList<>();
+        CardStack originStack;
+        CardStack targetStack;
+        SolitaireCard shownCard;
 
         MotionHistory(Collection<SolitaireCard> cards, CardStack originStack,
                 CardStack targetStack) {
@@ -526,6 +516,7 @@ public class SolitaireView extends BaseView {
             this.targetStack = targetStack;
             this.cards.addAll(cards);
         }
+
         MotionHistory(SolitaireCard cards, CardStack originStack, CardStack targetStack) {
             this.originStack = originStack;
             this.targetStack = targetStack;
@@ -533,6 +524,7 @@ public class SolitaireView extends BaseView {
         }
 
     }
+
     private class AutomaticCardsListener implements Animator.AnimatorListener {
 
         @Override

@@ -20,14 +20,6 @@ import red.guih.games.db.UserRecord;
 public class DotsActivity extends BaseActivity {
 
 
-    public static void setDifficulty(int difficulty) {
-        DotsDrawingView.DIFFICULTY = difficulty;
-    }
-
-    public static void setMazeWidth(int mazeWidth) {
-        DotsDrawingView.MAZE_WIDTH = mazeWidth;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +33,9 @@ public class DotsActivity extends BaseActivity {
     }
 
     private void setUserPreferences() {
-        setDifficulty(getUserPreference(R.string.difficulty, DotsDrawingView.DIFFICULTY));
-        setMazeWidth(getUserPreference(R.string.size, DotsDrawingView.MAZE_WIDTH));
+        DotsDrawingView
+                .setDifficulty(getUserPreference(R.string.difficulty, DotsDrawingView.difficulty));
+        DotsDrawingView.setMazeWidth(getUserPreference(R.string.size, DotsDrawingView.mazeWidth));
     }
 
     @Override
@@ -58,7 +51,7 @@ public class DotsActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS);
+                showRecords(DotsDrawingView.mazeWidth, UserRecord.DOTS);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -83,7 +76,7 @@ public class DotsActivity extends BaseActivity {
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
 
-        spinner.setSelection(DotsDrawingView.DIFFICULTY);
+        spinner.setSelection(DotsDrawingView.difficulty);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
@@ -96,10 +89,10 @@ public class DotsActivity extends BaseActivity {
         NumberPicker seekBar = dialog.findViewById(R.id.number);
         int progress = seekBar.getValue();
         int difficulty = spinner.getSelectedItemPosition() % 3;
-        setDifficulty(difficulty);
+        DotsDrawingView.setDifficulty(difficulty);
         addUserPreference(R.string.difficulty, difficulty);
-        if (DotsDrawingView.MAZE_WIDTH != progress) {
-            setMazeWidth(progress);
+        if (DotsDrawingView.mazeWidth != progress) {
+            DotsDrawingView.setMazeWidth(progress);
             addUserPreference(R.string.size, progress);
             recreate();
         }

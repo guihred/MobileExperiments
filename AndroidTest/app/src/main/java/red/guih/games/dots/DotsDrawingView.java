@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,7 +14,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -43,10 +44,11 @@ import static red.guih.games.dots.StreamHelp.*;
 
 public class DotsDrawingView extends BaseView {
     public static final int LINE_ANIMATION_DURATION = 500;
+    public static final int THIRD_STAR_THRESHOLD = 70;
     private static final String TAG = "DOTS";
     private static final String[] PLAYERS = {"EU", "TU"};
-    public static int MAZE_WIDTH = 8;
-    public static int DIFFICULTY = 2;
+    static int mazeWidth = 8;
+    static int difficulty = 2;
     private final Line line = new Line();
     private final List<Line> lines = Collections.synchronizedList(new ArrayList<>());
     private final List<Set<DotsSquare>> whites = Collections.synchronizedList(new ArrayList<>());
@@ -75,36 +77,50 @@ public class DotsDrawingView extends BaseView {
 
     }
 
-    private List<Pair> getPossibilidades() {
-        List<Pair> possibilidades = new ArrayList<>();
-        for (int i = 0; i < MAZE_WIDTH; i++) {
+    public static void setMazeWidth(int mazeWidth) {
+        DotsDrawingView.mazeWidth = mazeWidth;
+    }
+
+    public static void setDifficulty(int difficulty) {
+        DotsDrawingView.difficulty = difficulty;
+    }
+
+    private static Float getDistance(DotsSquare e, float x, float y) {
+        float[] center = e.getCenter();
+        float abs = abs(center[0] - x);
+        float abs2 = abs(center[1] - y);
+        return abs * abs + abs2 * abs2;
+    }
+
+    private static DotsSquare getMin(DotsSquare a1, DotsSquare b1, boolean condition1,
+            boolean condition2) {
+        if (condition1 || condition2) {
+            return a1;
+        }
+        return b1;
+    }
+
+    private List<Pair> getPossibilities() {
+        List<Pair> possibilities = new ArrayList<>();
+        for (int i = 0; i < mazeWidth; i++) {
             for (int j = 0; j < mazeHeight; j++) {
-                if (i < MAZE_WIDTH - 1 && !maze[i][j].contains(maze[i + 1][j])) {
-                    possibilidades.add(new Pair(maze[i][j], maze[i + 1][j]));
+                if (i < mazeWidth - 1 && !maze[i][j].contains(maze[i + 1][j])) {
+                    possibilities.add(new Pair(maze[i][j], maze[i + 1][j]));
                 }
                 if (j < mazeHeight - 1 && !maze[i][j].contains(maze[i][j + 1])) {
-                    possibilidades.add(new Pair(maze[i][j], maze[i][j + 1]));
+                    possibilities.add(new Pair(maze[i][j], maze[i][j + 1]));
                 }
             }
         }
-        Collections.shuffle(possibilidades);
-        return possibilidades;
+        Collections.shuffle(possibilities);
+        return possibilities;
     }
 
     private List<Pair> getBestPossibilities(Collection<Pair> possibilities) {
-        Log.i(TAG, "Melhor Possibilidade 1");
-        Set<Pair> best2 = new HashSet<>();
-
-        for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < mazeHeight; j++) {
-                final List<DotsSquare> bestCheck = maze[i][j].almostSquare();
-                final DotsSquare maze1 = maze[i][j];
-                final List<Pair> collect = map(bestCheck, e -> new Pair(maze1, e));
-                best2.addAll(collect);
-            }
-        }
+        Log.i(TAG, "BEST POSSIBILITY 1");
+        Set<Pair> best2 = createPairs();
         List<Pair> best = new ArrayList<>(best2);
-        if (DIFFICULTY > 0) {
+        if (difficulty > 0) {
             if (best.size() == 2) {
                 Set<Pair> pairs1 = getPairs(best.get(0).getKey(), best.get(0).getValue());
                 int countPair = pairs1.size();
@@ -116,7 +132,7 @@ public class DotsDrawingView extends BaseView {
                 if (countPair > countPair2) {
                     return Collections.singletonList(best.get(1));
                 }
-                if (DIFFICULTY > 1 && countPair == 3 && pairs1.equals(pairs2)) {
+                if (difficulty > 1 && countPair == 3 && pairs1.equals(pairs2)) {
                     List<Pair> distinct = distinct(possibilities);
                     distinct.removeAll(pairs1);
                     final Map<Integer, List<Pair>> collect = groupBy(distinct,
@@ -146,8 +162,22 @@ public class DotsDrawingView extends BaseView {
         return best;
     }
 
+    private Set<Pair> createPairs() {
+        Set<Pair> best2 = new HashSet<>();
+
+        for (int i = 0; i < mazeWidth; i++) {
+            for (int j = 0; j < mazeHeight; j++) {
+                final List<DotsSquare> bestCheck = maze[i][j].almostSquare();
+                final DotsSquare maze1 = maze[i][j];
+                final List<Pair> collect = map(bestCheck, e -> new Pair(maze1, e));
+                best2.addAll(collect);
+            }
+        }
+        return best2;
+    }
+
     private void reset() {
-        for (int i = 0; i < MAZE_WIDTH; i++) {
+        for (int i = 0; i < mazeWidth; i++) {
             for (int j = 0; j < mazeHeight; j++) {
                 maze[i][j].clear();
             }
@@ -168,13 +198,13 @@ public class DotsDrawingView extends BaseView {
     private void showDialog() {
         invalidate();
         float userPoints = this.points.get("TU").size();
-        int percentage = (int) (userPoints / (MAZE_WIDTH - 1) / (mazeHeight - 1) * 100);
+        int percentage = (int) (userPoints / (mazeWidth - 1) / (mazeHeight - 1) * 100);
         boolean userWon = points.get("TU").size() > points.get("EU").size();
-        if (userWon && isRecordSuitable(percentage, UserRecord.DOTS, DotsDrawingView.MAZE_WIDTH,
+        if (userWon && isRecordSuitable(percentage, UserRecord.DOTS, DotsDrawingView.mazeWidth,
                 false)) {
             createRecordIfSuitable(percentage, percentage + "%", UserRecord.DOTS,
-                    DotsDrawingView.MAZE_WIDTH, false);
-            showRecords(DotsDrawingView.MAZE_WIDTH, UserRecord.DOTS, DotsDrawingView.this::reset);
+                    DotsDrawingView.mazeWidth, false);
+            showRecords(DotsDrawingView.mazeWidth, UserRecord.DOTS, DotsDrawingView.this::reset);
             return;
         }
 
@@ -194,7 +224,7 @@ public class DotsDrawingView extends BaseView {
                 ImageView image2 = dialog.findViewById(R.id.image2);
                 image2.setImageResource(R.drawable.smile);
             }
-            if (percentage >= 70) {
+            if (percentage >= THIRD_STAR_THRESHOLD) {
                 ImageView image2 = dialog.findViewById(R.id.image3);
                 image2.setImageResource(R.drawable.smile);
             }
@@ -213,15 +243,15 @@ public class DotsDrawingView extends BaseView {
         dialog.show();
     }
 
-    private List<Pair> getBestPossibilities2(final List<Pair> possibilidades) {
-        Log.i(TAG, "Melhor Possibilidade 2");
-        return filter(possibilidades, entry -> {
-            final boolean checkMelhor = entry.getKey().checkMelhor(entry.getValue());
-            if (!checkMelhor) {
+    private List<Pair> getBestPossibilities2(final List<Pair> possibilities) {
+        Log.i(TAG, "BEST Possibility 2");
+        return filter(possibilities, entry -> {
+            final boolean check = entry.getKey().checkMelhor(entry.getValue());
+            if (!check) {
                 return false;
             }
-            final boolean checkMelhor1 = entry.getValue().checkMelhor(entry.getKey());
-            if (!checkMelhor1) {
+            final boolean check2 = entry.getValue().checkMelhor(entry.getKey());
+            if (!check2) {
                 return false;
             }
             entry.getKey().addAdj(entry.getValue());
@@ -243,6 +273,7 @@ public class DotsDrawingView extends BaseView {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
@@ -289,7 +320,7 @@ public class DotsDrawingView extends BaseView {
         }
         paint.setStrokeWidth(2);
         paint.setColor(Color.BLACK);
-        for (int i = 0; i < MAZE_WIDTH; i++) {
+        for (int i = 0; i < mazeWidth; i++) {
             for (int j = 0; j < mazeHeight; j++) {
                 DotsSquare dotsSquare = maze[i][j];
                 float[] center = dotsSquare.getCenter();
@@ -302,11 +333,12 @@ public class DotsDrawingView extends BaseView {
         for (Map.Entry<String, Set<Set<DotsSquare>>> entry : points.entrySet()) {
             Set<Set<DotsSquare>> value = entry.getValue();
             for (Set<DotsSquare> d : value) {
-                DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * MAZE_WIDTH + e.j));
+                DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * mazeWidth + e.j));
                 float[] center = min.getCenter();
-                float left = center[0], top = center[1]; // basically (X1, Y1)
-                float right = left + DotsSquare.SQUARE_SIZE; // width (distance from X1 to X2)
-                float bottom = top + DotsSquare.SQUARE_SIZE; // height (distance from Y1 to Y2)
+                float left = center[0];
+                float top = center[1]; // basically (X1, Y1)
+                float right = left + DotsSquare.squareSize; // width (distance from X1 to X2)
+                float bottom = top + DotsSquare.squareSize; // height (distance from Y1 to Y2)
 
                 if ("EU".equals(entry.getKey())) {
                     paint.setColor(Color.RED);
@@ -320,11 +352,12 @@ public class DotsDrawingView extends BaseView {
 
     private void drawWhiteSquares(Canvas canvas) {
         for (Set<DotsSquare> d : whites) {
-            DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * MAZE_WIDTH + e.j));
+            DotsSquare min = min(d, comparing((DotsSquare e) -> e.i * mazeWidth + e.j));
             float[] center = min.getCenter();
-            float left = center[0], top = center[1]; // basically (X1, Y1)
-            float right = left + DotsSquare.SQUARE_SIZE; // width (distance from X1 to X2)
-            float bottom = top + DotsSquare.SQUARE_SIZE; // height (distance from Y1 to Y2)
+            float left = center[0];
+            float top = center[1]; // basically (X1, Y1)
+            float right = left + DotsSquare.squareSize; // width (distance from X1 to X2)
+            float bottom = top + DotsSquare.squareSize; // height (distance from Y1 to Y2)
             canvas.drawRect(left, top, right, bottom, transparent);
         }
     }
@@ -332,7 +365,7 @@ public class DotsDrawingView extends BaseView {
     private void drawCirclesAndConnectedLines(Canvas canvas) {
         paint.setStrokeWidth(2);
         paint.setColor(Color.BLACK);
-        for (int i = 0; i < MAZE_WIDTH; i++) {
+        for (int i = 0; i < mazeWidth; i++) {
             for (int j = 0; j < mazeHeight; j++) {
                 DotsSquare dotsSquare = maze[i][j];
                 float[] center = dotsSquare.getCenter();
@@ -349,11 +382,11 @@ public class DotsDrawingView extends BaseView {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int width = this.getWidth();
-        setSquareSize(width / MAZE_WIDTH);
-        mazeHeight = this.getHeight() / DotsSquare.SQUARE_SIZE;
+        setSquareSize(width / mazeWidth);
+        mazeHeight = this.getHeight() / DotsSquare.squareSize;
         if (maze == null) {
-            maze = new DotsSquare[MAZE_WIDTH][mazeHeight];
-            for (int i = 0; i < MAZE_WIDTH; i++) {
+            maze = new DotsSquare[mazeWidth][mazeHeight];
+            for (int i = 0; i < mazeWidth; i++) {
                 for (int j = 0; j < mazeHeight; j++) {
                     maze[i][j] = new DotsSquare(i, j);
                 }
@@ -362,7 +395,7 @@ public class DotsDrawingView extends BaseView {
     }
 
     static void setSquareSize(int squareSize) {
-        DotsSquare.SQUARE_SIZE = squareSize;
+        DotsSquare.squareSize = squareSize;
     }
 
     private void onRelease(MotionEvent event) {
@@ -374,30 +407,14 @@ public class DotsDrawingView extends BaseView {
             over.addAdj(selected);
             //Checks whether the user closed a square
             Set<Set<DotsSquare>> check = over.check();
-
             Set<Set<DotsSquare>> collect = toSet(flatMap(points.values(), a -> a));
-
-            Set<Set<DotsSquare>> collect1 = filter(check,
-                    s -> !collect.contains(s));
+            Set<Set<DotsSquare>> collect1 = filter(check, s -> !collect.contains(s));
             if (!collect1.isEmpty()) {
                 points.get("TU").addAll(collect1);
             } else {
                 currentPlayer = (currentPlayer + 1) % PLAYERS.length;
-                int nplayed = 0;
-                while (currentPlayer == 0) {
-                    final List<Pair> todas = getPossibilidades();
-                    // VERIFY IF THE USER LEFT ANY SQUARE TO BE CLOSED
-                    List<Pair> possibilities = getBestPossibilities(todas);
-                    // VERIFY IF THERE ARE ANY OPTIONS THAT DON'T GIVE POINTS TO
-                    // THE USER
-                    possibilities = possibilities.isEmpty() ? getBestPossibilities2(todas)
-                            : possibilities;
-                    // VERIFY AMONG THE OPTIONS WHICH GIVES LESS POINTS
-                    possibilities = possibilities.isEmpty() ? getBestPossibilities3(todas)
-                            : possibilities;
-                    Log.i(TAG, "BEST POSSIBILITIES FOUND");
-                    possibilities = possibilities.isEmpty() ? todas : possibilities;
-
+                for (int nPlayed = 0; currentPlayer == 0; nPlayed++) {
+                    List<Pair> possibilities = choosePossiblePlays();
                     if (possibilities.isEmpty()) {
                         currentPlayer = 1;
                         break;
@@ -410,31 +427,48 @@ public class DotsDrawingView extends BaseView {
                     final Set<Set<DotsSquare>> collect2 = toSet(flatMap(points.values(), a -> a));
                     final Set<Set<DotsSquare>> squaresWon = Collections
                             .synchronizedSet(filter(check2, s -> !collect2.contains(s)));
-                    final boolean empty = squaresWon.isEmpty();
-                    if (empty) {
+                    if (squaresWon.isEmpty()) {
                         currentPlayer = 1;
                     } else {
                         points.get("EU").addAll(squaresWon);
                         whites.addAll(squaresWon);
                     }
-
-                    createAnimation(nplayed, get, squaresWon);
-                    nplayed++;
+                    createAnimation(nPlayed, get, squaresWon);
                 }
             }
         }
         selected = null;
         line.reset();
 
-        int total = points.get("EU").size() + points.get("TU").size();
-        if (total == (MAZE_WIDTH - 1) * (mazeHeight - 1) && whites.isEmpty()) {
-            showDialog();// END OF GAME
-        }
+        verifyEndOfGame();
         this.invalidate();
 
     }
 
-    private void createAnimation(int nplayed, Pair get, Set<Set<DotsSquare>> squaresWon) {
+    private void verifyEndOfGame() {
+        int total = points.get("EU").size() + points.get("TU").size();
+        if (total == (mazeWidth - 1) * (mazeHeight - 1) && whites.isEmpty()) {
+            showDialog();// END OF GAME
+        }
+    }
+
+    private List<Pair> choosePossiblePlays() {
+        final List<Pair> allPossibilities = getPossibilities();
+        // VERIFY IF THE USER LEFT ANY SQUARE TO BE CLOSED
+        List<Pair> possibilities = getBestPossibilities(allPossibilities);
+        // VERIFY IF THERE ARE ANY OPTIONS THAT DON'T GIVE POINTS TO
+        // THE USER
+        possibilities = possibilities.isEmpty() ? getBestPossibilities2(allPossibilities)
+                : possibilities;
+        // VERIFY AMONG THE OPTIONS WHICH GIVES LESS POINTS
+        possibilities = possibilities.isEmpty() ? getBestPossibilities3(allPossibilities)
+                : possibilities;
+        Log.i(TAG, "BEST POSSIBILITIES FOUND");
+        possibilities = possibilities.isEmpty() ? allPossibilities : possibilities;
+        return possibilities;
+    }
+
+    private void createAnimation(int nPlayed, Pair get, Set<Set<DotsSquare>> squaresWon) {
         final float[] center = get.getKey().getCenter();
         final float[] center2 = get.getValue().getCenter();
         Keyframe kf0 = Keyframe.ofFloat(0, center2[0]);
@@ -452,7 +486,8 @@ public class DotsDrawingView extends BaseView {
                 .ofPropertyValuesHolder(line2, pvhRotation,
                         pvhRotation2);
         lineAnim.setDuration(LINE_ANIMATION_DURATION);
-        lineAnim.setStartDelay(LINE_ANIMATION_DURATION * nplayed);
+        long startDelay = (long)LINE_ANIMATION_DURATION * nPlayed;
+        lineAnim.setStartDelay(startDelay);
         lineAnim.start();
         lineAnim.addUpdateListener(a -> invalidate());
         lineAnim.addListener(new LineAnimatorListener(line2, squaresWon));
@@ -469,19 +504,10 @@ public class DotsDrawingView extends BaseView {
         return min(dotsSquares, comparing((DotsSquare e) -> getDistance(e, x, y)));
     }
 
-    @NonNull
-    private Float getDistance(DotsSquare e, float x, float y) {
-        float[] center = e.getCenter();
-        float abs = abs(center[0] - x);
-        float abs2 = abs(center[1] - y);
-        return abs * abs + abs2 * abs2;
+    private List<Pair> getBestPossibilities3(final Iterable<Pair> possibilities) {
+        Log.i(TAG, "BEST Possibilities 3");
+        return mins(possibilities, comparing(e -> getCountPair(e.getKey(), e.getValue())));
     }
-
-    private List<Pair> getBestPossibilities3(final Iterable<Pair> possibilidades) {
-        Log.i(TAG, "Melhor Possibilidade 3");
-        return mins(possibilidades, comparing(e -> getCountPair(e.getKey(), e.getValue())));
-    }
-
 
     private int getCountPair(DotsSquare a1, DotsSquare b1) {
         Set<Pair> setCountMap = getSetCountMap(a1, b1);
@@ -521,7 +547,7 @@ public class DotsDrawingView extends BaseView {
                 pairs.addAll(getPairPoint(a, b, c, d));
 
             }
-            if (i < MAZE_WIDTH - 1) {
+            if (i < mazeWidth - 1) {
                 DotsSquare c = maze[i + 1][j];
                 DotsSquare d = maze[i + 1][j + 1];
                 pairs.addAll(getPairPoint(a, b, c, d));
@@ -537,21 +563,9 @@ public class DotsDrawingView extends BaseView {
                 DotsSquare d = maze[i + 1][j + 1];
                 pairs.addAll(getPairPoint(a, b, c, d));
             }
-
         }
-
-
         return pairs;
     }
-
-    private DotsSquare getMin(DotsSquare a1, DotsSquare b1, boolean condition1,
-            boolean condition2) {
-        if (condition1 || condition2) {
-            return a1;
-        }
-        return b1;
-    }
-
 
     private Set<Pair> getPairPoint(DotsSquare a, DotsSquare b, DotsSquare c, DotsSquare d) {
 
@@ -596,7 +610,7 @@ public class DotsDrawingView extends BaseView {
             lines.remove(line2);
             whites.removeAll(squaresWon);
             if (points.get("EU").size() + points.get("TU")
-                                                .size() == (MAZE_WIDTH - 1) * (mazeHeight - 1) &&
+                                                .size() == (mazeWidth - 1) * (mazeHeight - 1) &&
                     whites
                             .isEmpty()) {
                 showDialog();// END OF GAME

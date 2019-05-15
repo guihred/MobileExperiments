@@ -11,7 +11,10 @@ import android.graphics.Path;
 import android.graphics.Shader;
 
 public class PuzzlePiece {
-    public static final float SQRT_0_5 = 0.7071067811865476f;// SQRT(0.5)
+    static final float SQRT_0_5 = 0.7071067811865476F;// SQRT(0.5)
+    private final Matrix translate = new Matrix();
+    private final Path translated = new Path();
+    private final Matrix mTranslationMatrix = new Matrix();
     private PuzzlePath down = PuzzlePath.STRAIGHT;
     private Bitmap image;
     private BitmapShader imagePattern;
@@ -21,20 +24,18 @@ public class PuzzlePiece {
     private Paint stroke;
     private PuzzlePath right = PuzzlePath.STRAIGHT;
     private PuzzlePath up = PuzzlePath.STRAIGHT;
-    private float width = 10, height = 10;
-    private int x, y;
-    private float layoutX, layoutY;
-    private final Matrix translate = new Matrix();
-    private final Path translated = new Path();
-    private final Matrix mTranslationMatrix = new Matrix();
+    private float width;
+    private float height;
+    private int x;
+    private int y;
+    private float layoutX;
+    private float layoutY;
 
-    public PuzzlePiece(int x, int y, float width, float height) {
+    PuzzlePiece(int x, int y, float width, float height) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
-
-
     }
 
     @Override
@@ -53,26 +54,55 @@ public class PuzzlePiece {
         return y;
     }
 
-    public void move(Point2D subtract) {
+    void move(Point2D subtract) {
         setLayoutX(getLayoutX() + subtract.getX());
         setLayoutY(getLayoutY() + subtract.getY());
     }
 
-    public void move(float x, float y) {
+    public float getLayoutX() {
+        return layoutX;
+    }
+
+    public float getLayoutY() {
+        return layoutY;
+    }
+
+    public void setLayoutY(float layoutY) {
+        this.layoutY = layoutY;
+    }
+
+    public void setLayoutX(float layoutX) {
+        this.layoutX = layoutX;
+    }
+
+    void move(float x, float y) {
         setLayoutX(getLayoutX() + x);
         setLayoutY(getLayoutY() + y);
     }
 
+    public PuzzlePath getLeft() {
+        return left;
+    }
 
-    public BitmapShader getImagePattern() {
-        if (imagePattern == null) {
+    public void setLeft(PuzzlePath left) {
+        this.left = left;
+    }
 
-            imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+    public PuzzlePath getRight() {
+        return right;
+    }
 
-            imagePattern.setLocalMatrix(mTranslationMatrix);
-        }
+    public void setRight(PuzzlePath right) {
+        this.right = right;
+    }
 
-        return imagePattern;
+    void setDown(PuzzlePath down) {
+        this.down = down;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
+        getPaint().setShader(getImagePattern());
     }
 
     public Paint getPaint() {
@@ -83,6 +113,36 @@ public class PuzzlePiece {
 
         }
         return paint;
+    }
+
+    private BitmapShader getImagePattern() {
+        if (imagePattern == null) {
+
+            imagePattern = new BitmapShader(image, Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+
+            imagePattern.setLocalMatrix(mTranslationMatrix);
+        }
+
+        return imagePattern;
+    }
+
+    public void setUp(PuzzlePath up) {
+        this.up = up;
+    }
+
+    public void draw(Canvas canvas) {
+
+        Path translatedPath = getTranslatedPath();
+        canvas.drawPath(translatedPath, getPaint());
+        canvas.drawPath(translatedPath, getStroke());
+    }
+
+    Path getTranslatedPath() {
+        mTranslationMatrix.setTranslate(getLayoutX() - x * width, getLayoutY() - y * height);
+        imagePattern.setLocalMatrix(mTranslationMatrix);
+        translate.setTranslate(layoutX, layoutY);
+        getPath().transform(translate, translated);
+        return translated;
     }
 
     public Paint getStroke() {
@@ -96,11 +156,6 @@ public class PuzzlePiece {
         return stroke;
     }
 
-
-    public PuzzlePath getLeft() {
-        return left;
-    }
-
     public Path getPath() {
         if (path == null) {
             path = new Path();
@@ -111,63 +166,5 @@ public class PuzzlePiece {
             left.getPath(0, -height, path);
         }
         return path;
-    }
-
-    public PuzzlePath getRight() {
-        return right;
-    }
-
-
-    public void setDown(PuzzlePath down) {
-        this.down = down;
-    }
-
-    public void setImage(Bitmap image) {
-        this.image = image;
-        getPaint().setShader(getImagePattern());
-    }
-
-    public void setLeft(PuzzlePath left) {
-        this.left = left;
-    }
-
-    public void setRight(PuzzlePath right) {
-        this.right = right;
-    }
-
-    public void setUp(PuzzlePath up) {
-        this.up = up;
-    }
-
-    public float getLayoutY() {
-        return layoutY;
-    }
-
-    public void setLayoutY(float layoutY) {
-        this.layoutY = layoutY;
-    }
-
-    public float getLayoutX() {
-        return layoutX;
-    }
-
-    public void setLayoutX(float layoutX) {
-        this.layoutX = layoutX;
-    }
-
-
-    public void draw(Canvas canvas) {
-
-        Path translatedPath = getTranslatedPath();
-        canvas.drawPath(translatedPath, getPaint());
-        canvas.drawPath(translatedPath, getStroke());
-    }
-
-    public Path getTranslatedPath() {
-        mTranslationMatrix.setTranslate(getLayoutX() - x * width, getLayoutY() - y * height);
-        imagePattern.setLocalMatrix(mTranslationMatrix);
-        translate.setTranslate(layoutX, layoutY);
-        getPath().transform(translate, translated);
-        return translated;
     }
 }

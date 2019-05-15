@@ -26,17 +26,19 @@ import red.guih.games.db.UserRecord;
 
 
 public class MadMazeView extends BaseView implements SensorEventListener {
-    static final float SQR_ROOT_OF_3 = 1.7320508075688772f;
-    public static int DIFFICULTY = 10;
+    static final float SQR_ROOT_OF_3 = 1.7320508075688772F;
+    static int difficulty = 10;
     private static int madMazeOption;
     private final Paint paint = new Paint();
     private final Paint ballPaint = new Paint();
-    List<MadCell> allCells = new ArrayList<>();
-    List<MadEdge> allEdges = new ArrayList<>();
-    float ballx, bally;
-    float triangleSide;
-    float xSpeed, ySpeed;
-    Random random = new Random();
+    private List<MadCell> allCells = new ArrayList<>();
+    private List<MadEdge> allEdges = new ArrayList<>();
+    private float ballX;
+    private float ballY;
+    private float triangleSide;
+    private float xSpeed;
+    private float ySpeed;
+    private Random random = new Random();
     private Thread gameLoopThread;
     private float speed;
     private float ballRadius;
@@ -52,7 +54,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
     }
 
     public static void setDifficulty(int mazeSize) {
-        MadMazeView.DIFFICULTY = mazeSize * 5;
+        MadMazeView.difficulty = mazeSize * 5;
     }
 
     public int getMadMazeOption() {
@@ -86,7 +88,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
             MadTriangle e = balls.get(i);
             gc.drawCircle(e.getCenter().getX(), e.getCenter().getY(), ballRadius / 2, ballPaint);
         }
-        gc.drawCircle(ballx, bally, ballRadius, paint);
+        gc.drawCircle(ballX, ballY, ballRadius, paint);
         if (balls.isEmpty() && !displaying) {
             showDialogWinning();
         }
@@ -110,9 +112,9 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, emSegundos / 60, emSegundos % 60);
 
-        if (isRecordSuitable(emSegundos, UserRecord.MAD_MAZE, DIFFICULTY, true)) {
-            createRecordIfSuitable(emSegundos, format, UserRecord.MAD_MAZE, DIFFICULTY, true);
-            showRecords(DIFFICULTY, UserRecord.MAD_MAZE, this::reset);
+        if (isRecordSuitable(emSegundos, UserRecord.MAD_MAZE, difficulty, true)) {
+            createRecordIfSuitable(emSegundos, format, UserRecord.MAD_MAZE, difficulty, true);
+            showRecords(difficulty, UserRecord.MAD_MAZE, this::reset);
             return;
         }
         text.setText(String.format(getResources().getString(R.string.you_win), format));
@@ -154,19 +156,19 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         List<MadTriangle> deadEnds = labyrinth.triangles.stream().filter(MadTriangle::isDeadEnd)
                                                         .collect(Collectors.toList());
         int size = deadEnds.size();
-        for (int i = 0; !deadEnds.isEmpty() && i < Math.min(size, DIFFICULTY); i++) {
+        for (int i = 0; !deadEnds.isEmpty() && i < Math.min(size, difficulty); i++) {
             balls.add(deadEnds.remove(random.nextInt(deadEnds.size())));
         }
 
 
-        ballx = center.getX();
-        bally = center.getY();
+        ballX = center.getX();
+        ballY = center.getY();
         continueGame();
     }
 
     private void createSquarePoints(float maxWidth, float maxHeight) {
         allCells.clear();
-        int sqrt = DIFFICULTY;
+        int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
         speed = triangleSide / 50;
         ballRadius = triangleSide / 5;
@@ -180,15 +182,15 @@ public class MadMazeView extends BaseView implements SensorEventListener {
             cell.relocate(x, y);
             allCells.add(cell);
             if (i == 0) {
-                ballx = x + triangleSide * 1 / 2;
-                bally = y + triangleSide * 1 / 2;
+                ballX = x + triangleSide * 1 / 2;
+                ballY = y + triangleSide * 1 / 2;
             }
         }
     }
 
     private void createTrianglesPoints(float maxWidth, float maxHeight) {
         allCells.clear();
-        int sqrt = DIFFICULTY;
+        int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
         ballRadius = triangleSide / 5;
         speed = triangleSide / 50;
@@ -196,7 +198,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
             MadCell cell = new MadCell(i);
-            float x = i % sqrt * triangleSide + (i / sqrt % 2 == 0 ? 0 : -triangleSide / 2) +
+            float x = i % sqrt * triangleSide + (isEven(i / sqrt, 2) ? 0 : -triangleSide / 2) +
                     triangleSide * 3 / 4;
             int j = i / sqrt;
             float k = j * triangleSide;
@@ -204,36 +206,32 @@ public class MadMazeView extends BaseView implements SensorEventListener {
             cell.relocate(x, y);
             allCells.add(cell);
             if (i == 0) {
-                ballx = x;
-                bally = y + triangleSide * 3 / 4;
+                ballX = x;
+                ballY = y + triangleSide * 3 / 4;
             }
         }
     }
 
     private void createHexagonalPoints(float maxWidth, float maxHeight) {
         allCells.clear();
-        int sqrt = DIFFICULTY;
+        int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
         speed = triangleSide / 50;
         ballRadius = triangleSide / 7;
         int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
-            if (i % 3 == 0) {
+            if (isEven(i, 3)) {
                 continue;
             }
             MadCell cell = new MadCell(i);
-            float x = i % sqrt * triangleSide + (i / sqrt % 2 == 0 ? 0 : -triangleSide / 2) +
+            float x = i % sqrt * triangleSide + (isEven(i / sqrt, 2) ? 0 : -triangleSide / 2) +
                     triangleSide * 3 / 4;
             int j = i / sqrt;
             float k = j * triangleSide;
             float y = k * SQR_ROOT_OF_3 / 2 + triangleSide / 2;
             cell.relocate(x, y);
             allCells.add(cell);
-            if (i == 0) {
-                ballx = x;
-                bally = y + triangleSide * 3 / 4;
-            }
         }
     }
 
@@ -242,6 +240,10 @@ public class MadMazeView extends BaseView implements SensorEventListener {
             gameLoopThread = new Thread(this::gameLoop);
             gameLoopThread.start();
         }
+    }
+
+    private static boolean isEven(int i2, int i3) {
+        return i2 % i3 == 0;
     }
 
     private void gameLoop() {
@@ -257,23 +259,23 @@ public class MadMazeView extends BaseView implements SensorEventListener {
 
     boolean updateBall() {
         for (int i = 0; i < 5; i++) {
-            ballx -= xSpeed * speed;
+            ballX -= xSpeed * speed;
             if (checkCollision(allEdges)) {
-                ballx += xSpeed * speed;
+                ballX += xSpeed * speed;
                 break;
             }
         }
         for (int i = 0; i < 5; i++) {
-            bally += ySpeed * speed;
+            ballY += ySpeed * speed;
             if (checkCollision(allEdges)) {
-                bally -= ySpeed * speed;
+                ballY -= ySpeed * speed;
                 break;
             }
         }
         for (Iterator<MadTriangle> iterator = balls.iterator(); iterator.hasNext(); ) {
             MadTriangle e = iterator.next();
-            float a = e.getCenter().getX() - ballx;
-            float b = e.getCenter().getY() - bally;
+            float a = e.getCenter().getX() - ballX;
+            float b = e.getCenter().getY() - ballY;
             if (a * a + b * b <= ballRadius * ballRadius) {
                 iterator.remove();
             }
@@ -286,7 +288,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
 
     private boolean checkCollision(Iterable<MadEdge> edges) {
         for (MadEdge p : edges) {
-            if (p.checkCollisionBounds(ballx, bally) && distance(p) < ballRadius) {
+            if (p.checkCollisionBounds(ballX, ballY) && distance(p) < ballRadius) {
                 return true;
             }
         }
@@ -294,7 +296,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
     }
 
     float distance(MadEdge edge) {
-        return edge.distance(ballx, bally);
+        return edge.distance(ballX, ballY);
     }
 
 

@@ -28,6 +28,7 @@ import red.guih.games.db.UserRecord;
 public class PuzzleActivity extends BaseActivity {
 
     public static final String SELECT_PHOTO_TAG = "SELECT_PHOTO";
+    private static final int SELECT_PHOTO = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,39 @@ public class PuzzleActivity extends BaseActivity {
             a.setDisplayHomeAsUpEnabled(true);
         }
         setUserPreferences();
+    }
+
+    private void setUserPreferences() {
+        PuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, PuzzleView.puzzleWidth));
+        PuzzleView.setImage(getUserPreference(R.string.image, R.drawable.mona_lisa));
+
+        String photoUri = getUserPreference(R.string.photo, null);
+        if (photoUri != null) {
+            loadURI(Uri.parse(photoUri));
+        }
+
+    }
+
+    private void loadURI(Uri uri) {
+        if (uri != null && uri.getPath() != null) {
+            if (ActivityCompat
+                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, SELECT_PHOTO);
+            }
+            Log.i(SELECT_PHOTO_TAG, uri.toString());
+            Log.i(SELECT_PHOTO_TAG, uri.getEncodedPath());
+            Log.i(SELECT_PHOTO_TAG, uri.getPath().replaceAll(".+:", ""));
+            try (InputStream imageStream = getContentResolver().openInputStream(uri)) {
+                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                PuzzleView.setImage(selectedImage);
+                addUserPreference(R.string.photo, "file:" + uri.getPath().replaceAll(".+:", ""));
+                recreate();
+            } catch (Exception e) {
+                Log.e(SELECT_PHOTO_TAG, e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -57,24 +91,12 @@ public class PuzzleActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(PuzzleView.PUZZLE_WIDTH, UserRecord.PUZZLE);
+                showRecords(PuzzleView.puzzleWidth, UserRecord.PUZZLE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private void setUserPreferences() {
-        PuzzleView.setPuzzleDimensions(getUserPreference(R.string.size, PuzzleView.PUZZLE_WIDTH));
-        PuzzleView.setImage(getUserPreference(R.string.image, R.drawable.mona_lisa));
-
-        String photoUri = getUserPreference(R.string.photo, null);
-        if (photoUri != null) {
-            loadURI(Uri.parse(photoUri));
-        }
-
-    }
-
 
     private void showConfig() {
         final Dialog dialog = new Dialog(this);
@@ -83,7 +105,7 @@ public class PuzzleActivity extends BaseActivity {
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
         NumberPicker seekBar = dialog.findViewById(R.id.number);
-        seekBar.setValue(PuzzleView.PUZZLE_WIDTH);
+        seekBar.setValue(PuzzleView.puzzleWidth);
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog, spinner));
@@ -109,15 +131,11 @@ public class PuzzleActivity extends BaseActivity {
         } else {
             PuzzleView.setImage(R.drawable.mona_lisa);
         }
-        addUserPreference(R.string.image, PuzzleView.PUZZLE_IMAGE);
+        addUserPreference(R.string.image, PuzzleView.puzzleImage);
 
         recreate();
 
     }
-
-
-    private static final int SELECT_PHOTO = 100;
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
@@ -125,28 +143,6 @@ public class PuzzleActivity extends BaseActivity {
 
         if (requestCode == SELECT_PHOTO && resultCode == RESULT_OK) {
             loadURI(imageReturnedIntent.getData());
-        }
-    }
-
-    private void loadURI(Uri uri) {
-        if (uri != null) {
-            if (ActivityCompat
-                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                    PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, SELECT_PHOTO);
-            }
-            Log.i(SELECT_PHOTO_TAG, uri.toString());
-            Log.i(SELECT_PHOTO_TAG, uri.getEncodedPath());
-            Log.i(SELECT_PHOTO_TAG, uri.getPath().replaceAll(".+:", ""));
-            try (InputStream imageStream = getContentResolver().openInputStream(uri)) {
-                Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                PuzzleView.setImage(selectedImage);
-                addUserPreference(R.string.photo, "file:" + uri.getPath().replaceAll(".+:", ""));
-                recreate();
-            } catch (Exception e) {
-                Log.e(SELECT_PHOTO_TAG, e.getMessage(), e);
-            }
         }
     }
 

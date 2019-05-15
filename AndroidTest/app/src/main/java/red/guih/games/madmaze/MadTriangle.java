@@ -2,7 +2,7 @@ package red.guih.games.madmaze;
 
 import java.util.Arrays;
 
-public class MadTriangle{
+public class MadTriangle {
 
     private final MadPoint a;
 
@@ -13,7 +13,7 @@ public class MadTriangle{
     private MadPoint center;
     private boolean deadEnd;
 
-    public MadTriangle(MadPoint a, MadPoint b, MadPoint c) {
+    MadTriangle(MadPoint a, MadPoint b, MadPoint c) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -29,7 +29,7 @@ public class MadTriangle{
         return hasSameSign(pab, pca);
     }
 
-    public MadEdgeDistance findNearestEdge(MadPoint point) {
+    MadEdgeDistance findNearestEdge(MadPoint point) {
         MadEdgeDistance[] edges = new MadEdgeDistance[3];
 
         edges[0] = new MadEdgeDistance(new MadLine(a, b),
@@ -58,7 +58,7 @@ public class MadTriangle{
 
     public MadPoint getCenter() {
         if (center == null) {
-            center = a.add(b).add(c).multiply(1.0f / 3);
+            center = a.add(b).add(c).multiply(1.0F / 3);
         }
         return center;
     }
@@ -68,7 +68,7 @@ public class MadTriangle{
         return c;
     }
 
-    public MadPoint getNoneEdgeVertex(MadLine edge) {
+    MadPoint getNoneEdgeVertex(MadLine edge) {
         if (a != edge.a && a != edge.b) {
             return a;
         } else if (b != edge.a && b != edge.b) {
@@ -79,18 +79,18 @@ public class MadTriangle{
         return null;
     }
 
-    public boolean hasVertex(MadPoint vertex) {
+    boolean hasVertex(MadPoint vertex) {
         return a == vertex || b == vertex || c == vertex;
     }
 
-    public boolean isNeighbour(MadLine edge) {
+    boolean isNeighbour(MadLine edge) {
 
         return isEqual(edge.a, a, b, c) && isEqual(edge.b, a, b, c);
     }
 
-    boolean isEqual(MadPoint p, MadPoint... arr) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == p) {
+    private static boolean isEqual(MadPoint p, MadPoint... arr) {
+        for (MadPoint madPoint : arr) {
+            if (madPoint == p) {
                 return true;
             }
         }
@@ -98,30 +98,33 @@ public class MadTriangle{
     }
 
 
-    public boolean isOrientedCCW() {
-        float a11 = a.x - c.x;
-        float a21 = b.x - c.x;
+    private boolean isOrientedCCW() {
+        float a11 = a.getX() - c.getX();
+        float a21 = b.getX() - c.getX();
 
-        float a12 = a.y - c.y;
-        float a22 = b.y - c.y;
+        float a12 = a.getY() - c.getY();
+        float a22 = b.getY() - c.getY();
 
         float det = a11 * a22 - a12 * a21;
 
         return det > 0.0D;
     }
 
-    public boolean isPointInCircumcircle(MadPoint point) {
-        float a11 = a.x - point.x;
-        float a21 = b.x - point.x;
-        float a31 = c.x - point.x;
+    boolean isPointInCircumcircle(MadPoint point) {
+        float a11 = a.getX() - point.getX();
+        float a21 = b.getX() - point.getX();
+        float a31 = c.getX() - point.getX();
 
-        float a12 = a.y - point.y;
-        float a22 = b.y - point.y;
-        float a32 = c.y - point.y;
+        float a12 = a.getY() - point.getY();
+        float a22 = b.getY() - point.getY();
+        float a32 = c.getY() - point.getY();
 
-        float a13 = (a.x - point.x) * (a.x - point.x) + (a.y - point.y) * (a.y - point.y);
-        float a23 = (b.x - point.x) * (b.x - point.x) + (b.y - point.y) * (b.y - point.y);
-        float a33 = (c.x - point.x) * (c.x - point.x) + (c.y - point.y) * (c.y - point.y);
+        float a13 = (a.getX() - point.getX()) * (a.getX() - point.getX()) +
+                (a.getY() - point.getY()) * (a.getY() - point.getY());
+        float a23 = (b.getX() - point.getX()) * (b.getX() - point.getX()) +
+                (b.getY() - point.getY()) * (b.getY() - point.getY());
+        float a33 = (c.getX() - point.getX()) * (c.getX() - point.getX()) +
+                (c.getY() - point.getY()) * (c.getY() - point.getY());
 
         float det = a11 * a22 * a33 + a12 * a23 * a31 + a13 * a21 * a32 - a13 * a22 * a31 -
                 a12 * a21 * a33
@@ -138,10 +141,10 @@ public class MadTriangle{
         MadPoint ab = edge.b.sub(edge.a);
         float t = point.sub(edge.a).dot(ab) / ab.dot(ab);
 
-        if (t < 0.0f) {
-            t = 0.0f;
+        if (t < 0.0F) {
+            t = 0.0F;
         } else if (t > 1.0D) {
-            t = 1.0f;
+            t = 1.0F;
         }
 
         return edge.a.add(ab.multiply(t));
@@ -151,19 +154,19 @@ public class MadTriangle{
         return Math.signum(a1) == Math.signum(b1);
     }
 
-    public boolean isVisited() {
-        return visited;
+    boolean isNotVisited() {
+        return !visited;
     }
 
-    public void setVisited() {
+    void setVisited() {
         this.visited = true;
     }
 
-    public void setDeadEnd() {
+    void setDeadEnd() {
         deadEnd = true;
     }
 
-    public boolean isDeadEnd() {
+    boolean isDeadEnd() {
         return deadEnd;
     }
 }

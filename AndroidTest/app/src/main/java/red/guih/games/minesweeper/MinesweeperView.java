@@ -1,5 +1,6 @@
 package red.guih.games.minesweeper;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -32,19 +33,20 @@ import static java.lang.Math.abs;
 public class MinesweeperView extends BaseView {
     public static final int BOMBS_STEP = 15;
     public static final int DELAY_LONG_PRESS = 500;
-    public static int NUMBER_OF_BOMBS = 45;
-    final Random random = new Random();
+    static int numberOfBombs = 50;
+    private final Random random = new Random();
     private final Handler handler = new Handler();
     private final Paint hiddenColor;
     private final Paint shownColor;
     private final Paint textPaint = new Paint(Color.BLACK);
-    public int mapHeight = 30;
-    public int mapWidth = 16;
+    private int mapHeight = 30;
+    private int mapWidth = 16;
     private int boxWidth = 50;
     private boolean goneFlag;
     private MinesweeperSquare[][] map = new MinesweeperSquare[mapWidth][mapHeight];
     private int nPlayed;
-    private float pressedX, pressedY;
+    private float pressedX;
+    private float pressedY;
     private final Runnable mLongPressed = () -> {
         goneFlag = true;
         float x = pressedX;
@@ -60,7 +62,7 @@ public class MinesweeperView extends BaseView {
         hiddenColor.setTypeface(Typeface.DEFAULT);
         hiddenColor.setShadowLayer(1, 5, 5, Color.BLACK);
         hiddenColor.setColor(Color.LTGRAY);
-        textPaint.setTextSize(boxWidth - 5);
+        textPaint.setTextSize(boxWidth - 5F);
 
         shownColor = new Paint();
         shownColor.setTypeface(Typeface.DEFAULT);
@@ -91,7 +93,7 @@ public class MinesweeperView extends BaseView {
 
     private void addRandomBombs() {
         long count = 0;
-        while (count < NUMBER_OF_BOMBS) {
+        while (count < numberOfBombs) {
             int j = random.nextInt(mapWidth);
             int k = random.nextInt(mapHeight);
 
@@ -144,7 +146,7 @@ public class MinesweeperView extends BaseView {
     }
 
     public static void setNumberOfBombs(int selectedItemPosition) {
-        MinesweeperView.NUMBER_OF_BOMBS = (selectedItemPosition + 1) * MinesweeperView.BOMBS_STEP;
+        MinesweeperView.numberOfBombs = (selectedItemPosition + 1) * MinesweeperView.BOMBS_STEP;
     }
 
     private void clickEvent(MotionEvent e) {
@@ -154,8 +156,6 @@ public class MinesweeperView extends BaseView {
         if (mem == null) {
             return;
         }
-
-
         if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
             nPlayed++;
             mem.setState(MinesweeperSquare.State.SHOWN);
@@ -184,8 +184,8 @@ public class MinesweeperView extends BaseView {
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
 
-                float abs = abs((i + 0.5f) * boxWidth - x);
-                float abs2 = abs((j + 0.5f) * boxWidth - y);
+                float abs = abs((i + 0.5F) * boxWidth - x);
+                float abs2 = abs((j + 0.5F) * boxWidth - y);
                 float a = abs * abs + abs2 * abs2;
                 if (a < minimum) {
                     minimum = a;
@@ -197,6 +197,7 @@ public class MinesweeperView extends BaseView {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
@@ -227,7 +228,9 @@ public class MinesweeperView extends BaseView {
                         drawHidden(canvas, i, j);
                         break;
                     case SHOWN:
-                        canvas.drawRect(i * boxWidth, j * boxWidth, (i + 1) * boxWidth, (j + 1) * boxWidth, shownColor);
+                        float width = this.boxWidth;
+                        canvas.drawRect(i * width, j * width, (i + 1) * width,
+                                (j + 1) * width, shownColor);
                         drawImage(canvas, i, j);
                         break;
                     case FLAGGED:
@@ -243,10 +246,13 @@ public class MinesweeperView extends BaseView {
     private void drawHidden(Canvas canvas, int i, int j) {
         hiddenColor.setStyle(Paint.Style.FILL);
         hiddenColor.setColor(Color.LTGRAY);
-        canvas.drawRect(i * boxWidth, j * boxWidth, (i + 1) * boxWidth, (j + 1) * boxWidth, hiddenColor);
+        float width = this.boxWidth;
+        canvas.drawRect(i * width, j * width, (i + 1) * width, (j + 1) * width,
+                hiddenColor);
         hiddenColor.setStyle(Paint.Style.STROKE);
         hiddenColor.setColor(Color.BLACK);
-        canvas.drawRect(i * boxWidth, j * boxWidth, (i + 1) * boxWidth, (j + 1) * boxWidth, hiddenColor);
+        canvas.drawRect(i * width, j * width, (i + 1) * width, (j + 1) * width,
+                hiddenColor);
     }
 
     private void drawImage(Canvas canvas, int i, int j) {
@@ -283,7 +289,8 @@ public class MinesweeperView extends BaseView {
         } else {
             textPaint.setColor(getResources().getColor(R.color.colorPrimary, null));
         }
-        canvas.drawText(Integer.toString(num), (0.5f + i) * boxWidth, (0.75f + j) * boxWidth, textPaint);
+        canvas.drawText(Integer.toString(num), (0.5F + i) * boxWidth, (3 / 4F + j) * boxWidth,
+                textPaint);
     }
 
     private int countHiddenAround(int i, int j) {
@@ -308,7 +315,7 @@ public class MinesweeperView extends BaseView {
         int width = this.getWidth();
         boxWidth = width / mapWidth;
         mapHeight = this.getHeight() / boxWidth;
-        textPaint.setTextSize(boxWidth - 5);
+        textPaint.setTextSize(boxWidth - 5F);
         textPaint.setTextAlign(Paint.Align.CENTER);
         reset();
     }
@@ -343,13 +350,14 @@ public class MinesweeperView extends BaseView {
 
         // set the custom minesweeper_dialog components - text, image and button
         TextView text = dialog.findViewById(R.id.textDialog);
-        long emSegundos = (System.currentTimeMillis() - startTime) / 1000;
+        long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
         String s = getResources().getString(R.string.time_format);
-        String format = String.format(s, emSegundos / 60, emSegundos % 60);
+        String format = String.format(s, inSeconds / 60, inSeconds % 60);
 
-        if (isRecordSuitable(emSegundos, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true)) {
-            createRecordIfSuitable(emSegundos, format, UserRecord.MINESWEEPER, NUMBER_OF_BOMBS, true);
-            showRecords(NUMBER_OF_BOMBS, UserRecord.MINESWEEPER, MinesweeperView.this::reset);
+        if (isRecordSuitable(inSeconds, UserRecord.MINESWEEPER, numberOfBombs, true)) {
+            createRecordIfSuitable(inSeconds, format, UserRecord.MINESWEEPER, numberOfBombs,
+                    true);
+            showRecords(numberOfBombs, UserRecord.MINESWEEPER, MinesweeperView.this::reset);
             return;
         }
         text.setText(String.format(getResources().getString(R.string.you_win), format));
@@ -385,11 +393,10 @@ public class MinesweeperView extends BaseView {
 
     }
 
-    private void toggleFlag(MinesweeperSquare mem) {
+    private static void toggleFlag(MinesweeperSquare mem) {
         if (mem == null) {
             return;
         }
-
         if (mem.getState() == MinesweeperSquare.State.HIDDEN) {
             mem.setState(MinesweeperSquare.State.FLAGGED);
         } else if (mem.getState() == MinesweeperSquare.State.FLAGGED) {

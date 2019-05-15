@@ -3,10 +3,11 @@ package red.guih.games.madmaze;
 import java.util.Objects;
 
 public class MadPoint {
-    float x, y;
-    MadCell cell;
+    private float x;
+    private float y;
+    private MadCell cell;
 
-    public MadPoint(float x, float y, MadCell c) {
+    MadPoint(float x, float y, MadCell c) {
         this.x = x;
         this.y = y;
         cell = c;
@@ -28,7 +29,7 @@ public class MadPoint {
         this.y = y;
     }
 
-    public MadCell getCell() {
+    MadCell getCell() {
         return cell;
     }
 
@@ -36,11 +37,11 @@ public class MadPoint {
         return new MadPoint(x + vector.x, y + vector.y, cell);
     }
 
-    public float cross(MadPoint vector) {
+    float cross(MadPoint vector) {
         return y * vector.x - x * vector.y;
     }
 
-    public float dot(MadPoint vector) {
+    float dot(MadPoint vector) {
         return x * vector.x + y * vector.y;
     }
 
@@ -55,15 +56,15 @@ public class MadPoint {
         return Objects.hash(x, y);
     }
 
-    public float mag() {
+    float mag() {
         return (float) Math.sqrt(x * x + y * y);
     }
 
-    public MadPoint multiply(float scalar) {
+    MadPoint multiply(float scalar) {
         return new MadPoint(x * scalar, y * scalar, cell);
     }
 
-    public MadPoint sub(MadPoint vector) {
+    MadPoint sub(MadPoint vector) {
         return new MadPoint(x - vector.x, y - vector.y, cell);
     }
 

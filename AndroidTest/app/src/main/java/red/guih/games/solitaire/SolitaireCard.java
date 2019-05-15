@@ -8,29 +8,24 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
 public class SolitaireCard {
-
-
+    private static int cardWidth;
     private final SolitaireNumber number;
     private final SolitaireSuit suit;
-    private boolean shown;
-    boolean autoMoved;
-    private float layoutX, layoutY;
     private final Drawable drawable;
-    private RectF bounds;
     private final Paint paint = new Paint();
+    boolean autoMoved;
+    private boolean shown;
+    private float layoutX;
+    private float layoutY;
+    private RectF bounds;
     private RectF boundsF;
-    private static int cardWidth;
 
-    public SolitaireCard(SolitaireNumber number, SolitaireSuit suit, Context c) {
+    SolitaireCard(SolitaireNumber number, SolitaireSuit suit, Context c) {
         this.number = number;
         this.suit = suit;
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         drawable = c.getResources().getDrawable(suit.getShape(), null);
-    }
-
-    public static void setCardWidth(int cardWidth) {
-        SolitaireCard.cardWidth = cardWidth;
     }
 
     public void draw(Canvas canvas, float layoutX, float layoutY) {
@@ -45,19 +40,33 @@ public class SolitaireCard {
         if (!shown) {
             return;
         }
-        paint.setTextSize(getCardWidth() / 4);
+        paint.setTextSize(getCardWidth() / 4F);
 
         int left = (int) (layoutX + this.layoutX) + getCardWidth() / 3;
         int top = (int) (layoutY + this.layoutY) + getCardWidth() / 10 / 2;
         drawable.setBounds(left, top, left + getCardWidth() / 4, top + getCardWidth() / 4);
         drawable.draw(canvas);
 
-        canvas.drawText(number.getRepresentation(), left - getCardWidth() / 4,
-                top + getCardWidth() / 4, paint);
+        canvas.drawText(number.getRepresentation(), left - getCardWidth() / 4F,
+                top + getCardWidth() / 4F, paint);
     }
 
-    public static int getCardWidth() {
+    RectF getBoundsF() {
+        if (boundsF == null) {
+            boundsF = new RectF();
+        }
+
+        boundsF.set(layoutX, layoutY, layoutX + getCardWidth(),
+                layoutY + getCardWidth());
+        return boundsF;
+    }
+
+    static int getCardWidth() {
         return cardWidth * 4 / 5;
+    }
+
+    static void setCardWidth(int cardWidth) {
+        SolitaireCard.cardWidth = cardWidth;
     }
 
     public float getLayoutX() {
@@ -77,15 +86,15 @@ public class SolitaireCard {
         return number;
     }
 
-    public SolitaireSuit getSuit() {
+    SolitaireSuit getSuit() {
         return suit;
     }
 
-    public boolean isShown() {
+    boolean isShown() {
         return shown;
     }
 
-    public void setShown(boolean value) {
+    void setShown(boolean value) {
         shown = value;
     }
 
@@ -102,22 +111,13 @@ public class SolitaireCard {
             bounds = new RectF();
         }
 
-        bounds.set((int) layoutX, (int) layoutY, (int) layoutX + getCardWidth(),
-                (int) layoutY + getCardWidth());
+        float width = getCardWidth();
+        bounds.set(layoutX, layoutY, layoutX + width,
+                layoutY + width);
         return bounds;
     }
 
-    public RectF getBoundsF() {
-        if (boundsF == null) {
-            boundsF = new RectF();
-        }
-
-        boundsF.set((int) layoutX, (int) layoutY, (int) layoutX + getCardWidth(),
-                (int) layoutY + getCardWidth());
-        return boundsF;
-    }
-
-    public void relocate(float layoutX, float layoutY) {
+    void relocate(float layoutX, float layoutY) {
         setLayoutX(layoutX);
         setLayoutY(layoutY);
     }

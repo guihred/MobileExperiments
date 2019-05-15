@@ -26,6 +26,6 @@ public class MyNumberPicker extends NumberPicker {
         //This method reads the parameters given in the xml file and sets the properties according to it
         this.setMinValue(attrs.getAttributeIntValue(null, "min", 0));
         this.setMaxValue(attrs.getAttributeIntValue(null, "max", 0));
-        this.setValue(DotsDrawingView.MAZE_WIDTH);
+        this.setValue(DotsDrawingView.mazeWidth);
     }
 }

@@ -1,5 +1,6 @@
 package red.guih.games.puzzle;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,10 +26,10 @@ import static java.util.stream.Collectors.toList;
 
 public class PuzzleView extends BaseView {
 
-    public static int PUZZLE_IMAGE = R.drawable.mona_lisa;
-    public static int PUZZLE_WIDTH = 4;
-    public static int PUZZLE_HEIGHT = 6;
-    private static Bitmap SELECTED_IMAGE;
+    static int puzzleImage = R.drawable.mona_lisa;
+    static int puzzleWidth = 4;
+    static int puzzleHeight = 6;
+    private static Bitmap selectedImage;
     private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
     Random random = new Random();
     private PuzzlePiece[][] puzzle;
@@ -43,19 +44,20 @@ public class PuzzleView extends BaseView {
     }
 
     public static void setPuzzleDimensions(int progress) {
-        PuzzleView.PUZZLE_WIDTH = progress;
-        PuzzleView.PUZZLE_HEIGHT = progress * 3 / 2;
+        PuzzleView.puzzleWidth = progress;
+        PuzzleView.puzzleHeight = progress * 3 / 2;
     }
 
     public static void setImage(int image) {
-        PuzzleView.PUZZLE_IMAGE = image;
+        PuzzleView.puzzleImage = image;
     }
 
     public static void setImage(Bitmap selectedImage) {
-        PuzzleView.SELECTED_IMAGE = selectedImage;
+        PuzzleView.selectedImage = selectedImage;
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent e) {
         int action = e.getAction();
 
@@ -174,15 +176,12 @@ public class PuzzleView extends BaseView {
     }
 
     private List<PuzzlePiece> groupWhichContains() {
-
         for (int i = linkedPieces.size() - 1; i >= 0; i--) {
             List<PuzzlePiece> group = linkedPieces.get(i);
             if (group.stream().anyMatch(this::containsPoint)) {
                 return group;
             }
         }
-
-
         return null;
     }
 
@@ -191,7 +190,7 @@ public class PuzzleView extends BaseView {
         linkedPieces.add(containsPuzzle);
     }
 
-    private boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
+    private static boolean checkNeighbours(PuzzlePiece p, PuzzlePiece puzzlePiece) {
         return Math.abs(puzzlePiece.getX() - p.getX()) == 1 && puzzlePiece.getY() - p.getY() == 0
                 ||
                 Math.abs(puzzlePiece.getY() - p.getY()) == 1 && puzzlePiece.getX() - p.getX() == 0;
@@ -222,9 +221,9 @@ public class PuzzleView extends BaseView {
         long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
         String s = getResources().getString(R.string.time_format);
         String format = String.format(s, inSeconds / 60, inSeconds % 60);
-        if (isRecordSuitable(inSeconds, UserRecord.PUZZLE, PUZZLE_WIDTH, true)) {
-            createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, PUZZLE_WIDTH, true);
-            showRecords(PUZZLE_WIDTH, UserRecord.PUZZLE, PuzzleView.this::reset);
+        if (isRecordSuitable(inSeconds, UserRecord.PUZZLE, puzzleWidth, true)) {
+            createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, puzzleWidth, true);
+            showRecords(puzzleWidth, UserRecord.PUZZLE, PuzzleView.this::reset);
             return;
         }
 
@@ -255,8 +254,8 @@ public class PuzzleView extends BaseView {
     private void reset() {
         puzzle = initializePieces();
         linkedPieces.clear();
-        for (int i = 0; i < PUZZLE_WIDTH; i++) {
-            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
+        for (int i = 0; i < puzzleWidth; i++) {
+            for (int j = 0; j < puzzleHeight; j++) {
                 List<PuzzlePiece> e = new ArrayList<>();
                 e.add(puzzle[i][j]);
                 linkedPieces.add(e);
@@ -267,10 +266,10 @@ public class PuzzleView extends BaseView {
     }
 
     private PuzzlePiece[][] initializePieces() {
-        Bitmap image = SELECTED_IMAGE != null ? SELECTED_IMAGE :
-                BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+        Bitmap image = selectedImage != null ? selectedImage :
+                BitmapFactory.decodeResource(getResources(), puzzleImage);
         if (image == null) {
-            image = BitmapFactory.decodeResource(getResources(), PUZZLE_IMAGE);
+            image = BitmapFactory.decodeResource(getResources(), puzzleImage);
         }
 
         if (image.getWidth() > image.getHeight()) {
@@ -279,13 +278,13 @@ public class PuzzleView extends BaseView {
             image = Bitmap.createBitmap(image, 0, 0, image.getWidth(), image.getHeight(), matrix,
                     true);
         }
-        width = getWidth() / PUZZLE_WIDTH;
-        height = getHeight() / PUZZLE_HEIGHT;
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.PUZZLE_WIDTH,
-                height * PuzzleView.PUZZLE_HEIGHT, false);
-        PuzzlePiece[][] puzzlePieces = new PuzzlePiece[PUZZLE_WIDTH][PUZZLE_HEIGHT];
-        for (int i = 0; i < PUZZLE_WIDTH; i++) {
-            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
+        width = getWidth() / puzzleWidth;
+        height = getHeight() / puzzleHeight;
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(image, width * PuzzleView.puzzleWidth,
+                height * PuzzleView.puzzleHeight, false);
+        PuzzlePiece[][] puzzlePieces = new PuzzlePiece[puzzleWidth][puzzleHeight];
+        for (int i = 0; i < puzzleWidth; i++) {
+            for (int j = 0; j < puzzleHeight; j++) {
                 puzzlePieces[i][j] = new PuzzlePiece(i, j, width, height);
                 puzzlePieces[i][j].setLayoutX(random.nextFloat() * (getWidth() - width));
                 puzzlePieces[i][j].setLayoutY(random.nextFloat() * (getHeight() - height));
@@ -293,14 +292,14 @@ public class PuzzleView extends BaseView {
             }
         }
         PuzzlePath[] values = PuzzlePath.values();
-        for (int i = 0; i < PUZZLE_WIDTH; i++) {
-            for (int j = 0; j < PUZZLE_HEIGHT; j++) {
+        for (int i = 0; i < puzzleWidth; i++) {
+            for (int j = 0; j < puzzleHeight; j++) {
                 PuzzlePath puzzlePath2 = values[random.nextInt(values.length - 1) + 1];
-                if (i < PUZZLE_WIDTH - 1) {
+                if (i < puzzleWidth - 1) {
                     puzzlePieces[i][j].setRight(puzzlePath2);
                     puzzlePieces[i + 1][j].setLeft(puzzlePath2);
                 }
-                if (j < PUZZLE_HEIGHT - 1) {
+                if (j < puzzleHeight - 1) {
                     puzzlePieces[i][j].setDown(puzzlePath2);
                     puzzlePieces[i][j + 1].setUp(puzzlePath2);
                 }

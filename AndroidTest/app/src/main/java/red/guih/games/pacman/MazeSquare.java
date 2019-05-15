@@ -14,17 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class MazeSquare {
-    public static int SQUARE_SIZE = 0;
+    static int squareSize = 10;
     static Map<MazeSquare, Map<MazeSquare, MazeSquare>> paths; // <id,cell>
-    final int i, j;
+    final int i;
+    final int j;
     private final List<RectF> walls = new ArrayList<>();
     private final Paint paint = new Paint(Color.GREEN);
     private List<MazeSquare> adjacents;
-    private boolean visited = false;
-    private boolean west = false;
-    private boolean east = false;
-    private boolean north = false;
-    private boolean south = false;
+    private boolean visited;
+    private boolean west;
+    private boolean east;
+    private boolean north;
+    private boolean south;
     private List<RectF> bounds;
 
     MazeSquare(int i, int j) {
@@ -53,72 +54,72 @@ public class MazeSquare {
 
     List<RectF> updateWalls() {
         walls.clear();
-        float layoutX = i * SQUARE_SIZE;
-        float layoutX2 = PacmanView.MAZE_WIDTH * 2 * SQUARE_SIZE - i * SQUARE_SIZE - SQUARE_SIZE;
-        float layoutY = j * SQUARE_SIZE;
-        float layoutY2 = PacmanView.MAZE_HEIGHT * 2 * SQUARE_SIZE - j * SQUARE_SIZE - SQUARE_SIZE;
-        if (!this.isWest()) {
-            walls.add(new RectF(layoutX, layoutY, layoutX + SQUARE_SIZE, layoutY + 2));
-            walls.add(new RectF(layoutX2, layoutY, layoutX2 + SQUARE_SIZE, layoutY + 2));
-            walls.add(new RectF(layoutX, layoutY2 + SQUARE_SIZE, layoutX + SQUARE_SIZE,
-                    layoutY2 + SQUARE_SIZE + 2));
-            walls.add(new RectF(layoutX2, layoutY2 + SQUARE_SIZE, layoutX2 + SQUARE_SIZE,
-                    layoutY2 + SQUARE_SIZE + 2));
+        float layoutX = (float) i * squareSize;
+        float layoutX2 = PacmanView.MAZE_WIDTH * 2F * squareSize - i * squareSize - squareSize;
+        float layoutY = (float) j * squareSize;
+        float layoutY2 = PacmanView.mazeHeight * 2F * squareSize - j * squareSize - squareSize;
+        if (this.isNotWest()) {
+            walls.add(new RectF(layoutX, layoutY, layoutX + squareSize, layoutY + 2));
+            walls.add(new RectF(layoutX2, layoutY, layoutX2 + squareSize, layoutY + 2));
+            walls.add(new RectF(layoutX, layoutY2 + squareSize, layoutX + squareSize,
+                    layoutY2 + squareSize + 2));
+            walls.add(new RectF(layoutX2, layoutY2 + squareSize, layoutX2 + squareSize,
+                    layoutY2 + squareSize + 2));
         }
-        if (!this.isNorth()) {
-            walls.add(new RectF(layoutX, layoutY, layoutX + 2, layoutY + SQUARE_SIZE));
-            walls.add(new RectF(layoutX2 + SQUARE_SIZE, layoutY, layoutX2 + SQUARE_SIZE + 2,
-                    layoutY + SQUARE_SIZE));
-            walls.add(new RectF(layoutX, layoutY2, layoutX + 2, layoutY2 + SQUARE_SIZE));
-            walls.add(new RectF(layoutX2 + SQUARE_SIZE, layoutY2, layoutX2 + SQUARE_SIZE + 2,
-                    layoutY2 + SQUARE_SIZE));
+        if (this.isNotNorth()) {
+            walls.add(new RectF(layoutX, layoutY, layoutX + 2, layoutY + squareSize));
+            walls.add(new RectF(layoutX2 + squareSize, layoutY, layoutX2 + squareSize + 2,
+                    layoutY + squareSize));
+            walls.add(new RectF(layoutX, layoutY2, layoutX + 2, layoutY2 + squareSize));
+            walls.add(new RectF(layoutX2 + squareSize, layoutY2, layoutX2 + squareSize + 2,
+                    layoutY2 + squareSize));
         }
-        if (!this.isEast()) {
-            walls.add(new RectF(layoutX, layoutY + SQUARE_SIZE, layoutX + SQUARE_SIZE,
-                    layoutY + SQUARE_SIZE + 2));
-            walls.add(new RectF(layoutX2, layoutY + SQUARE_SIZE, layoutX2 + SQUARE_SIZE,
-                    layoutY + SQUARE_SIZE + 2));
-            walls.add(new RectF(layoutX, layoutY2, layoutX + SQUARE_SIZE, layoutY2 + 2));
-            walls.add(new RectF(layoutX2, layoutY2, layoutX2 + SQUARE_SIZE, layoutY2 + 2));
+        if (this.isNotEast()) {
+            walls.add(new RectF(layoutX, layoutY + squareSize, layoutX + squareSize,
+                    layoutY + squareSize + 2));
+            walls.add(new RectF(layoutX2, layoutY + squareSize, layoutX2 + squareSize,
+                    layoutY + squareSize + 2));
+            walls.add(new RectF(layoutX, layoutY2, layoutX + squareSize, layoutY2 + 2));
+            walls.add(new RectF(layoutX2, layoutY2, layoutX2 + squareSize, layoutY2 + 2));
         }
-        if (!this.isSouth()) {
-            walls.add(new RectF(layoutX + SQUARE_SIZE, layoutY, layoutX + SQUARE_SIZE + 2,
-                    layoutY + SQUARE_SIZE));
-            walls.add(new RectF(layoutX2, layoutY, layoutX2 + 2, layoutY + SQUARE_SIZE));
-            walls.add(new RectF(layoutX + SQUARE_SIZE, layoutY2, layoutX + SQUARE_SIZE + 2,
-                    layoutY2 + SQUARE_SIZE));
-            walls.add(new RectF(layoutX2, layoutY2, layoutX2 + 2, layoutY2 + SQUARE_SIZE));
+        if (this.isNotSouth()) {
+            walls.add(new RectF(layoutX + squareSize, layoutY, layoutX + squareSize + 2,
+                    layoutY + squareSize));
+            walls.add(new RectF(layoutX2, layoutY, layoutX2 + 2, layoutY + squareSize));
+            walls.add(new RectF(layoutX + squareSize, layoutY2, layoutX + squareSize + 2,
+                    layoutY2 + squareSize));
+            walls.add(new RectF(layoutX2, layoutY2, layoutX2 + 2, layoutY2 + squareSize));
         }
         return walls;
 
     }
 
-    final boolean isWest() {
-        return west;
+    final boolean isNotWest() {
+        return !west;
+    }
+
+    final boolean isNotNorth() {
+        return !north;
+    }
+
+    final boolean isNotEast() {
+        return !east;
+    }
+
+    boolean isNotSouth() {
+        return !south;
     }
 
     final void setWest(final boolean west) {
         this.west = west;
     }
 
-    final boolean isNorth() {
-        return north;
+    void setSouth() {
+        this.south = true;
     }
 
-    final boolean isEast() {
-        return east;
-    }
-
-    boolean isSouth() {
-        return south;
-    }
-
-    void setSouth(boolean b) {
-        this.south = b;
-    }
-
-    void setEast(boolean b) {
-        this.east = b;
+    void setEast() {
+        this.east = true;
     }
 
     final void setNorth(final boolean north) {
@@ -128,11 +129,11 @@ public class MazeSquare {
     boolean isInBounds(float x, float y) {
         if (bounds == null) {
 
-            float size = SQUARE_SIZE;
+            float size = squareSize;
             float layoutX = i * size;
             float layoutX2 = PacmanView.MAZE_WIDTH * 2 * size - i * size - size;
             float layoutY = j * size;
-            float layoutY2 = PacmanView.MAZE_HEIGHT * 2 * size - j * size - size;
+            float layoutY2 = PacmanView.mazeHeight * 2 * size - j * size - size;
             List<RectF> arrayList = new ArrayList<>();
             arrayList.add(new RectF(layoutX, layoutY, layoutX + size, layoutY + size));
             arrayList.add(new RectF(layoutX, layoutY2, layoutX + size, layoutY2 + size));
@@ -170,7 +171,7 @@ public class MazeSquare {
         }
     }
 
-    private Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source,
+    private static Map<MazeSquare, Boolean> createDistanceMap(MazeSquare source,
             Map<MazeSquare, Integer> distance, MazeSquare[][] map) {
         Map<MazeSquare, Boolean> known = new HashMap<>();
         for (MazeSquare[] u : map) {
@@ -187,7 +188,7 @@ public class MazeSquare {
         if (adjacents == null) {
             adjacents = new ArrayList<>();
             MazeSquare el = map[i][j];
-            if (el.east && j + 1 < PacmanView.MAZE_HEIGHT) {
+            if (el.east && j + 1 < PacmanView.mazeHeight) {
                 adjacents.add(map[i][j + 1]);
             }
             if (el.west && j > 0) {
@@ -218,8 +219,8 @@ public class MazeSquare {
         paths.get(from).put(to, by);
     }
 
-    final boolean isVisited() {
-        return visited;
+    final boolean isNotVisited() {
+        return !visited;
     }
 
     final void setVisited() {

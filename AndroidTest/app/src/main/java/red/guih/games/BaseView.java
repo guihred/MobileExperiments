@@ -29,23 +29,10 @@ public abstract class BaseView extends View {
     public static final int MAX_RECORDS = 5;
     protected UserRecordDatabase db = BaseActivity
             .getInstance(this.getContext().getApplicationContext());
+    boolean suitable;
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    private void createUserRecord(long points, String description, String gameName,
-            int difficulty) {
-        try {
-            UserRecord userRecord = new UserRecord();
-            userRecord.setDescription(description);
-            userRecord.setPoints(points);
-            userRecord.setGameName(gameName);
-            userRecord.setDifficulty(difficulty);
-            db.userDao().insertAll(userRecord);
-        } catch (Exception e) {
-            Log.e("BASEVIEW", "ERROR WHEN CREATING USER RECORD", e);
-        }
     }
 
     protected void addUserPreference(int name, int value) {
@@ -129,8 +116,19 @@ public abstract class BaseView extends View {
         }
     }
 
-
-    boolean suitable;
+    private void createUserRecord(long points, String description, String gameName,
+            int difficulty) {
+        try {
+            UserRecord userRecord = new UserRecord();
+            userRecord.setDescription(description);
+            userRecord.setPoints(points);
+            userRecord.setGameName(gameName);
+            userRecord.setDifficulty(difficulty);
+            db.userDao().insertAll(userRecord);
+        } catch (Exception e) {
+            Log.e("BASEVIEW", "ERROR WHEN CREATING USER RECORD", e);
+        }
+    }
 
     public boolean isRecordSuitable(long points, String gameName, int difficulty, boolean asc) {
         if (points == 0) {

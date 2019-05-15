@@ -1,6 +1,7 @@
 
 package red.guih.games.pacman;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -24,18 +25,22 @@ import red.guih.games.R;
 
 import static java.util.stream.Stream.of;
 
-@SuppressWarnings("MagicNumber")
+
 public class PacmanView extends BaseView {
 
     public static final int MAZE_WIDTH = 5;
     public static final int GHOST_AFRAID_TIME = 200;
-    public static int MAZE_HEIGHT = 5;
+    public static final int SWEEP_ANGLE = 270;
+    public static final int START_ANGLE = 45;
+    public static final float INITIAL_POSITION = MazeSquare.squareSize / 4F;
+    static int mazeHeight = 5;
     private final Pacman pacman;
     private final List<PacmanGhost> ghosts;
     boolean gamePaused;
     Random random = new Random();
     private int lifeCount = 3;
-    private float startX, startY;
+    private float startX;
+    private float startY;
     private List<RectF> walls = new ArrayList<>();
     private Thread gameLoopThread;
     private List<PacmanBall> balls = new ArrayList<>();
@@ -54,22 +59,23 @@ public class PacmanView extends BaseView {
     }
 
     private void createBalls() {
+        float middle = MazeSquare.squareSize / 2F;
         balls = DoubleStream
-                .iterate(MazeSquare.SQUARE_SIZE / 2, d -> d + MazeSquare.SQUARE_SIZE)
-                .limit(MAZE_WIDTH * 2)
+                .iterate(middle, d -> d + MazeSquare.squareSize)
+                .limit(MAZE_WIDTH * 2L)
                 .boxed()
                 .flatMap(
-                        d -> DoubleStream.iterate(MazeSquare.SQUARE_SIZE / 2,
-                                e -> e + MazeSquare.SQUARE_SIZE)
-                                         .limit(MAZE_HEIGHT * 2)
+                        d -> DoubleStream.iterate(middle,
+                                e -> e + MazeSquare.squareSize)
+                                         .limit(mazeHeight * 2L)
                                          .mapToObj((double e) -> new PacmanBall(d, e)))
                 .collect(Collectors.toList());
     }
 
     private static MazeSquare[][] initializeMaze() {
-        MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][MAZE_HEIGHT];
+        MazeSquare[][] maze = new MazeSquare[MAZE_WIDTH][mazeHeight];
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 maze[i][j] = new MazeSquare(i, j);
                 if (i == 0) {
                     maze[0][j].setNorth(false);
@@ -77,11 +83,11 @@ public class PacmanView extends BaseView {
                 if (j == 0) {
                     maze[i][0].setWest(false);
                 }
-                if (MAZE_HEIGHT - 1 == j && i % 3 == 0) {
-                    maze[i][MAZE_HEIGHT - 1].setEast(true);
+                if (mazeHeight - 1 == j && i % 3 == 0) {
+                    maze[i][mazeHeight - 1].setEast();
                 }
                 if (MAZE_WIDTH - 1 == i && j % 3 == 0) {
-                    maze[MAZE_WIDTH - 1][j].setSouth(true);
+                    maze[MAZE_WIDTH - 1][j].setSouth();
                 }
             }
         }
@@ -89,10 +95,11 @@ public class PacmanView extends BaseView {
     }
 
     private static void adjustDimensions(int width, int height) {
-        MazeSquare.SQUARE_SIZE = width / MAZE_WIDTH / 2;
-        MAZE_HEIGHT = height / MazeSquare.SQUARE_SIZE / 2;
+        MazeSquare.squareSize = width / MAZE_WIDTH / 2;
+        mazeHeight = height / MazeSquare.squareSize / 2;
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
@@ -130,7 +137,7 @@ public class PacmanView extends BaseView {
         super.onDraw(canvas);
         canvas.drawColor(Color.BLACK);
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 maze[i][j].draw(canvas);
             }
         }
@@ -148,11 +155,12 @@ public class PacmanView extends BaseView {
     }
 
     private void drawLives(Canvas canvas) {
-        float y = MAZE_HEIGHT * 2 * MazeSquare.SQUARE_SIZE + MazeSquare.SQUARE_SIZE / 8;
+        float y = mazeHeight * 2 * MazeSquare.squareSize + MazeSquare.squareSize / 8F;
         for (int i = 0; i < lifeCount; i++) {
-            float x = MAZE_WIDTH * 3 / 5 * MazeSquare.SQUARE_SIZE + i * MazeSquare.SQUARE_SIZE;
-            canvas.drawArc(x, y, x + pacman.getPacmanWidth() / 1.5f,
-                    y + pacman.getPacmanWidth() / 1.5f, 45, 270, true, pacman.paint);
+            float x = MAZE_WIDTH * 3F / 5 * MazeSquare.squareSize + i * MazeSquare.squareSize;
+            canvas.drawArc(x, y, x + pacman.getPacmanWidth() * 2 / 3,
+                    y + pacman.getPacmanWidth() * 2 / 3, START_ANGLE, SWEEP_ANGLE, true,
+                    pacman.paint);
         }
     }
 
@@ -172,7 +180,7 @@ public class PacmanView extends BaseView {
 
         walls = new ArrayList<>();
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 walls.addAll(maze[i][j].updateWalls());
                 maze[i][j].dijkstra(maze);
             }
@@ -185,18 +193,17 @@ public class PacmanView extends BaseView {
             pacmanBall.setSpecial();
         }
         pacman.turn(PacmanDirection.RIGHT);
-        pacman.setY(MazeSquare.SQUARE_SIZE / 4);
-        pacman.setX(MazeSquare.SQUARE_SIZE / 4);
+        pacman.setY(INITIAL_POSITION);
+        pacman.setX(INITIAL_POSITION);
         for (int i = 0; i < ghosts.size(); i++) {
             PacmanGhost ghost = ghosts.get(i);
             ghost.setStatus(GhostStatus.ALIVE);
-
             if (i == 0) {
-                ghost.setStartPosition(MazeSquare.SQUARE_SIZE * (MAZE_WIDTH - 1),
-                        MazeSquare.SQUARE_SIZE * (MAZE_HEIGHT - 1));
+                ghost.setStartPosition(MazeSquare.squareSize * (MAZE_WIDTH - 1),
+                        MazeSquare.squareSize * (mazeHeight - 1));
             } else {
-                ghost.setStartPosition(i % 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_WIDTH - 1),
-                        i / 2 * MazeSquare.SQUARE_SIZE * (2 * MAZE_HEIGHT - 1));
+                ghost.setStartPosition(i % 2 * MazeSquare.squareSize * (2 * MAZE_WIDTH - 1),
+                        i / 2 * MazeSquare.squareSize * (2 * mazeHeight - 1));
             }
         }
         continueGame();
@@ -207,12 +214,12 @@ public class PacmanView extends BaseView {
         gamePaused = false;
         if (gameLoopThread == null || !gameLoopThread.isAlive()) {
             gameLoopThread = new Thread(() -> {
-                if (MazeSquare.SQUARE_SIZE > 0) {
+                if (MazeSquare.squareSize > 0) {
                     while (gameLoop(System.currentTimeMillis())) {
                         try {
                             Thread.sleep(50);
                         } catch (Exception e) {
-                            Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                            Log.e("GAME LOOP", "ERROR IN GAME LOOP", e);
                         }
                     }
                 }
@@ -277,8 +284,8 @@ public class PacmanView extends BaseView {
                 if (lifeCount > 0) {
                     lifeCount--;
                     pacman.turn(PacmanDirection.RIGHT);
-                    pacman.setY(MazeSquare.SQUARE_SIZE / 4);
-                    pacman.setX(MazeSquare.SQUARE_SIZE / 4);
+                    pacman.setY(INITIAL_POSITION);
+                    pacman.setX(INITIAL_POSITION);
                     return true;
                 }
 

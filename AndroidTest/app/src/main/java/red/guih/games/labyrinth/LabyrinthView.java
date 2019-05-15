@@ -25,14 +25,16 @@ import java.util.List;
 public class LabyrinthView extends View implements SensorEventListener {
 
     public static final int MAZE_WIDTH = 15;
-    public static int MAZE_HEIGHT = 5;
-    private final List<RectF> walls = Collections.synchronizedList(new ArrayList<RectF>());
-    Paint paint = new Paint();
-    float speed = LabyrinthSquare.SQUARE_SIZE / 4;
-    float xSpeed, ySpeed;
-    RectF bounds = new RectF();
+    static int mazeHeight = 5;
+    private final List<RectF> walls = Collections.synchronizedList(new ArrayList<>());
+    private Paint paint = new Paint();
+    private float speed = LabyrinthSquare.squareSize / 4F;
+    private float xSpeed;
+    private float ySpeed;
+    private RectF bounds = new RectF();
     private LabyrinthSquare[][] maze;
-    private float ballx, bally;
+    private float ballX;
+    private float ballY;
     private Thread gameLoopThread;
 
     public LabyrinthView(Context context, @Nullable AttributeSet attrs) {
@@ -44,7 +46,7 @@ public class LabyrinthView extends View implements SensorEventListener {
         for (RectF w : walls) {
             canvas.drawRect(w, paint);
         }
-        canvas.drawCircle(ballx, bally, LabyrinthSquare.SQUARE_SIZE / 4, paint);
+        canvas.drawCircle(ballX, ballY, LabyrinthSquare.squareSize / 4F, paint);
     }
 
     @Override
@@ -59,15 +61,15 @@ public class LabyrinthView extends View implements SensorEventListener {
         LabyrinthSquare.setSquareSize(getWidth() / MAZE_WIDTH);
         setMazeHeight(getHeight());
         maze = initializeMaze(getContext());
-        speed = LabyrinthSquare.SQUARE_SIZE / 20;
-        ballx = LabyrinthSquare.SQUARE_SIZE / 2;
-        bally = LabyrinthSquare.SQUARE_SIZE / 2;
+        speed = LabyrinthSquare.squareSize / 20F;
+        ballX = LabyrinthSquare.squareSize / 2F;
+        ballY = LabyrinthSquare.squareSize / 2F;
 
         CreateLabyrinth.createLabyrinth(maze);
         paint.setColor(Color.BLACK);
 
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 walls.addAll(maze[i][j].updateWalls());
             }
         }
@@ -77,13 +79,13 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     private static void setMazeHeight(int height) {
-        MAZE_HEIGHT = height / LabyrinthSquare.SQUARE_SIZE;
+        mazeHeight = height / LabyrinthSquare.squareSize;
     }
 
     private static LabyrinthSquare[][] initializeMaze(Context c) {
-        LabyrinthSquare[][] maze = new LabyrinthSquare[MAZE_WIDTH][MAZE_HEIGHT];
+        LabyrinthSquare[][] maze = new LabyrinthSquare[MAZE_WIDTH][mazeHeight];
         for (int i = 0; i < MAZE_WIDTH; i++) {
-            for (int j = 0; j < MAZE_HEIGHT; j++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 maze[i][j] = new LabyrinthSquare(c, i, j);
                 if (i == 0) {
                     maze[0][j].setNorth(false);
@@ -91,8 +93,8 @@ public class LabyrinthView extends View implements SensorEventListener {
                 if (j == 0) {
                     maze[i][0].setWest(false);
                 }
-                if (MAZE_HEIGHT - 1 == j) {
-                    maze[i][MAZE_HEIGHT - 1].setEast(false);
+                if (mazeHeight - 1 == j) {
+                    maze[i][mazeHeight - 1].setEast(false);
                 }
                 if (MAZE_WIDTH - 1 == i) {
                     maze[MAZE_WIDTH - 1][j].setSouth(false);
@@ -114,23 +116,23 @@ public class LabyrinthView extends View implements SensorEventListener {
             try {
                 Thread.sleep(10);
             } catch (Exception e) {
-                Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                Log.e("GAME LOOP", "ERROR IN GAME LOOP", e);
             }
         }
     }
 
     boolean updateBall() {
         for (int i = 0; i < 10; i++) {
-            ballx -= xSpeed * speed;
+            ballX -= xSpeed * speed;
             if (checkCollision(walls)) {
-                ballx += xSpeed * speed;
+                ballX += xSpeed * speed;
                 break;
             }
         }
         for (int i = 0; i < 10; i++) {
-            bally += ySpeed * speed;
+            ballY += ySpeed * speed;
             if (checkCollision(walls)) {
-                bally -= ySpeed * speed;
+                ballY -= ySpeed * speed;
                 break;
             }
         }
@@ -149,8 +151,9 @@ public class LabyrinthView extends View implements SensorEventListener {
     }
 
     RectF getBounds() {
-        bounds.set(ballx - LabyrinthSquare.SQUARE_SIZE / 4, bally - LabyrinthSquare.SQUARE_SIZE / 4,
-                ballx + LabyrinthSquare.SQUARE_SIZE / 4, bally + LabyrinthSquare.SQUARE_SIZE / 4);
+        bounds.set(ballX - LabyrinthSquare.squareSize / 4F,
+                ballY - LabyrinthSquare.squareSize / 4F,
+                ballX + LabyrinthSquare.squareSize / 4F, ballY + LabyrinthSquare.squareSize / 4F);
         return bounds;
     }
 

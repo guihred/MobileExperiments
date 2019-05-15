@@ -10,23 +10,24 @@ import android.view.MotionEvent;
 
 public final class Point2D {
     private static Point2D instance;
-    float x, y;
-
-    public static Point2D getInstance() {
-        if (instance == null) {
-            instance = new Point2D();
-        }
-        return instance;
-    }
+    float x;
+    float y;
 
     private Point2D() {
     }
 
-    public static Point2D getIntersectedPoint(MotionEvent e) {
+    static Point2D getIntersectedPoint(MotionEvent e) {
         Point2D point3D = Point2D.getInstance();
         point3D.x = e.getX();
         point3D.y = e.getY();
         return point3D;
+    }
+
+    private static Point2D getInstance() {
+        if (instance == null) {
+            instance = new Point2D();
+        }
+        return instance;
     }
 
     public float getX() {
@@ -45,7 +46,7 @@ public final class Point2D {
         this.y = y;
     }
 
-    public Point2D subtract(MotionEvent intersectedPoint) {
+    Point2D subtract(MotionEvent intersectedPoint) {
         x = intersectedPoint.getX() - x;
         y = intersectedPoint.getY() - y;
         return this;

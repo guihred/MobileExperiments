@@ -10,7 +10,7 @@ public enum PuzzlePath {
     STRAIGHT((x, y) -> p -> p.rLineTo(x, y)),
     //    _( )_
     ROUND((x, y) -> p -> {
-        float q = 0.75f;
+        float q = 0.75F;
         p.rCubicTo(Math.abs(y) * q - x * q, Math.abs(x) * q - y * q, Math.abs(y) * q + x * (1 + q),
                 Math.abs(x) * q + y * (1 + q), x, y);
     }),
@@ -18,10 +18,10 @@ public enum PuzzlePath {
     TRIANGLE((x, y) -> p -> {
         float i = Math.signum(x + y);
 
-        p.rLineTo(nonZero(i * y * PuzzlePiece.SQRT_0_5, x / 2f),
-                nonZero(i * x * PuzzlePiece.SQRT_0_5, y / 2f));
-        p.rLineTo(nonZero(i * -y * PuzzlePiece.SQRT_0_5, x / 2f),
-                nonZero(i * -x * PuzzlePiece.SQRT_0_5, y / 2f));
+        p.rLineTo(nonZero(i * y * PuzzlePiece.SQRT_0_5, x / 2F),
+                nonZero(i * x * PuzzlePiece.SQRT_0_5, y / 2F));
+        p.rLineTo(nonZero(i * -y * PuzzlePiece.SQRT_0_5, x / 2F),
+                nonZero(i * -x * PuzzlePiece.SQRT_0_5, y / 2F));
 
     }),
     //      _

@@ -1,5 +1,6 @@
 package red.guih.games.tetris;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -26,24 +27,26 @@ public class TetrisView extends BaseView {
 
     public static final int UPDATE_DELAY_MILLIS = 750;
     public static final int ACCELERATING_STEP = 5000;
-    public int mapHeight = 24;
-    public int mapWidth = 12;
-    boolean movedLeftRight;
-    int points;
-    long startTime;
-    private int currentI, currentJ;
-    private TetrisDirection direction = TetrisDirection.UP;
-    private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
-    private TetrisPiece piece = TetrisPiece.L;
-    private TetrisPiece nextPiece = TetrisPiece.L;
     private final Map<TetrisPiece, Map<TetrisDirection, int[][]>> pieceDirection =
             new EnumMap<>(TetrisPiece.class);
     private final Paint paint = new Paint();
     private final Random random = new Random();
-    private float startX, startY;
+    private int mapHeight = 20;
+    private int mapWidth = 12;
+    private boolean movedLeftRight;
+    private int points;
+    private long startTime;
+    private boolean gamePaused;
+    private int currentI;
+    private int currentJ;
+    private TetrisDirection direction = TetrisDirection.UP;
+    private TetrisSquare[][] map = new TetrisSquare[mapWidth][mapHeight];
+    private TetrisPiece piece = TetrisPiece.L;
+    private TetrisPiece nextPiece = TetrisPiece.L;
+    private float startX;
+    private float startY;
     private int squareSize;
     private Thread gameLoopThread;
-
 
     public TetrisView(Context c, AttributeSet a) {
         super(c, a);
@@ -67,6 +70,18 @@ public class TetrisView extends BaseView {
 
     }
 
+    final int[][] rotateMap(int[][] pieceMap) {
+        int width = pieceMap.length;
+        int height = pieceMap[0].length;
+        int[][] left = new int[height][width];
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                left[j][i] = pieceMap[i][height - j - 1];
+            }
+        }
+        return left;
+    }
+
     public TetrisDirection getDirection(MotionEvent e) {
         float x = e.getX();
         float y = e.getY();
@@ -81,40 +96,6 @@ public class TetrisView extends BaseView {
             return TetrisDirection.UP;
         }
         return TetrisDirection.DOWN;
-
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-
-        squareSize = getWidth() / mapWidth;
-        mapHeight = getHeight() / squareSize - 1;
-        paint.setTextSize(mapHeight * 3);
-        reset();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        for (int i = 0; i < mapWidth; i++) {
-            for (int j = 0; j < mapHeight; j++) {
-                TetrisPieceState state = map[i][j].getState();
-                if (state == TetrisPieceState.EMPTY) {
-                    paint.setColor(Color.BLACK);
-                } else if (state == TetrisPieceState.TRANSITION) {
-                    paint.setColor(piece.getColor());
-                } else if (state == TetrisPieceState.SETTLED) {
-                    paint.setColor(map[i][j].getColor());
-                }
-                canvas.drawRect(i * squareSize, j * squareSize, (i + 1) * squareSize,
-                        (j + 1) * squareSize, paint);
-            }
-        }
-
-        paint.setColor(Color.BLACK);
-        canvas.drawText(points + " Points", squareSize, mapHeight * squareSize + squareSize / 2,
-                paint);
-        drawNextPiece(canvas, (mapWidth - 2) * squareSize, mapHeight * squareSize + squareSize / 2);
 
     }
 
@@ -153,6 +134,7 @@ public class TetrisView extends BaseView {
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent e) {
         int action = e.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -179,6 +161,58 @@ public class TetrisView extends BaseView {
             movePiece(e);
         }
         return false;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        float size = this.squareSize;
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
+                TetrisPieceState state = map[i][j].getState();
+                if (state == TetrisPieceState.EMPTY) {
+                    paint.setColor(Color.BLACK);
+                } else if (state == TetrisPieceState.TRANSITION) {
+                    paint.setColor(piece.getColor());
+                } else if (state == TetrisPieceState.SETTLED) {
+                    paint.setColor(map[i][j].getColor());
+                }
+                canvas.drawRect(i * size, j * size, (i + 1) * size,
+                        (j + 1) * size, paint);
+            }
+        }
+
+        paint.setColor(Color.BLACK);
+        canvas.drawText(points + " Points", size, mapHeight * size + size / 2F,
+                paint);
+        drawNextPiece(canvas, (mapWidth - 2) * size,
+                mapHeight * size + size / 2F);
+
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+
+        squareSize = getWidth() / mapWidth;
+        mapHeight = getHeight() / squareSize - 1;
+        paint.setTextSize(mapHeight * 3F);
+        reset();
+    }
+
+    void drawNextPiece(Canvas canvas, float offsetX, float offsetY) {
+        final int[][] get = pieceDirection.get(nextPiece).get(TetrisDirection.UP);
+        paint.setColor(nextPiece.getColor());
+        int squareMiniSize = squareSize / 4;
+        for (int i = 0; i < get.length; i++) {
+            for (int j = 0; j < get[i].length; j++) {
+                if (get[i][j] == 1) {
+
+                    canvas.drawRect(i * squareMiniSize + offsetX, j * squareMiniSize + offsetY,
+                            offsetX + (i + 1) * squareMiniSize, offsetY + (j + 1) * squareMiniSize,
+                            paint);
+                }
+            }
+        }
     }
 
     private void movePiece(MotionEvent e) {
@@ -269,7 +303,7 @@ public class TetrisView extends BaseView {
                 Thread.sleep(UPDATE_DELAY_MILLIS +
                         (startTime - System.currentTimeMillis()) / ACCELERATING_STEP);
             } catch (Exception e) {
-                Log.e("GAME LOOP", "ERRO DE GAME LOOP", e);
+                Log.e("GAME LOOP", "ERROR IN GAME LOOP", e);
             }
         }
         postInvalidate();
@@ -298,22 +332,6 @@ public class TetrisView extends BaseView {
         }
     }
 
-    void drawNextPiece(Canvas canvas, float offsetX, float offsetY) {
-        final int[][] get = pieceDirection.get(nextPiece).get(TetrisDirection.UP);
-        paint.setColor(nextPiece.getColor());
-        int squareMiniSize = squareSize / 4;
-        for (int i = 0; i < get.length; i++) {
-            for (int j = 0; j < get[i].length; j++) {
-                if (get[i][j] == 1) {
-
-                    canvas.drawRect(i * squareMiniSize + offsetX, j * squareMiniSize + offsetY,
-                            offsetX + (i + 1) * squareMiniSize, offsetY + (j + 1) * squareMiniSize,
-                            paint);
-                }
-            }
-        }
-    }
-
     public int getCurrentI() {
         return currentI;
     }
@@ -330,11 +348,8 @@ public class TetrisView extends BaseView {
         this.currentJ = currentJ;
     }
 
-    boolean gamePaused;
-
-    public boolean pause() {
+    public void pause() {
         gamePaused = true;
-        return true;
     }
 
     public boolean movePiecesTimeline() {
@@ -419,18 +434,6 @@ public class TetrisView extends BaseView {
         piece = values[random.nextInt(values.length)];
         nextPiece = values[random.nextInt(values.length)];
         continueGame();
-    }
-
-    final int[][] rotateMap(int[][] pieceMap) {
-        int width = pieceMap.length;
-        int height = pieceMap[0].length;
-        int[][] left = new int[height][width];
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                left[j][i] = pieceMap[i][height - j - 1];
-            }
-        }
-        return left;
     }
 
 }

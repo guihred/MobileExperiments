@@ -31,7 +31,7 @@ public class MinesweeperActivity extends BaseActivity {
 
     private void setUserPreferences() {
         MinesweeperView.setNumberOfBombs(
-                getUserPreference(R.string.size, MinesweeperView.NUMBER_OF_BOMBS) /
+                getUserPreference(R.string.size, MinesweeperView.numberOfBombs) /
                         MinesweeperView.BOMBS_STEP - 1);
     }
 
@@ -50,7 +50,7 @@ public class MinesweeperActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(MinesweeperView.NUMBER_OF_BOMBS, UserRecord.MINESWEEPER);
+                showRecords(MinesweeperView.numberOfBombs, UserRecord.MINESWEEPER);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -64,13 +64,13 @@ public class MinesweeperActivity extends BaseActivity {
         // set the custom minesweeper_dialog components - text, image and button
         Spinner spinner = dialog.findViewById(R.id.spinner1);
 
-        spinner.setSelection(MinesweeperView.NUMBER_OF_BOMBS / MinesweeperView.BOMBS_STEP - 1);
+        spinner.setSelection(MinesweeperView.numberOfBombs / MinesweeperView.BOMBS_STEP - 1);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
             MinesweeperView.setNumberOfBombs(spinner.getSelectedItemPosition());
-            addUserPreference(R.string.size, MinesweeperView.NUMBER_OF_BOMBS);
+            addUserPreference(R.string.size, MinesweeperView.numberOfBombs);
             recreate();
             dialog.dismiss();
         });

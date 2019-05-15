@@ -13,16 +13,16 @@ public class MadEdge implements Comparable<MadEdge> {
     private float[] xBounds;
     private float[] yBounds;
 
-    public MadEdge(MadCell source, MadCell target) {
+    MadEdge(MadCell source, MadCell target) {
         this.source = source;
         this.target = target;
     }
 
-    public MadCell getSource() {
+    MadCell getSource() {
         return source;
     }
 
-    public MadCell getTarget() {
+    MadCell getTarget() {
         return target;
     }
 
@@ -32,21 +32,23 @@ public class MadEdge implements Comparable<MadEdge> {
             float top = source.getY();
             float right = target.getX();
             float bottom = target.getY();
-            float frac = 2;
-            xBounds = new float[]{left + getA() / frac, left - getA() / frac,
-                    right - getA() / frac, right + getA() / frac};
-            yBounds = new float[]{top + getB() / frac, top - getB() / frac,
-                    bottom - getB() / frac, bottom + getB() / frac};
+            float fraction = 2;
+            xBounds = new float[]{left + getA() / fraction, left - getA() / fraction,
+                    right - getA() / fraction, right + getA() / fraction};
+            yBounds = new float[]{top + getB() / fraction, top - getB() / fraction,
+                    bottom - getB() / fraction, bottom + getB() / fraction};
         }
 
     }
 
-    boolean checkCollisionBounds(float testx, float testy) {
+    boolean checkCollisionBounds(float testX, float testY) {
         getBounds();
-        return checkInBounds(xBounds, yBounds, testx, testy);
+        return checkInBounds(xBounds, yBounds, testX, testY);
     }
-    boolean checkInBounds(float[] vertx, float[] verty, float testx, float testy) {
-        int i, j;
+
+    private static boolean checkInBounds(float[] vertx, float[] verty, float testx, float testy) {
+        int i;
+        int j;
         boolean inBound = false;
         for (i = 0, j = 3; i < 4; j = i++) {
             if (verty[i] > testy != verty[j] > testy
@@ -57,12 +59,13 @@ public class MadEdge implements Comparable<MadEdge> {
         }
         return inBound;
     }
+
     @Override
     public int compareTo(@NonNull MadEdge o) {
         return 0;
     }
 
-    public float distance(float ballX, float ballY) {
+    float distance(float ballX, float ballY) {
         return Math.abs(getA() * ballX + getB() * ballY + getC()) / getSqrt();
     }
 

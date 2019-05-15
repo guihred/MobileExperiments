@@ -1,5 +1,6 @@
 package red.guih.games.japanese;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -41,21 +42,20 @@ public class JapaneseView extends BaseView {
     public static final int LIGHT_RED = 0x88FF0000;
     public static final int MAX_CHAPTERS = 148;
     public static final int LIGHT_GREEN = 0x8800FF00;
-    public static boolean SHOW_ROMAJI;
-    public static boolean NIGHT_MODE;
-    public static int CHAPTER = 1;
-
+    static boolean showRomaji;
+    static boolean nightMode;
+    static int chapter = 1;
     final List<Letter> answer = new ArrayList<>();
     final List<Letter> letters = new ArrayList<>();
     private final Paint paint = new Paint();
     private final Paint greenPaint = new Paint();
     private final Paint redPaint = new Paint();
     private final RectF okButton = new RectF();
-    public int characterSize = 50;
-    private float points;
-    private float currentScore;
     private final List<JapaneseLesson> lessons = new ArrayList<>();
     private final List<String> tips = new ArrayList<>();
+    private int characterSize = 50;
+    private float points;
+    private float currentScore;
     private int currentLesson;
     private DynamicLayout englishLayout;
     private DynamicLayout romajiLayout;
@@ -72,28 +72,14 @@ public class JapaneseView extends BaseView {
         loadLessons();
     }
 
-    private static void setStaticChapter(int seekBar) {
-        JapaneseView.CHAPTER = seekBar;
-    }
-
-    public void setChapter(int seekBar) {
-        if (CHAPTER != seekBar) {
-            addUserPreference(R.string.punctuation, (float) 0);
-            addUserPreference(R.string.lesson, 0);
-        }
-        setStaticChapter(seekBar);
-    }
-
-    public List<JapaneseLesson> loadLessons() {
-
+    public void loadLessons() {
         new Thread(this::migrateLessons).start();
-        return lessons;
     }
 
     private void migrateLessons() {
         Log.e("JAPANESE VIEW", "LOADING LESSONS");
         lessons.clear();
-        List<JapaneseLesson> all = db.japaneseLessonDao().getAll(CHAPTER);
+        List<JapaneseLesson> all = db.japaneseLessonDao().getAll(chapter);
         Log.e("JAPANESE VIEW", db.toString());
         lessons.addAll(all);
         if (!lessons.isEmpty()) {
@@ -113,19 +99,6 @@ public class JapaneseView extends BaseView {
 
         postInvalidate();
         loadTips();
-    }
-
-    public List<String> loadTips() {
-        tips.clear();
-        tips.addAll(lessons.stream().filter(e -> e != null && e.getRomaji() != null)
-                           .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
-                           .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
-                           .flatMap(e -> Stream.of(e.split("\\).*\\(")))
-                           .collect(Collectors.toList())
-        );
-        postInvalidate();
-
-        return tips;
     }
 
     private void configureCurrentLesson() {
@@ -151,7 +124,7 @@ public class JapaneseView extends BaseView {
 
 
         TextPaint tp = new TextPaint();
-        tp.setColor(NIGHT_MODE ? Color.WHITE : Color.BLACK);
+        tp.setColor(nightMode ? Color.WHITE : Color.BLACK);
         tp.setTextSize(characterSize);
         tp.setTextAlign(Paint.Align.CENTER);
         tp.setAntiAlias(true);
@@ -179,103 +152,54 @@ public class JapaneseView extends BaseView {
 
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        characterSize = getWidth() / 24;
-        int h = getHeight() * 3 / 4;
-        int w = getWidth();
-        okButton.set(w / 3, h, w * 2 / 3, h + characterSize * 4);
+    public List<String> loadTips() {
+        tips.clear();
+        tips.addAll(lessons.stream().filter(e -> e != null && e.getRomaji() != null)
+                           .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
+                           .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
+                           .flatMap(e -> Stream.of(e.split("\\).*\\(")))
+                           .collect(Collectors.toList())
+        );
+        postInvalidate();
 
-        configureCurrentLesson();
+        return tips;
+    }
+
+    private int getLettersLayout() {
+        return getHeight() * 4 / 6;
+    }
+
+    private void adjust(int h, int w2, int j, Letter remove) {
+        int left = w2 / 12 * (j % 10) + w2 / 12;
+        int top = 2 * characterSize * (j / 10) + h;
+        remove.bound.left = left;
+        remove.bound.top = top;
+        remove.bound.right = left + characterSize * 2F;
+        remove.bound.bottom = top + characterSize * 2F;
+    }
+
+    static void setShowRomaji(boolean value) {
+        JapaneseView.showRomaji = value;
+    }
+
+    static void setNightMode(boolean nightMode) {
+        JapaneseView.nightMode = nightMode;
+    }
+
+    private static void setStaticChapter(int seekBar) {
+        JapaneseView.chapter = seekBar;
+    }
+
+    public void setChapter(int seekBar) {
+        if (chapter != seekBar) {
+            addUserPreference(R.string.punctuation, (float) 0);
+            addUserPreference(R.string.lesson, 0);
+        }
+        setStaticChapter(seekBar);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        if (NIGHT_MODE) {
-            paint.setColor(Color.WHITE);
-            canvas.drawColor(Color.BLACK);
-        } else {
-            paint.setColor(Color.BLACK);
-            canvas.drawColor(Color.WHITE);
-        }
-
-
-        String chapterFormat = getContext()
-                .getString(R.string.chapter_format, CHAPTER, currentLesson, lessons.size());
-        canvas.drawText(chapterFormat, characterSize, characterSize, paint);
-        String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
-        canvas.drawText(punctuationFormat, getWidth() / 2, characterSize, paint);
-
-        drawTextLayout(canvas, getWidth() / 2, getHeight() / 12, this.englishLayout);
-        if (SHOW_ROMAJI || letters.isEmpty()) {
-            drawTextLayout(canvas, getWidth() / 2, getHeight() * 3 / 6, this.romajiLayout);
-        }
-        if (letters.isEmpty()) {
-            drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
-            canvas.drawRoundRect(okButton, 10, 10, greenPaint);
-            String singleScore = getContext().getString(R.string.percent, currentScore);
-            canvas.drawText(singleScore,
-                    okButton.centerX() - characterSize * singleScore.length() / 4,
-                    okButton.centerY(), paint);
-            canvas.drawText("Ok", okButton.centerX() - characterSize / 2,
-                    okButton.centerY() + characterSize, paint);
-            canvas.drawRoundRect(okButton, 10, 10, paint);
-        }
-        drawLetters(canvas, this.letters);
-        drawLetters(canvas, this.answer);
-
-    }
-
-    private double getCurrentScore() {
-        if (currentLesson == 0) {
-            if (lessons.isEmpty()) {
-                return 0;
-            }
-
-            return points / lessons.size();
-        }
-
-        return points / currentLesson;
-    }
-
-    private void drawTextLayout(Canvas canvas, int dx, int dy, DynamicLayout englishLayout) {
-        if (englishLayout != null) {
-
-            canvas.save();
-            canvas.translate(dx, dy);
-            englishLayout.draw(canvas);
-            canvas.restore();
-        }
-    }
-
-    private void drawLetters(Canvas canvas, List<Letter> l) {
-        if (lessons.isEmpty()) {
-            return;
-        }
-        if (currentLesson >= lessons.size()) {
-            currentLesson = 0;
-        }
-
-
-        JapaneseLesson japaneseLesson = lessons.get(currentLesson);
-        for (int i = 0; i < l.size(); i++) {
-            Letter rc = l.get(i);
-
-            if (letters.isEmpty() && Objects.toString(japaneseLesson.getJapanese(), "")
-                                            .length() > i) {
-                Paint p = Objects.equals(Character.toString(japaneseLesson.getJapanese().charAt(i)),
-                        rc.character) ? greenPaint : redPaint;
-
-                canvas.drawRoundRect(rc.bound, 10, 10, p);
-            }
-            canvas.drawRoundRect(rc.bound, 10, 10, paint);
-            canvas.drawText(rc.character, rc.bound.left + characterSize / 2,
-                    rc.bound.top + characterSize * 5 / 4, this.paint);
-        }
-    }
-
-    @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -321,6 +245,101 @@ public class JapaneseView extends BaseView {
         return true;
     }
 
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (nightMode) {
+            paint.setColor(Color.WHITE);
+            canvas.drawColor(Color.BLACK);
+        } else {
+            paint.setColor(Color.BLACK);
+            canvas.drawColor(Color.WHITE);
+        }
+
+
+        String chapterFormat = getContext()
+                .getString(R.string.chapter_format, chapter, currentLesson, lessons.size());
+        canvas.drawText(chapterFormat, characterSize, characterSize, paint);
+        String punctuationFormat = getContext().getString(R.string.punctuation, getCurrentScore());
+        canvas.drawText(punctuationFormat, getWidth() / 2F, characterSize, paint);
+
+        drawTextLayout(canvas, getWidth() / 2, getHeight() / 12, this.englishLayout);
+        if (showRomaji || letters.isEmpty()) {
+            drawTextLayout(canvas, getWidth() / 2, getHeight() * 3 / 6, this.romajiLayout);
+        }
+        if (letters.isEmpty()) {
+            drawTextLayout(canvas, getWidth() / 2, getHeight() * 4 / 6, this.answerLayout);
+            canvas.drawRoundRect(okButton, 10, 10, greenPaint);
+            String singleScore = getContext().getString(R.string.percent, currentScore);
+            canvas.drawText(singleScore,
+                    okButton.centerX() - characterSize * singleScore.length() / 4F,
+                    okButton.centerY(), paint);
+            canvas.drawText("Ok", okButton.centerX() - characterSize / 2F,
+                    okButton.centerY() + characterSize, paint);
+            canvas.drawRoundRect(okButton, 10, 10, paint);
+        }
+        drawLetters(canvas, this.letters);
+        drawLetters(canvas, this.answer);
+
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        characterSize = getWidth() / 20;
+        int h = getHeight() * 3 / 4;
+        int w = getWidth();
+        okButton.set(w / 3F, h, w * 2F / 3, h + characterSize * 4F);
+
+        configureCurrentLesson();
+    }
+
+    private double getCurrentScore() {
+        if (currentLesson == 0) {
+            if (lessons.isEmpty()) {
+                return 0;
+            }
+
+            return points / lessons.size();
+        }
+
+        return points / currentLesson;
+    }
+
+    private static void drawTextLayout(Canvas canvas, int dx, int dy, DynamicLayout englishLayout) {
+        if (englishLayout != null) {
+            canvas.save();
+            canvas.translate(dx, dy);
+            englishLayout.draw(canvas);
+            canvas.restore();
+        }
+    }
+
+    private void drawLetters(Canvas canvas, List<Letter> l) {
+        if (lessons.isEmpty()) {
+            return;
+        }
+        if (currentLesson >= lessons.size()) {
+            currentLesson = 0;
+        }
+
+
+        JapaneseLesson japaneseLesson = lessons.get(currentLesson);
+        for (int i = 0; i < l.size(); i++) {
+            Letter rc = l.get(i);
+
+            if (letters.isEmpty() && Objects.toString(japaneseLesson.getJapanese(), "")
+                                            .length() > i) {
+                Paint p = Objects.equals(Character.toString(japaneseLesson.getJapanese().charAt(i)),
+                        rc.character) ? greenPaint : redPaint;
+
+                canvas.drawRoundRect(rc.bound, 10, 10, p);
+            }
+            canvas.drawRoundRect(rc.bound, 10, 10, paint);
+            canvas.drawText(rc.character, rc.bound.left + characterSize / 2F,
+                    rc.bound.top + characterSize * 5F / 4, this.paint);
+        }
+    }
+
     private void showDialogWinning() {
 
         final Dialog dialog = new Dialog(getContext());
@@ -333,10 +352,10 @@ public class JapaneseView extends BaseView {
         double score = getCurrentScore();
         String description = getContext().getString(R.string.punctuation, score);
         currentLesson = 0;
-        if (isRecordSuitable((long) score * 100, UserRecord.JAPANESE, CHAPTER, false)) {
-            createRecordIfSuitable((long) score * 100, description, UserRecord.JAPANESE, CHAPTER,
+        if (isRecordSuitable((long) score * 100, UserRecord.JAPANESE, chapter, false)) {
+            createRecordIfSuitable((long) score * 100, description, UserRecord.JAPANESE, chapter,
                     false);
-            showRecords(CHAPTER, UserRecord.JAPANESE, this::nextChapter);
+            showRecords(chapter, UserRecord.JAPANESE, this::nextChapter);
             return;
         }
         text.setText(String.format(getResources().getString(R.string.you_win), description));
@@ -347,18 +366,14 @@ public class JapaneseView extends BaseView {
     }
 
     private void nextChapter() {
-        setChapter((CHAPTER + 1) % MAX_CHAPTERS);
+        setChapter((chapter + 1) % MAX_CHAPTERS);
         addUserPreference("japanese." + JapaneseActivity.class.getSimpleName(), R.string.chapter,
-                JapaneseView.CHAPTER);
+                JapaneseView.chapter);
         loadLessons();
     }
 
     private int getAnswerLayout() {
         return getHeight() * 2 / 6;
-    }
-
-    private int getLettersLayout() {
-        return getHeight() * 4 / 6;
     }
 
     private boolean exchangeLetter(MotionEvent event, int sourceOffset, List<Letter> source,
@@ -379,15 +394,6 @@ public class JapaneseView extends BaseView {
             }
         }
         return false;
-    }
-
-    private void adjust(int h, int w2, int j, Letter remove) {
-        int left = w2 / 12 * (j % 10) + w2 / 12;
-        int top = 2 * characterSize * (j / 10) + h;
-        remove.bound.left = left;
-        remove.bound.top = top;
-        remove.bound.right = left + characterSize * 2;
-        remove.bound.bottom = top + characterSize * 2;
     }
 }
 

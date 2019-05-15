@@ -8,6 +8,7 @@ package red.guih.games.square2048;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -38,10 +39,10 @@ public class Square2048View extends BaseView {
     public static final int MAIN_GOAL = 2048;
     final Random random = new Random();
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
-    Map<Square2048, Square2048> movingSquares = new HashMap<>();
-    private long nPlayed;
     private final List<Square2048> mapAsList = new ArrayList<>();
     private final List<Square2048> changedList = new ArrayList<>();
+    private Map<Square2048, Square2048> movingSquares = new HashMap<>();
+    private long nPlayed;
     private float initialX;
     private float initialY;
 
@@ -65,25 +66,16 @@ public class Square2048View extends BaseView {
         invalidate();
     }
 
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        Square2048.setSquareSize(getWidth() / MAP_WIDTH);
-        Square2048.setPadding((getHeight() - getWidth()) / 2);
-        if (changed) {
-            reset();
-        }
+    public Square2048[][] getMap() {
+        return map;
     }
 
     private int newNumber() {
         return (random.nextInt(2) + 1) * 2;
     }
 
-    public Square2048[][] getMap() {
-        return map;
-    }
-
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
 
         int action = event.getAction();
@@ -108,6 +100,17 @@ public class Square2048View extends BaseView {
         }
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        int size = getWidth() / MAP_WIDTH;
+        Square2048.setSquareSize(size);
+        Square2048.setPadding((getHeight() - getWidth()) / 2);
+        if (changed) {
+            reset();
+        }
+    }
+
     Direction getDirection(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
@@ -127,7 +130,8 @@ public class Square2048View extends BaseView {
 
 
     public void handleKeyPressed(Direction direction) {
-        int x = direction.x, y = direction.y;
+        int x = direction.x;
+        int y = direction.y;
         movingSquares.clear();
         boolean changed = true;
         changedList.clear();

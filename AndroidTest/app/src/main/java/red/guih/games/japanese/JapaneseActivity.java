@@ -1,11 +1,13 @@
 package red.guih.games.japanese;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.util.SparseLongArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -14,7 +16,6 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,13 +26,13 @@ import red.guih.games.db.UserRecord;
 
 public class JapaneseActivity extends BaseActivity {
 
-    private static final float HUNDRED = 100.0f;
-    private Map<Integer, Long> pointsMap = new HashMap<>();
+    private static final float HUNDRED = 100.0F;
+    private SparseLongArray pointsMap = new SparseLongArray();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setChapter(getUserPreference(R.string.chapter, JapaneseView.CHAPTER));
+        setChapter(getUserPreference(R.string.chapter, JapaneseView.chapter));
         setContentView(R.layout.activity_japanese);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
@@ -44,7 +45,7 @@ public class JapaneseActivity extends BaseActivity {
         secondButton.setOnClickListener(e -> showTips());
         FloatingActionButton romajiButton = findViewById(R.id.showRomajiButton);
         romajiButton.setOnClickListener(e -> {
-            setShowRomaji(!JapaneseView.SHOW_ROMAJI);
+            JapaneseView.setShowRomaji(!JapaneseView.showRomaji);
             JapaneseView viewById = findViewById(R.id.japaneseView);
             viewById.postInvalidate();
         });
@@ -52,28 +53,29 @@ public class JapaneseActivity extends BaseActivity {
     }
 
     private static void setChapter(int chapter) {
-        JapaneseView.CHAPTER = chapter;
+        JapaneseView.chapter = chapter;
     }
 
+    @SuppressLint("DefaultLocale")
     private void showConfig() {
         final Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.japanese_config_dialog);
         dialog.setTitle(R.string.config);
         NumberPicker seekBar = dialog.findViewById(R.id.number);
-        seekBar.setValue(JapaneseView.CHAPTER);
+        seekBar.setValue(JapaneseView.chapter);
         retrievePointsByDifficulty(seekBar);
         CheckBox viewById1 = dialog.findViewById(R.id.showRomaji);
-        viewById1.setChecked(JapaneseView.SHOW_ROMAJI);
+        viewById1.setChecked(JapaneseView.showRomaji);
         CheckBox nightMode = dialog.findViewById(R.id.nightMode);
-        nightMode.setChecked(JapaneseView.NIGHT_MODE);
+        nightMode.setChecked(JapaneseView.nightMode);
         seekBar.setFormatter(value -> String
-                .format("%d - %.1f%%", value, (float) pointsMap.getOrDefault(value, 0L) / HUNDRED));
+                .format("%d - %.1f%%", value, (float) pointsMap.get(value, 0L) / HUNDRED));
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> onClickConfigButton(dialog));
         dialog.show();
     }
-
+    @SuppressLint("InflateParams")
     private void showTips() {
         JapaneseView viewById = findViewById(R.id.japaneseView);
         List<String> japaneseLessons = viewById.loadTips();
@@ -90,17 +92,15 @@ public class JapaneseActivity extends BaseActivity {
         alertDialog.show();
     }
 
-    private static void setShowRomaji(boolean value) {
-        JapaneseView.SHOW_ROMAJI = value;
-    }
 
     private void retrievePointsByDifficulty(NumberPicker seekBar) {
         new Thread(() -> {
             try {
                 List<UserRecord> records = db.userDao().getMaxRecords(UserRecord.JAPANESE);
                 Log.i("RECORDS", records + "");
-                pointsMap = records.stream().collect(
+                Map<Integer, Long> collect = records.stream().collect(
                         Collectors.toMap(UserRecord::getDifficulty, UserRecord::getPoints));
+                collect.forEach((a, b) -> pointsMap.put(a, b));
                 seekBar.refreshDrawableState();
             } catch (Exception ex) {
                 Log.e("DATABASE", "DATABASE ERROR", ex);
@@ -115,17 +115,13 @@ public class JapaneseActivity extends BaseActivity {
         viewById.setChapter(seekBar.getValue());
         viewById.loadLessons();
         CheckBox viewById1 = dialog.findViewById(R.id.showRomaji);
-        setShowRomaji(viewById1.isChecked());
+        JapaneseView.setShowRomaji(viewById1.isChecked());
         CheckBox nightMode = dialog.findViewById(R.id.nightMode);
-        setNightMode(nightMode);
+        JapaneseView.setNightMode(nightMode.isChecked());
 
-        addUserPreference(R.string.chapter, JapaneseView.CHAPTER);
+        addUserPreference(R.string.chapter, JapaneseView.chapter);
         dialog.dismiss();
         recreate();
-    }
-
-    private static void setNightMode(CheckBox nightMode) {
-        JapaneseView.NIGHT_MODE = nightMode.isChecked();
     }
 
 

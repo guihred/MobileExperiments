@@ -3,9 +3,13 @@ package red.guih.games.dots;
 
 @SuppressWarnings("unused")
 public class Line {
-    float startX, startY, endX, endY;
+    float startX;
+    float startY;
+    float endX;
+    float endY;
 
-    Line() {}
+    Line() {
+    }
 
     Line(float[] center1, float[] center2) {
         startX = center1[0];

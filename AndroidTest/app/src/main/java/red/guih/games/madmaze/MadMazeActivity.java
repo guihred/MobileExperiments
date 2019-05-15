@@ -65,7 +65,7 @@ public class MadMazeActivity extends BaseActivity {
                 showConfig();
                 return true;
             case R.id.records:
-                showRecords(MadMazeView.DIFFICULTY, UserRecord.MAD_MAZE);
+                showRecords(MadMazeView.difficulty, UserRecord.MAD_MAZE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -83,7 +83,7 @@ public class MadMazeActivity extends BaseActivity {
         spinner.setSelection(labyrinthView.getMadMazeOption());
         NumberPicker mazeSize = dialog.findViewById(R.id.mazeSize);
 
-        mazeSize.setValue(MadMazeView.DIFFICULTY / 5);
+        mazeSize.setValue(MadMazeView.difficulty / 5);
 
         Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog

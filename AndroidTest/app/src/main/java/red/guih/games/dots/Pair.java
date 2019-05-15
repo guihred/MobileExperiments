@@ -3,7 +3,8 @@ package red.guih.games.dots;
 import java.util.Objects;
 
 public class Pair {
-    final DotsSquare a, b;
+    final DotsSquare a;
+    final DotsSquare b;
 
     Pair(DotsSquare a, DotsSquare b) {
         this.a = a;
