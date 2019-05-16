@@ -147,11 +147,9 @@ public class JapaneseView extends BaseView {
                 Objects.toString(japaneseLesson.getJapanese(), "").replaceAll("\\(.+\\)", "")), tp,
                 getWidth() * 7 / 8, Layout.Alignment.ALIGN_NORMAL, 1, 0, false);
         answerLayout.getOffsetToRightOf(characterSize);
-        if (romaji != null && romaji.contains("(") && romaji.contains(")")) {
-            post(() -> {
-                String tip = romaji.replaceAll(".+\\((.+)\\)", "$1");
-                Toast.makeText(this.getContext(), tip, Toast.LENGTH_LONG).show();
-            });
+        String tip = japaneseLesson.getTip();
+        if (tip != null) {
+            post(() -> Toast.makeText(this.getContext(), tip, Toast.LENGTH_LONG).show());
         }
 
     }
@@ -162,9 +160,8 @@ public class JapaneseView extends BaseView {
 
     public List<String> loadTips() {
         tips.clear();
-        tips.addAll(lessons.stream().filter(e -> e != null && e.getRomaji() != null)
-                           .filter(e -> e.getRomaji().contains("(") && e.getRomaji().contains(")"))
-                           .map(e -> e.getRomaji().replaceAll(".+\\((.+)\\)", "$1"))
+        tips.addAll(lessons.stream().filter(e -> e != null && e.getTip() != null)
+                           .map(JapaneseLesson::getTip)
                            .flatMap(e -> Stream.of(e.split("\\).*\\(")))
                            .collect(Collectors.toList())
         );

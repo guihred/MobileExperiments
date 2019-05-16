@@ -84,8 +84,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         for (MadEdge c : allEdges) {
             gc.drawLine(c.getSource().x, c.getSource().y, c.getTarget().x, c.getTarget().y, paint);
         }
-        for (int i = 0; i < balls.size(); i++) {
-            MadTriangle e = balls.get(i);
+        for (MadTriangle e : balls) {
             gc.drawCircle(e.getCenter().getX(), e.getCenter().getY(), ballRadius / 2, ballPaint);
         }
         gc.drawCircle(ballX, ballY, ballRadius, paint);
@@ -259,16 +258,18 @@ public class MadMazeView extends BaseView implements SensorEventListener {
 
     boolean updateBall() {
         for (int i = 0; i < 5; i++) {
-            ballX -= xSpeed * speed * (i + 1);
+            float diffX = xSpeed * speed * (i + 1);
+            this.ballX -= diffX;
             if (checkCollision(allEdges)) {
-                ballX += xSpeed * speed* (i + 1);
+                this.ballX += diffX;
                 break;
             }
         }
         for (int i = 0; i < 5; i++) {
-            ballY += ySpeed * speed * (i + 1);
+            float diffY = ySpeed * speed * (i + 1);
+            this.ballY += diffY;
             if (checkCollision(allEdges)) {
-                ballY -= ySpeed * speed* (i + 1);
+                this.ballY -= diffY;
                 break;
             }
         }
