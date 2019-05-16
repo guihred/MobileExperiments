@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Objects;
 import java.util.Random;
 
 import red.guih.games.BaseView;
@@ -159,7 +160,7 @@ public class SlidingPuzzleView extends BaseView {
     private void slideIfPossible(SlidingPuzzleSquare mem) {
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
-                if (map[i][j] == mem && (
+                if (Objects.equals(map[i][j], mem) && (
                         isNeighborEmpty(i, j, 0, -1)
                                 || isNeighborEmpty(i, j, 0, 1)
                                 || isNeighborEmpty(i, j, 1, 0)

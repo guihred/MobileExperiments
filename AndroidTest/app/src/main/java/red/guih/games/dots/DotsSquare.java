@@ -70,7 +70,7 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != DotsSquare.this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && c.contains(DotsSquare.this)) {
+                        if (!Objects.equals(a, c) && c.contains(DotsSquare.this)) {
                             points.add(new LinkedHashSet<>(Arrays.asList(a, b, c, this)));
                         }
                     }
@@ -91,7 +91,7 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) &&
+                        if (!Objects.equals(a, c) && !c.contains(this) &&
                                 Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             objects.add(c);
                         }
@@ -107,7 +107,7 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) &&
+                        if (!Objects.equals(a, c) && !c.contains(this) &&
                                 Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             return true;
                         }
@@ -126,7 +126,7 @@ class DotsSquare {
             for (DotsSquare b : a.adjacencies) {
                 if (b != this) {
                     for (DotsSquare c : b.adjacencies) {
-                        if (a != c && !c.contains(this) &&
+                        if (!Objects.equals(a, c) && !c.contains(this) &&
                                 Math.abs(c.i - i) + Math.abs(c.j - j) == 1) {
                             return false;
                         }

@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
@@ -494,7 +495,7 @@ public class DotsDrawingView extends BaseView {
     }
 
     private boolean isValidMove(DotsSquare over) {
-        return selected != null && over != null && selected != over && abs(
+        return selected != null && over != null && !Objects.equals(selected, over) && abs(
                 over.i - selected.i) + abs(over.j - selected.j) == 1
                 && !over.contains(selected);
     }
@@ -529,7 +530,7 @@ public class DotsDrawingView extends BaseView {
     private Set<Pair> getSetCountMap(DotsSquare a1, DotsSquare b1) {
         DotsSquare a = getMin(a1, b1, a1.i < b1.i, a1.j < b1.j);
         DotsSquare b = getMin(b1, a1, b1.i > a1.i, b1.j > a1.j);
-        if (a == b) {
+        if (Objects.equals(a, b)) {
             Log.e("DOTS DRAWING VIEW", "ERROR THIS SHOULD NOT HAPPEN");
             return Collections.emptySet();
         }

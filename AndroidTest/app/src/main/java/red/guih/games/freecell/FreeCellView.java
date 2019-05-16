@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class FreeCellView extends BaseView {
     private final FreeCellStack[] ascendingStacks = new FreeCellStack[4];
     private final FreeCellStack[] supportingStacks = new FreeCellStack[4];
     private final DragContext dragContext = new DragContext();
-    private final List<FreeCellStack> cardStackList = new ArrayList<>();
+    private final List<FreeCellStack> cardStackList = new LinkedList<>();
     private final List<MotionHistory> history = new ArrayList<>();
     private final FreeCellStack[] simpleStacks = new FreeCellStack[8];
     private final Drawable returnButtonIcon;

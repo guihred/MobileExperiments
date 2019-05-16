@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -40,7 +41,7 @@ public class Square2048View extends BaseView {
     final Random random = new Random();
     private final Square2048[][] map = new Square2048[MAP_WIDTH][MAP_HEIGHT];
     private final List<Square2048> mapAsList = new ArrayList<>();
-    private final List<Square2048> changedList = new ArrayList<>();
+    private final List<Square2048> changedList = new LinkedList<>();
     private Map<Square2048, Square2048> movingSquares = new HashMap<>();
     private long nPlayed;
     private float initialX;
@@ -119,7 +120,6 @@ public class Square2048View extends BaseView {
                 return Direction.LEFT;
             }
             return Direction.RIGHT;
-
         }
         if (initialY > y) {
             return Direction.UP;
@@ -139,7 +139,6 @@ public class Square2048View extends BaseView {
             changed = moveSquares(x, y);
         }
         movingSquares.forEach(this::animateMovingSquare);
-
 
         if (mapAsList.stream().anyMatch(f -> f.getNumber() == MAIN_GOAL)) {
             showDialogWinning();

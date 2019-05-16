@@ -14,7 +14,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import red.guih.games.BaseView;
@@ -30,8 +32,8 @@ public class PuzzleView extends BaseView {
     static int puzzleWidth = 4;
     static int puzzleHeight = 6;
     private static Bitmap selectedImage;
-    private final List<List<PuzzlePiece>> linkedPieces = new ArrayList<>();
-    Random random = new Random();
+    private final List<List<PuzzlePiece>> linkedPieces = new LinkedList<>();
+    private Random random = new Random();
     private PuzzlePiece[][] puzzle;
     private int width;
     private int height;
@@ -117,7 +119,8 @@ public class PuzzleView extends BaseView {
         List<PuzzlePiece> containsP = chosenPuzzleGroup;
         if (containsP != null) {
             List<List<PuzzlePiece>> pieces =
-                    linkedPieces.stream().filter(l -> l != containsP).collect(toList());
+                    linkedPieces.stream().filter(l -> !Objects.equals(l, containsP))
+                                .collect(toList());
             for (PuzzlePiece piece : containsP) {
                 if (addPieceToRightGroup(containsP, pieces, piece)) {
                     return true;

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Created by guilherme.hmedeiros on 16/03/2018.
@@ -76,7 +77,8 @@ final class FileHelper {
      * @return String array containing the sql statements.
      */
     static String[] parseSqlFile(InputStream sqlFile) throws IOException {
-        return parseSqlFile(new BufferedReader(new InputStreamReader(sqlFile)));
+        return parseSqlFile(
+                new BufferedReader(new InputStreamReader(sqlFile, StandardCharsets.UTF_8)));
     }
 
 

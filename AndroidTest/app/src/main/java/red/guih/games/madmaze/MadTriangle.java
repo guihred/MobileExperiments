@@ -1,6 +1,7 @@
 package red.guih.games.madmaze;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MadTriangle {
 
@@ -90,7 +91,7 @@ public class MadTriangle {
 
     private static boolean isEqual(MadPoint p, MadPoint... arr) {
         for (MadPoint madPoint : arr) {
-            if (madPoint == p) {
+            if (Objects.equals(madPoint, p)) {
                 return true;
             }
         }

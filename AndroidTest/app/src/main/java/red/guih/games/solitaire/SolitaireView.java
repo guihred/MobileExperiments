@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -44,7 +45,7 @@ public class SolitaireView extends BaseView {
     public static final int DARK_GREEN = 0xFF008800;
     private final CardStack[] ascendingStacks = new CardStack[4];
     private final DragContext dragContext = new DragContext();
-    private final Collection<CardStack> cardStackList = new ArrayList<>();
+    private final Collection<CardStack> cardStackList = new LinkedList<>();
     private final CardStack[] simpleStacks = new CardStack[7];
     private final List<MotionHistory> history = new ArrayList<>();
     private final Drawable returnButtonIcon;

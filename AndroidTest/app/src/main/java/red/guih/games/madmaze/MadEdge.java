@@ -2,6 +2,8 @@ package red.guih.games.madmaze;
 
 import android.support.annotation.NonNull;
 
+import java.util.Objects;
+
 public class MadEdge implements Comparable<MadEdge> {
 
     private final MadCell source;
@@ -18,12 +20,9 @@ public class MadEdge implements Comparable<MadEdge> {
         this.target = target;
     }
 
-    MadCell getSource() {
-        return source;
-    }
-
-    MadCell getTarget() {
-        return target;
+    boolean checkCollisionBounds(float testX, float testY) {
+        getBounds();
+        return checkInBounds(xBounds, yBounds, testX, testY);
     }
 
     public void getBounds() {
@@ -41,11 +40,6 @@ public class MadEdge implements Comparable<MadEdge> {
 
     }
 
-    boolean checkCollisionBounds(float testX, float testY) {
-        getBounds();
-        return checkInBounds(xBounds, yBounds, testX, testY);
-    }
-
     private static boolean checkInBounds(float[] vertx, float[] verty, float testx, float testy) {
         int i;
         int j;
@@ -60,6 +54,42 @@ public class MadEdge implements Comparable<MadEdge> {
         return inBound;
     }
 
+    private float getA() {
+        if (a == 0) {
+            a = this.getSource().getY() - this.getTarget().getY();
+        }
+        return a;
+    }
+
+    private float getB() {
+        if (b == 0) {
+            b = this.getTarget().getX() - this.getSource().getX();
+        }
+        return b;
+    }
+
+    MadCell getSource() {
+        return source;
+    }
+
+    MadCell getTarget() {
+        return target;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(source, target);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !this.getClass().isInstance(obj)) {
+            return false;
+        }
+        final MadEdge other = (MadEdge) obj;
+        return source == other.source && target == other.target;
+    }
+
     @Override
     public int compareTo(@NonNull MadEdge o) {
         return 0;
@@ -67,16 +97,6 @@ public class MadEdge implements Comparable<MadEdge> {
 
     float distance(float ballX, float ballY) {
         return Math.abs(getA() * ballX + getB() * ballY + getC()) / getSqrt();
-    }
-
-    private float getSqrt() {
-        if (sqrt != 0) {
-            return sqrt;
-        }
-        float a1 = getA();
-        float b1 = getB();
-        sqrt = (float) Math.sqrt(a1 * a1 + b1 * b1);
-        return sqrt;
     }
 
     private float getC() {
@@ -87,17 +107,13 @@ public class MadEdge implements Comparable<MadEdge> {
         return c;
     }
 
-    private float getB() {
-        if (b == 0) {
-            b = this.getTarget().getX() - this.getSource().getX();
+    private float getSqrt() {
+        if (sqrt != 0) {
+            return sqrt;
         }
-        return b;
-    }
-
-    private float getA() {
-        if (a == 0) {
-            a = this.getSource().getY() - this.getTarget().getY();
-        }
-        return a;
+        float a1 = getA();
+        float b1 = getB();
+        sqrt = (float) Math.sqrt(a1 * a1 + b1 * b1);
+        return sqrt;
     }
 }
