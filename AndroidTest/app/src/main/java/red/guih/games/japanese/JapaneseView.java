@@ -45,8 +45,8 @@ public class JapaneseView extends BaseView {
     static boolean showRomaji;
     static boolean nightMode;
     static int chapter = 1;
-    final List<Letter> answer = new ArrayList<>();
-    final List<Letter> letters = new ArrayList<>();
+    private final List<Letter> answer = new ArrayList<>();
+    private final List<Letter> letters = new ArrayList<>();
     private final Paint paint = new Paint();
     private final Paint greenPaint = new Paint();
     private final Paint redPaint = new Paint();
@@ -303,10 +303,8 @@ public class JapaneseView extends BaseView {
             if (lessons.isEmpty()) {
                 return 0;
             }
-
             return points / lessons.size();
         }
-
         return points / currentLesson;
     }
 
