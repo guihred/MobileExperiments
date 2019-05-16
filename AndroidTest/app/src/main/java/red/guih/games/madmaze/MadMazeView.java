@@ -170,7 +170,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         allCells.clear();
         int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
-        speed = triangleSide / 50;
+        speed = triangleSide / 100;
         ballRadius = triangleSide / 5;
         int m = (int) (maxHeight / triangleSide);
         int size = sqrt * m;
@@ -193,7 +193,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
         ballRadius = triangleSide / 5;
-        speed = triangleSide / 50;
+        speed = triangleSide / 100;
         int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
         for (int i = 0; i < size; i++) {
@@ -216,7 +216,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
         allCells.clear();
         int sqrt = difficulty;
         triangleSide = maxWidth / sqrt;
-        speed = triangleSide / 50;
+        speed = triangleSide / 100;
         ballRadius = triangleSide / 7;
         int m = (int) (maxHeight / triangleSide / SQR_ROOT_OF_3 * 2) + 1;
         int size = sqrt * m;
@@ -259,16 +259,16 @@ public class MadMazeView extends BaseView implements SensorEventListener {
 
     boolean updateBall() {
         for (int i = 0; i < 5; i++) {
-            ballX -= xSpeed * speed;
+            ballX -= xSpeed * speed * (i + 1);
             if (checkCollision(allEdges)) {
-                ballX += xSpeed * speed;
+                ballX += xSpeed * speed* (i + 1);
                 break;
             }
         }
         for (int i = 0; i < 5; i++) {
-            ballY += ySpeed * speed;
+            ballY += ySpeed * speed * (i + 1);
             if (checkCollision(allEdges)) {
-                ballY -= ySpeed * speed;
+                ballY -= ySpeed * speed* (i + 1);
                 break;
             }
         }
