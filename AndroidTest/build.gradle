@@ -25,8 +25,19 @@ sonarqube {
         property "sonar.projectName", "MobileExperiments"
         property "sonar.projectKey", "red.guih.games"
         property "sonar.host.url", "http://localhost:9000"
+		property "sonar.verbose", "true"
+		property "sonar.sources", "app/java/"
+		
+        def unit = fileTree(dir: project.projectDir, includes: ['**/*.exec']).files;
+        def ui = fileTree(dir: project.projectDir, includes: ['**/*.ec']).files;
+        unit.addAll(ui);
+        def files = unit.join(", ");
 
-        property "sonar.sources", "app/java/"
+        property "sonar.jacoco.reportPaths", files
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.junit.reportsPath", "build/test-results/testDebugUnitTest"
+		property "sonar.android.lint.report", "build/reports/lint-results.xml"
+		
     }
 }   
 allprojects {
