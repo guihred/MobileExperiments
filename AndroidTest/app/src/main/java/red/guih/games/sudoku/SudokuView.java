@@ -47,7 +47,7 @@ public class SudokuView extends BaseView {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (resetStarted) {
-            return false;
+            return true;
         }
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
@@ -63,13 +63,9 @@ public class SudokuView extends BaseView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (resetStarted) {
 
-            spinButton.draw(canvas);
-            return;
-        }
         for (SudokuSquare sq : sudokuSquares) {
-            sq.draw(canvas);
+            sq.draw(canvas, !resetStarted);
         }
         paintDarkerSquares(canvas);
         if (pressedSquare != null) {
@@ -86,8 +82,8 @@ public class SudokuView extends BaseView {
 
     }
 
-    @SuppressLint("DrawAllocation")
     @Override
+    @SuppressLint("DrawAllocation")
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         int squareSize = getWidth() / MAP_N_SQUARED;
@@ -98,7 +94,7 @@ public class SudokuView extends BaseView {
         invalidate();
         new Thread(() -> {
             initialize();
-            invalidate();
+            postInvalidate();
         }).start();
     }
 
@@ -201,7 +197,7 @@ public class SudokuView extends BaseView {
 
     public void reset() {
         resetStarted = true;
-        Log.i("Reset", "0");
+        Log.i("Reset", " RESETTING");
         List<Integer> numbers =
                 IntStream.rangeClosed(1, MAP_N_SQUARED).boxed().collect(Collectors.toList());
         Collections.shuffle(numbers);
@@ -209,8 +205,8 @@ public class SudokuView extends BaseView {
         List<SudokuSquare> all = sudokuSquares.stream().filter(SudokuSquare::isNotEmpty)
                                               .collect(Collectors.toList());
         Collections.shuffle(all);
-        for (int i = 0; i < all.size(); i++) {
-            SudokuSquare sudokuSquare = all.get(i);
+
+        for (SudokuSquare sudokuSquare : all) {
             int previousN = sudokuSquare.setEmpty();
             updatePossibilities();
             solve();
@@ -219,7 +215,9 @@ public class SudokuView extends BaseView {
             } else {
                 sudokuSquare.setNumber(previousN);
             }
-            sudokuSquares.stream().filter(SudokuSquare::isNotPermanent)
+            postInvalidate();
+
+            sudokuSquares.parallelStream().filter(SudokuSquare::isNotPermanent)
                          .forEach(SudokuSquare::setEmpty);
         }
         resetStarted = false;

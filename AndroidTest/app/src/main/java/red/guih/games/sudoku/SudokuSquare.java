@@ -53,7 +53,7 @@ public class SudokuSquare {
         GRAY.setColor(Color.GRAY);
     }
 
-    public void draw(Canvas canvas) {
+    public void draw(Canvas canvas,boolean showN) {
         float size = SudokuSquare.squareSize;
         float top = col * size + layoutY;
         if (permanent) {
@@ -64,7 +64,7 @@ public class SudokuSquare {
                     top + size, WHITE);
         }
 
-        if (!isEmpty()) {
+        if (!isEmpty()&&showN) {
             BLACK.setStyle(Paint.Style.FILL);
             canvas.drawText(Integer.toString(number), row * size + size / 2F,
                     top + size / 2F + NumberButton.TEXT_SIZE * 2F / 5, wrong ? RED : BLACK);

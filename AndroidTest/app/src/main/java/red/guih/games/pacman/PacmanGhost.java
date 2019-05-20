@@ -77,7 +77,7 @@ public class PacmanGhost extends View {
     }
 
     private static MazeSquare getBestMaze(MazeSquare[][] maze, int hx, int hy, int hxg, int hyg) {
-        if (MazeSquare.paths == null) {
+        if (MazeSquare.paths == null || maze == null) {
             return null;
         }
         if (hx < 0) {

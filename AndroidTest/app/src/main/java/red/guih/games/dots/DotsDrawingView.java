@@ -48,7 +48,7 @@ public class DotsDrawingView extends BaseView {
     public static final int THIRD_STAR_THRESHOLD = 70;
     private static final String TAG = "DOTS";
     private static final String[] PLAYERS = {"EU", "TU"};
-    public static int mazeWidth = 8;
+    static int mazeWidth = 8;
     static int difficulty = 2;
     private final Line line = new Line();
     private final List<Line> lines = Collections.synchronizedList(new ArrayList<>());
@@ -76,6 +76,12 @@ public class DotsDrawingView extends BaseView {
         points.put("EU", new HashSet<>());
         points.put("TU", new HashSet<>());
 
+    }
+
+
+
+    public static int getMazeWidth() {
+        return mazeWidth;
     }
 
     public static void setMazeWidth(int mazeWidth) {
@@ -487,7 +493,7 @@ public class DotsDrawingView extends BaseView {
                 .ofPropertyValuesHolder(line2, pvhRotation,
                         pvhRotation2);
         lineAnim.setDuration(LINE_ANIMATION_DURATION);
-        long startDelay = (long)LINE_ANIMATION_DURATION * nPlayed;
+        long startDelay = (long) LINE_ANIMATION_DURATION * nPlayed;
         lineAnim.setStartDelay(startDelay);
         lineAnim.start();
         lineAnim.addUpdateListener(a -> invalidate());

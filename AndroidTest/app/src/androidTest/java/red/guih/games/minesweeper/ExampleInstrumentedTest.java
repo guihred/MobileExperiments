@@ -1,13 +1,16 @@
 package red.guih.games.minesweeper;
 
+import android.util.Log;
 import android.view.View;
 
+import androidx.test.InstrumentationRegistry;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
-import androidx.test.espresso.action.ViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
@@ -25,6 +28,9 @@ import red.guih.games.dots.DotsDrawingView;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 /**
@@ -32,8 +38,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(AndroidJUnit4.class)
 @LargeTest
+@RunWith(AndroidJUnit4.class)
 public class ExampleInstrumentedTest {
     @Rule
     public ActivityTestRule<GamesActivity> rule = new ActivityTestRule<>(GamesActivity.class);
@@ -42,7 +48,7 @@ public class ExampleInstrumentedTest {
     public void testGamesWorking() {
         List<Integer> buttons =
                 Arrays.asList(R.id.minesweeperButton, R.id.dotsButton, R.id.tetrisButton,
-                        R.id.pacmanButton, R.id.puzzleButton, R.id.sudokuButton,
+                        R.id.puzzleButton, R.id.sudokuButton,
                         R.id.freecellButton, R.id.solitaireButton, R.id.japaneseButton,
                         R.id.slidingPuzzleButton, R.id.square2048Button, R.id.labyrinthButton);
         for (Integer buttonId : buttons) {
@@ -52,22 +58,35 @@ public class ExampleInstrumentedTest {
     }
 
     private void clickButton(Integer buttonId) {
-        onView(withId(buttonId)).perform(ViewActions.click());
+        onView(withId(buttonId)).perform(click());
     }
 
     @Test
     public void testDots() {
-        clickButton(R.id.dotsButton);
-        onView(withId(R.id.game_board))
-                .perform(swipe(true, true), swipe(true, false), swipe(false, true),
-                        swipe(false, false));
+        swipeAllDirections(R.id.dotsButton, R.id.game_board);
     }
-    @Test
-    public void testSquare2048() {
-        clickButton(R.id.square2048Button);
-        onView(withId(R.id.square2048_view))
-                .perform(swipe(true, true), swipe(true, false), swipe(false, true),
+
+    private void swipeAllDirections(int minesweeperButton, int minesweeperView) {
+        clickButton(minesweeperButton);
+
+        List<ViewAction> viewActions =
+                Arrays.asList(swipe(true, true), swipe(true, false), swipe(false, true),
                         swipe(false, false));
+        for (ViewAction ac : viewActions) {
+            if (isVisible(minesweeperView)) {
+                onView(withId(minesweeperView)).perform(ac);
+            }
+        }
+        try {
+            Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
+            if (isVisible(R.id.config)) {
+                onView(withId(R.id.config)).perform(click());
+            }
+
+        } catch (Exception e) {
+            Log.e("TEST", "ERROR IN SWIPE", e);
+        }
+
     }
 
     private ViewAction swipe(boolean horizontal, boolean right) {
@@ -78,17 +97,75 @@ public class ExampleInstrumentedTest {
     private float[] getCoordinates(View view, boolean horizontal, int right) {
         final int[] xy = new int[2];
         view.getLocationOnScreen(xy);
-        float i = DotsDrawingView.mazeWidth / 2F;
+        float i = DotsDrawingView.getMazeWidth() / 2F;
         int width = view.getWidth();
-        int squareSize = width / DotsDrawingView.mazeWidth;
-        float x = getPosition(xy[0], width, DotsDrawingView.mazeWidth, horizontal ? i + right : i);
+        int squareSize = width / DotsDrawingView.getMazeWidth();
+        float x = getPosition(xy[0], width, DotsDrawingView.getMazeWidth(),
+                horizontal ? i + right : i);
         int mazeHeight = view.getHeight() / squareSize;
         float v = mazeHeight / 2F;
         float y = getPosition(xy[1], view.getHeight(), mazeHeight, horizontal ? v : v + right);
         return new float[]{x, y};
     }
 
-    private float getPosition(int viewPos, int viewLength, float div, float mazeWidth) {
+    private float getPosition(int viewPos, float viewLength, float div, float mazeWidth) {
         return viewPos + (viewLength - 1F) / div * mazeWidth;
+    }
+
+    @Test
+    public void testSquare2048() {
+        swipeAllDirections(R.id.square2048Button, R.id.square2048_view);
+    }
+
+    @Test
+    public void testPacman() {
+        swipeAllDirections(R.id.pacmanButton, R.id.pacman_view);
+    }
+
+    @Test
+    public void testTetris() {
+        swipeAllDirections(R.id.tetrisButton, R.id.tetris_view);
+    }
+
+    @Test
+    public void testPuzzle() {
+        swipeAllDirections(R.id.puzzleButton, R.id.puzzle_view);
+    }
+
+    @Test
+    public void testMinesweeper() {
+        swipeAllDirections(R.id.minesweeperButton, R.id.minesweeper_view);
+    }
+
+    @Test
+    public void testSlidingpuzzle() {
+        clickButton(R.id.slidingPuzzleButton);
+        onView(withId(R.id.sliding_puzzle_view))
+                .perform(new GeneralSwipeAction(Swipe.FAST, this::getRandomCoordinates,
+                        this::getRandomCoordinates, Press.PINPOINT));
+    }
+
+    private float[] getRandomCoordinates(View view) {
+        final int[] xy = new int[2];
+        view.getLocationOnScreen(xy);
+        float i = DotsDrawingView.getMazeWidth() / 2F;
+        int width = view.getWidth();
+        int squareSize = width / DotsDrawingView.getMazeWidth();
+        float x = getPosition(xy[0], width * (float) Math.random(), DotsDrawingView.getMazeWidth(),
+                i);
+        int mazeHeight = view.getHeight() / squareSize;
+        float v = mazeHeight / 2F;
+        float y = getPosition(xy[1], view.getHeight() * (float) Math.random(), mazeHeight, v);
+        return new float[]{x, y};
+    }
+
+    private boolean isVisible(int id) {
+        try {
+            // View is in hierarchy
+            onView(withId(id)).check(matches(isDisplayed()));
+            return true;
+        } catch (NoMatchingViewException e) {
+            return false;
+        }
     }
 }

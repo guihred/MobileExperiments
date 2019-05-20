@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DotsSquare {
-    public static int squareSize;
+    static int squareSize;
 
     final int i;
     final int j;
@@ -21,6 +21,7 @@ public class DotsSquare {
         this.i = i;
         this.j = j;
     }
+
 
     void clear() {
         adjacencies.clear();
@@ -141,6 +142,9 @@ public class DotsSquare {
     void removeAdj(DotsSquare value) {
         adjacencies.remove(value);
         value.adjacencies.remove(this);
+    }
+    public static int getSquareSize() {
+        return squareSize;
     }
 
 }
