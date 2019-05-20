@@ -79,12 +79,14 @@ public class ExampleInstrumentedTest {
         }
         try {
             Espresso.openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getTargetContext());
-            if (isVisible(R.id.config)) {
-                onView(withId(R.id.config)).perform(click());
-            }
-
         } catch (Exception e) {
             Log.e("TEST", "ERROR IN SWIPE", e);
+        }
+        if (isVisible(R.id.config)) {
+            clickButton(R.id.config);
+        }
+        if (isVisible(R.id.records)) {
+            clickButton(R.id.records);
         }
 
     }
@@ -92,6 +94,16 @@ public class ExampleInstrumentedTest {
     private ViewAction swipe(boolean horizontal, boolean right) {
         return new GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER,
                 view -> getCoordinates(view, horizontal, right ? 1 : -1), Press.PINPOINT);
+    }
+
+    private boolean isVisible(int id) {
+        try {
+            // View is in hierarchy
+            onView(withId(id)).check(matches(isDisplayed()));
+            return true;
+        } catch (NoMatchingViewException e) {
+            return false;
+        }
     }
 
     private float[] getCoordinates(View view, boolean horizontal, int right) {
@@ -157,15 +169,5 @@ public class ExampleInstrumentedTest {
         float v = mazeHeight / 2F;
         float y = getPosition(xy[1], view.getHeight() * (float) Math.random(), mazeHeight, v);
         return new float[]{x, y};
-    }
-
-    private boolean isVisible(int id) {
-        try {
-            // View is in hierarchy
-            onView(withId(id)).check(matches(isDisplayed()));
-            return true;
-        } catch (NoMatchingViewException e) {
-            return false;
-        }
     }
 }

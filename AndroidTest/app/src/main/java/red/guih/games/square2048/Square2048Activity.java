@@ -43,16 +43,15 @@ public class Square2048Activity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.config:
-                Square2048View viewById = findViewById(R.id.square2048_view);
-                viewById.reset();
-                return true;
-            case R.id.records:
-                showRecords(Square2048View.MAP_WIDTH, UserRecord.SQUARE_2048);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.config) {
+            Square2048View viewById = findViewById(R.id.square2048_view);
+            viewById.reset();
+            return true;
+        } else if (i == R.id.records) {
+            showRecords(Square2048View.MAP_WIDTH, UserRecord.SQUARE_2048);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 }

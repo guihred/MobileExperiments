@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
-
-     android:layout_height="wrap_content" android:layout_width="wrap_content">
-
-            <item android:id="@+id/config"
-                android:title="@string/config" />
-
-    <item android:id="@+id/records"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <item
+        android:id="@+id/config"
+        android:title="@string/config" />
+    <item
+        android:id="@+id/records"
         android:title="@string/records" />
-
-
 </menu>

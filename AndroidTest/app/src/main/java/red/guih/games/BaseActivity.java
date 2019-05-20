@@ -26,31 +26,26 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     protected final UserRecordDatabase db = BaseActivity.getInstance(this);
-
-    public void retrieveRecords(View recordListView, ArrayAdapter<UserRecord> adapter,
-            int difficulty, String gameName) {
-        List<UserRecord> records = getAll(difficulty, gameName);
-        for (int i = 0; i < records.size(); i++) {
-            records.get(i).setPosition(i + 1);
-        }
-        adapter.addAll(records);
-        recordListView.refreshDrawableState();
-    }
+    private Dialog dialog;
 
     public static UserRecordDatabase getInstance(Context context) {
-
         return Room.databaseBuilder(context,
                 UserRecordDatabase.class, UserRecord.DATABASE_NAME)
                    .fallbackToDestructiveMigration()
                    .allowMainThreadQueries().build();
     }
 
-    protected List<UserRecord> getAll(int difficulty, String gameName) {
-        return db.userDao().getAll(difficulty, gameName);
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (dialog != null) {
+            dialog.dismiss();
+            dialog = null;
+        }
     }
 
     public void showRecords(int difficulty, String gameName) {
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         List<UserRecord> all = new ArrayList<>();
         dialog.setContentView(R.layout.records_dialog);
         ListView recordListView = dialog.findViewById(R.id.recordList);
@@ -68,6 +63,19 @@ public abstract class BaseActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    public void retrieveRecords(View recordListView, ArrayAdapter<UserRecord> adapter,
+            int difficulty, String gameName) {
+        List<UserRecord> records = getAll(difficulty, gameName);
+        for (int i = 0; i < records.size(); i++) {
+            records.get(i).setPosition(i + 1);
+        }
+        adapter.addAll(records);
+        recordListView.refreshDrawableState();
+    }
+
+    protected List<UserRecord> getAll(int difficulty, String gameName) {
+        return db.userDao().getAll(difficulty, gameName);
+    }
 
     protected int getUserPreference(int name, int defaultValue) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
