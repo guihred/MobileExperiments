@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-class DotsSquare {
-    static int squareSize;
+public class DotsSquare {
+    public static int squareSize;
 
     final int i;
     final int j;

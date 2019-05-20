@@ -48,7 +48,7 @@ public class DotsDrawingView extends BaseView {
     public static final int THIRD_STAR_THRESHOLD = 70;
     private static final String TAG = "DOTS";
     private static final String[] PLAYERS = {"EU", "TU"};
-    static int mazeWidth = 8;
+    public static int mazeWidth = 8;
     static int difficulty = 2;
     private final Line line = new Line();
     private final List<Line> lines = Collections.synchronizedList(new ArrayList<>());
