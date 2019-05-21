@@ -5,12 +5,10 @@
  */
 package red.guih.games.solitaire;
 
-import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -19,8 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +30,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import red.guih.games.AutomaticListener;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 
@@ -368,7 +365,8 @@ public class SolitaireView extends BaseView {
         }
         if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            showDialogWinning();
+            youWin = true;
+            showDialogWinning(this::reset);
         }
 
     }
@@ -401,14 +399,15 @@ public class SolitaireView extends BaseView {
         eatingAnimation.setDuration(ANIMATION_DURATION);
 
         eatingAnimation.addUpdateListener(animation -> invalidate());
-        eatingAnimation.addListener(new AutomaticCardsListener());
+        eatingAnimation.addListener(new AutomaticListener(this::automaticCard));
         eatingAnimation.start();
     }
 
     private void handleMouseReleased(MotionEvent event) {
         if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == SolitaireNumber.values().length)) {
-            showDialogWinning();
+            youWin = true;
+            showDialogWinning(this::reset);
         }
         if (isNullOrEmpty(dragContext.cards)) {
             return;
@@ -438,7 +437,8 @@ public class SolitaireView extends BaseView {
                 dragContext.reset();
                 if (!youWin && Stream.of(ascendingStacks).allMatch(
                         e -> e.getCards().size() == SolitaireNumber.values().length)) {
-                    showDialogWinning();
+                    youWin = true;
+                    showDialogWinning(this::reset);
                 }
                 return;
             }
@@ -466,24 +466,6 @@ public class SolitaireView extends BaseView {
         }
         dragContext.stack.addCards(dragContext.cards);
         dragContext.reset();
-    }
-
-    private void showDialogWinning() {
-        youWin = true;
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.you_win);
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(R.string.game_over);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        dialogButton.setOnClickListener(v -> {
-            this.reset();
-            invalidate();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-        invalidate();
     }
 
     private Collection<CardStack> getHoveredStacks(CardStack[] stacks) {
@@ -526,26 +508,5 @@ public class SolitaireView extends BaseView {
 
     }
 
-    private class AutomaticCardsListener implements Animator.AnimatorListener {
 
-        @Override
-        public void onAnimationStart(Animator animation) {
-            //DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            automaticCard();
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-            //DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-            //DOES NOTHING
-        }
-    }
 }

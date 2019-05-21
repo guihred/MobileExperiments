@@ -15,7 +15,7 @@ public class MadEdgeDistance implements Comparable<MadEdgeDistance> {
     private float distance;
     MadLine edge;
 
-    MadEdgeDistance(MadLine edge, float distance) {
+    public MadEdgeDistance(MadLine edge, float distance) {
         this.edge = edge;
         this.distance = distance;
     }

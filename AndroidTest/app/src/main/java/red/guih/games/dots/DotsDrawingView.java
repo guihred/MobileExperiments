@@ -1,7 +1,6 @@
 package red.guih.games.dots;
 
 
-import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -14,7 +13,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
-
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -36,12 +34,21 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 
+import red.guih.games.AutomaticListener;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 import red.guih.games.db.UserRecord;
 
 import static java.lang.Math.abs;
-import static red.guih.games.dots.StreamHelp.*;
+import static red.guih.games.dots.StreamHelp.comparing;
+import static red.guih.games.dots.StreamHelp.distinct;
+import static red.guih.games.dots.StreamHelp.filter;
+import static red.guih.games.dots.StreamHelp.flatMap;
+import static red.guih.games.dots.StreamHelp.groupBy;
+import static red.guih.games.dots.StreamHelp.map;
+import static red.guih.games.dots.StreamHelp.min;
+import static red.guih.games.dots.StreamHelp.mins;
+import static red.guih.games.dots.StreamHelp.toSet;
 
 public class DotsDrawingView extends BaseView {
     public static final int LINE_ANIMATION_DURATION = 500;
@@ -77,7 +84,6 @@ public class DotsDrawingView extends BaseView {
         points.put("TU", new HashSet<>());
 
     }
-
 
 
     public static int getMazeWidth() {
@@ -497,7 +503,15 @@ public class DotsDrawingView extends BaseView {
         lineAnim.setStartDelay(startDelay);
         lineAnim.start();
         lineAnim.addUpdateListener(a -> invalidate());
-        lineAnim.addListener(new LineAnimatorListener(line2, squaresWon));
+        lineAnim.addListener(new AutomaticListener(() -> {
+            lines.remove(line2);
+            whites.removeAll(squaresWon);
+            if (points.get("EU").size() + points.get("TU")
+                                                .size() == (mazeWidth - 1) * (mazeHeight - 1) &&
+                    whites.isEmpty()) {
+                showDialog();// END OF GAME
+            }
+        }));
     }
 
     private boolean isValidMove(DotsSquare over) {
@@ -595,44 +609,6 @@ public class DotsDrawingView extends BaseView {
             return setCountMap;
         }
         return Collections.emptySet();
-    }
-
-
-    private class LineAnimatorListener implements Animator.AnimatorListener {
-        private final Line line2;
-        private final Set<Set<DotsSquare>> squaresWon;
-
-        LineAnimatorListener(Line line2, Set<Set<DotsSquare>> collect3) {
-            this.line2 = line2;
-            this.squaresWon = collect3;
-        }
-
-        @Override
-        public void onAnimationStart(Animator animator) {
-            // DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animator) {
-            lines.remove(line2);
-            whites.removeAll(squaresWon);
-            if (points.get("EU").size() + points.get("TU")
-                                                .size() == (mazeWidth - 1) * (mazeHeight - 1) &&
-                    whites
-                            .isEmpty()) {
-                showDialog();// END OF GAME
-            }
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animator) {
-            // DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animator) {
-            // DOES NOTHING
-        }
     }
 }
 

@@ -86,16 +86,15 @@ public class PuzzleActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.config:
-                showConfig();
-                return true;
-            case R.id.records:
-                showRecords(PuzzleView.puzzleWidth, UserRecord.PUZZLE);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.config) {
+            showConfig();
+            return true;
+        } else if (i == R.id.records) {
+            showRecords(PuzzleView.puzzleWidth, UserRecord.PUZZLE);
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showConfig() {

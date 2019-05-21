@@ -40,14 +40,12 @@ public class SolitaireActivity extends BaseActivity {
         super.onConfigurationChanged(newConfig);
         ActionBar a = getSupportActionBar();
         if (a != null) {
-            if (newConfig.screenWidthDp > newConfig.screenHeightDp) {
-                a.hide();
-            } else {
+            if (newConfig.screenWidthDp <= newConfig.screenHeightDp) {
                 a.show();
+            } else {
+                a.hide();
             }
         }
-
-
     }
 
     @Override

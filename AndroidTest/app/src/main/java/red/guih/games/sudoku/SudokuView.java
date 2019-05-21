@@ -1,7 +1,6 @@
 package red.guih.games.sudoku;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,8 +11,6 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,28 +358,9 @@ public class SudokuView extends BaseView {
         pressedSquare = null;
 
         if (isFullyFilled()) {
-            showDialogWinning();
+            showDialogWinning(this::reset);
         }
 
-    }
-
-    private void showDialogWinning() {
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.you_win);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(R.string.game_over);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            this.reset();
-            invalidate();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-        invalidate();
     }
 
     private void clearPossibilities(List<SudokuSquare> squares) {

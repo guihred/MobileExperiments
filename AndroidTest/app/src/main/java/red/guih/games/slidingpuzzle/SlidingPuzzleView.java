@@ -6,7 +6,6 @@
 package red.guih.games.slidingpuzzle;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,8 +14,6 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.Objects;
 import java.util.Random;
@@ -215,19 +212,6 @@ public class SlidingPuzzleView extends BaseView {
             showRecords(mapWidth, UserRecord.SLIDING_PUZZLE, this::reset);
             return;
         }
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.game_over);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(format);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            this.reset();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        showDialogWinning(format,this::reset);
     }
 }

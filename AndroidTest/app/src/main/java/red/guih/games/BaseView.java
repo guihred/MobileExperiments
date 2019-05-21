@@ -206,6 +206,30 @@ public abstract class BaseView extends View {
         recordListView.refreshDrawableState();
     }
 
+    protected void showDialogWinning(Runnable run) {
+        String string = getResources().getString(R.string.game_over);
+        showDialogWinning(string, run);
+    }
+
+    protected void showDialogWinning(String str, Runnable run) {
+        final Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.minesweeper_dialog);
+        dialog.setTitle(R.string.you_win);
+        // set the custom minesweeper_dialog components - text, image and button
+        TextView text = dialog.findViewById(R.id.textDialog);
+        text.setText(str);
+        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        // if button is clicked, close the custom minesweeper_dialog
+        dialogButton.setOnClickListener(v -> {
+            run.run();
+            invalidate();
+            dialog.dismiss();
+        });
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+        invalidate();
+    }
+
     protected List<UserRecord> getAll(int difficulty, String gameName) {
         return db.userDao().getAll(difficulty, gameName);
     }

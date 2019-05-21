@@ -266,21 +266,7 @@ public class Square2048View extends BaseView {
             return;
         }
 
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.game_over);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(format);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            this.reset();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        showDialogWinning(format,this::reset);
     }
 
     enum Direction {

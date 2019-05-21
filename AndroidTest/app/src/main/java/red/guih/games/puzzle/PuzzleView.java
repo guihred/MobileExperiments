@@ -1,7 +1,6 @@
 package red.guih.games.puzzle;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,8 +9,6 @@ import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -222,29 +219,16 @@ public class PuzzleView extends BaseView {
     private void showDialogWinning() {
         invalidate();
         long inSeconds = (System.currentTimeMillis() - startTime) / 1000;
-        String s = getResources().getString(R.string.time_format);
-        String format = String.format(s, inSeconds / 60, inSeconds % 60);
+        String format =
+                getResources().getString(R.string.time_format,inSeconds / 60, inSeconds % 60);
         if (isRecordSuitable(inSeconds, UserRecord.PUZZLE, puzzleWidth, true)) {
             createRecordIfSuitable(inSeconds, format, UserRecord.PUZZLE, puzzleWidth, true);
             showRecords(puzzleWidth, UserRecord.PUZZLE, PuzzleView.this::reset);
             return;
         }
 
-
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.game_over);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(String.format(getResources().getString(R.string.you_win), format));
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            PuzzleView.this.reset();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        String format1 = getResources().getString(R.string.you_win,format);
+        showDialogWinning(format1, PuzzleView.this::reset);
     }
 
     private boolean containsPoint(PuzzlePiece p1) {

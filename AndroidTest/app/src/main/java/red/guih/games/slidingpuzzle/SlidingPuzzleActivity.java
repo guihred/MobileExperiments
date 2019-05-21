@@ -27,22 +27,17 @@ public class SlidingPuzzleActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_slidingpuzzle);
-
         ActionBar a = getSupportActionBar();
         if (a != null) {
             a.setTitle(R.string.slidingpuzzle);
             a.setDisplayHomeAsUpEnabled(true);
         }
-
-
         setUserPreferences();
-
-
     }
 
     private void setUserPreferences() {
-        SlidingPuzzleView.setPuzzleDimensions(
-                getUserPreference(R.string.size, SlidingPuzzleView.mapHeight));
+        SlidingPuzzleView
+                .setPuzzleDimensions(getUserPreference(R.string.size, SlidingPuzzleView.mapHeight));
         SlidingPuzzleView
                 .setPuzzleImage(getUserPreference(R.string.image, SlidingPuzzleView.puzzleImage));
     }
@@ -58,11 +53,11 @@ public class SlidingPuzzleActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.config:
-                showConfig();
-                return true;
             case R.id.records:
                 showRecords(SlidingPuzzleView.mapWidth, UserRecord.SLIDING_PUZZLE);
+                return true;
+            case R.id.config:
+                showConfig();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

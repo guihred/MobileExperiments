@@ -5,12 +5,10 @@
  */
 package red.guih.games.freecell;
 
-import android.animation.Animator;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -19,8 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,10 +28,11 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import red.guih.games.AutomaticListener;
 import red.guih.games.BaseView;
 import red.guih.games.R;
 
-import static red.guih.games.freecell.FreeCellStack.StackType.*;
+import static red.guih.games.freecell.FreeCellStack.StackType.ASCENDING;
 import static red.guih.games.freecell.FreeCellStack.StackType.SIMPLE;
 import static red.guih.games.freecell.FreeCellStack.StackType.SUPPORT;
 
@@ -356,7 +353,8 @@ public class FreeCellView extends BaseView {
         }
         if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == FreeCellNumber.values().length)) {
-            showDialogWinning();
+            youWin = true;
+            showDialogWinning(this::reset);
         }
 
     }
@@ -386,7 +384,7 @@ public class FreeCellView extends BaseView {
         eatingAnimation.setDuration(ANIMATION_DURATION);
         originStack.adjust();
         eatingAnimation.addUpdateListener(animation -> invalidate());
-        eatingAnimation.addListener(new AutomaticCardsListener());
+        eatingAnimation.addListener(new AutomaticListener(this::automaticCard));
         eatingAnimation.start();
     }
 
@@ -414,7 +412,7 @@ public class FreeCellView extends BaseView {
 
         eatingAnimation.addUpdateListener(animation -> invalidate());
         if (first) {
-            eatingAnimation.addListener(new AutomaticCardsListener());
+            eatingAnimation.addListener(new AutomaticListener(this::automaticCard));
         }
         eatingAnimation.start();
     }
@@ -422,7 +420,8 @@ public class FreeCellView extends BaseView {
     private void handleMouseReleased() {
         if (!youWin && Stream.of(ascendingStacks).allMatch(
                 e -> e.getCards().size() == FreeCellNumber.values().length)) {
-            showDialogWinning();
+            youWin = true;
+            showDialogWinning(this::reset);
         }
         if (isNullOrEmpty(dragContext.cards)) {
             return;
@@ -448,7 +447,8 @@ public class FreeCellView extends BaseView {
                 automaticCard();
                 if (!youWin && Stream.of(ascendingStacks).allMatch(
                         e -> e.getCards().size() == FreeCellNumber.values().length)) {
-                    showDialogWinning();
+                    youWin = true;
+                    showDialogWinning(this::reset);
                 }
                 return;
             }
@@ -563,26 +563,6 @@ public class FreeCellView extends BaseView {
         return pileMaxSize(null);
     }
 
-    private void showDialogWinning() {
-        youWin = true;
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.you_win);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(R.string.game_over);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener(v -> {
-            this.reset();
-            invalidate();
-            dialog.dismiss();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
-        invalidate();
-    }
-
     private Collection<FreeCellStack> getHoveredStacks(FreeCellStack[] stacks) {
         FreeCellCard next = dragContext.cards.iterator().next();
         return Stream.of(stacks)
@@ -621,26 +601,4 @@ public class FreeCellView extends BaseView {
         }
     }
 
-    private class AutomaticCardsListener implements Animator.AnimatorListener {
-
-        @Override
-        public void onAnimationStart(Animator animation) {
-            // DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            automaticCard();
-        }
-
-        @Override
-        public void onAnimationCancel(Animator animation) {
-            // DOES NOTHING
-        }
-
-        @Override
-        public void onAnimationRepeat(Animator animation) {
-            // DOES NOTHING
-        }
-    }
 }
