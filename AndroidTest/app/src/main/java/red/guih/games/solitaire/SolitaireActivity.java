@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import red.guih.games.BaseActivity;
@@ -27,12 +26,7 @@ public class SolitaireActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-
-        MenuItem item = menu.findItem(R.id.config);
-        item.setTitle(R.string.reset);
-        return true;
+        return expandMenu(menu, R.string.reset);
     }
 
     @Override

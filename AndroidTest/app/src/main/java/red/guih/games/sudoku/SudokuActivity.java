@@ -27,10 +27,8 @@ public class SudokuActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_sudoku, menu);
-
         MenuItem item = menu.findItem(R.id.reset);
         item.setTitle(R.string.reset);
-
         return true;
     }
 

@@ -33,10 +33,8 @@ public class Square2048Activity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_records, menu);
-
         MenuItem item = menu.findItem(R.id.config);
         item.setTitle(R.string.reset);
-
         return true;
     }
 

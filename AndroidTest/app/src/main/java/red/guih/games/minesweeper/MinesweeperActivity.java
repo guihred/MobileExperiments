@@ -32,9 +32,9 @@ public class MinesweeperActivity extends BaseActivity {
     }
 
     private void setUserPreferences() {
-        MinesweeperView.setNumberOfBombs(
-                getUserPreference(R.string.size, MinesweeperView.numberOfBombs) /
-                        MinesweeperView.BOMBS_STEP - 1);
+        int numberPref = getUserPreference(R.string.size, MinesweeperView.numberOfBombs);
+        int numberOfBombs = numberPref / MinesweeperView.BOMBS_STEP - 1;
+        MinesweeperView.setNumberOfBombs(numberOfBombs);
     }
 
     @Override

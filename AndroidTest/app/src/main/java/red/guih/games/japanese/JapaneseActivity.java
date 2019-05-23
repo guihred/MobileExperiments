@@ -52,7 +52,6 @@ public class JapaneseActivity extends BaseActivity {
             JapaneseView viewById = findViewById(R.id.japaneseView);
             viewById.postInvalidate();
         });
-
     }
 
     private static void setChapter(int chapter) {

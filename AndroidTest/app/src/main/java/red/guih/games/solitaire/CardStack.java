@@ -32,6 +32,26 @@ class CardStack {
         return String.format(Locale.getDefault(), "(type=%s, n=%d)", type, n);
     }
 
+    List<SolitaireCard> removeLastCards(int n) {
+        if (cards.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<SolitaireCard> lastCards = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
+            lastCards.add(solitaireCard);
+        }
+        return lastCards;
+    }
+
+    SolitaireCard removeLastCards() {
+        if (cards.isEmpty()) {
+            return null;
+        }
+
+        return cards.remove(cards.size() - 1);
+    }
+
     RectF getBoundsF() {
 
         if (boundsF == null) {
@@ -65,26 +85,6 @@ class CardStack {
 
     public void setLayoutY(int layoutY) {
         this.layoutY = layoutY;
-    }
-
-    List<SolitaireCard> removeLastCards(int n) {
-        if (cards.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<SolitaireCard> lastCards = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            SolitaireCard solitaireCard = cards.remove(cards.size() - 1);
-            lastCards.add(solitaireCard);
-        }
-        return lastCards;
-    }
-
-    SolitaireCard removeLastCards() {
-        if (cards.isEmpty()) {
-            return null;
-        }
-
-        return cards.remove(cards.size() - 1);
     }
 
     void addCards(Collection<SolitaireCard> cards) {

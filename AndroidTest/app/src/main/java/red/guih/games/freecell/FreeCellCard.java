@@ -53,15 +53,6 @@ public class FreeCellCard {
                 top + getCardWidth() / 4F, paint);
     }
 
-    RectF getBoundsF() {
-        if (boundsF == null) {
-            boundsF = new RectF();
-        }
-
-        boundsF.set(layoutX, layoutY, layoutX + getCardWidth(),
-                layoutY + getCardWidth());
-        return boundsF;
-    }
 
     static int getCardWidth() {
         return cardWidth * 4 / 5;
@@ -120,6 +111,16 @@ public class FreeCellCard {
     void relocate(float layoutX, float layoutY) {
         setLayoutX(layoutX);
         setLayoutY(layoutY);
+    }
+
+    RectF getBoundsF() {
+        if (boundsF == null) {
+            boundsF = new RectF();
+        }
+
+        boundsF.set(layoutX, layoutY, layoutX + getCardWidth(),
+                layoutY + getCardWidth());
+        return boundsF;
     }
 
     boolean isAutoMoved() {

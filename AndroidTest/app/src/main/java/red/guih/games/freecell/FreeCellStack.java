@@ -34,19 +34,7 @@ class FreeCellStack {
                 ')';
     }
 
-    RectF getBoundsF() {
 
-        if (boundsF == null) {
-            boundsF = new RectF();
-        }
-        float right = FreeCellCard.getCardWidth();
-        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards()
-                .getBoundsF().bottom;
-
-
-        boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
-        return boundsF;
-    }
 
     FreeCellCard getLastCards() {
         if (cards.isEmpty()) {
@@ -174,7 +162,19 @@ class FreeCellStack {
     void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
     }
+    RectF getBoundsF() {
 
+        if (boundsF == null) {
+            boundsF = new RectF();
+        }
+        float right = FreeCellCard.getCardWidth();
+        float bottom = cards.isEmpty() ? FreeCellCard.getCardWidth() : getLastCards()
+                .getBoundsF().bottom;
+
+
+        boundsF.set(getLayoutX(), getLayoutY(), right + layoutX, bottom + layoutY);
+        return boundsF;
+    }
 
     public enum StackType {
         SIMPLE,

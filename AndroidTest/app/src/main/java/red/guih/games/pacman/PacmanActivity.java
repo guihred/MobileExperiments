@@ -40,8 +40,6 @@ public class PacmanActivity extends AppCompatActivity {
         } else {
             view.pause();
         }
-
-
     }
 
     @Override

@@ -34,7 +34,6 @@ public class MadMazeActivity extends BaseActivity {
         }
 
         labyrinthView = findViewById(R.id.madTopology);
-
         senSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         senAccelerometer = senSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         senSensorManager.registerListener(labyrinthView, senAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
@@ -60,16 +59,15 @@ public class MadMazeActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.config:
-                showConfig();
-                return true;
-            case R.id.records:
-                showRecords(MadMazeView.difficulty, UserRecord.MAD_MAZE);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int i = item.getItemId();
+        if (i == R.id.records) {
+            showRecords(MadMazeView.difficulty, UserRecord.MAD_MAZE);
+            return true;
+        } else if (i == R.id.config) {
+            showConfig();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showConfig() {

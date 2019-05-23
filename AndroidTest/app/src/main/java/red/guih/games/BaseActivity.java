@@ -5,6 +5,9 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -61,6 +64,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         dialogButton.setOnClickListener(v -> dialog.dismiss());
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+    }
+
+    protected boolean expandMenu(Menu menu, int reset) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+
+        MenuItem item = menu.findItem(R.id.config);
+        item.setTitle(reset);
+        return true;
     }
 
     public void retrieveRecords(View recordListView, ArrayAdapter<UserRecord> adapter,

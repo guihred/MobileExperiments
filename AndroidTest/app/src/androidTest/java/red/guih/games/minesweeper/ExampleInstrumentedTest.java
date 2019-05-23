@@ -44,18 +44,6 @@ public class ExampleInstrumentedTest {
     @Rule
     public ActivityTestRule<GamesActivity> rule = new ActivityTestRule<>(GamesActivity.class);
 
-    @Test
-    public void testGamesWorking() {
-        List<Integer> buttons =
-                Arrays.asList(R.id.minesweeperButton, R.id.dotsButton, R.id.tetrisButton,
-                        R.id.puzzleButton, R.id.sudokuButton,
-                        R.id.freecellButton, R.id.solitaireButton, R.id.japaneseButton,
-                        R.id.slidingPuzzleButton, R.id.square2048Button, R.id.labyrinthButton);
-        for (Integer buttonId : buttons) {
-            clickButton(buttonId);
-            pressBack();
-        }
-    }
 
     private void clickButton(Integer buttonId) {
         onView(withId(buttonId)).perform(click());
@@ -153,10 +141,37 @@ public class ExampleInstrumentedTest {
     public void testSlidingpuzzle() {
         clickButton(R.id.slidingPuzzleButton);
         onView(withId(R.id.sliding_puzzle_view))
-                .perform(new GeneralSwipeAction(Swipe.FAST, this::getRandomCoordinates,
-                        this::getRandomCoordinates, Press.PINPOINT));
+                .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
+    }
+    @Test
+    public void testFreecell() {
+        clickButton(R.id.freecellButton);
+        onView(withId(R.id.freecell_view))
+                .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
+    }
+    @Test
+    public void testSolitaire() {
+        clickButton(R.id.solitaireButton);
+        onView(withId(R.id.solitaire_view))
+                .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
     }
 
+    private GeneralSwipeAction randomSwipe() {
+        return new GeneralSwipeAction(Swipe.FAST, this::getRandomCoordinates,
+                this::getRandomCoordinates, Press.PINPOINT);
+    }
+    @Test
+    public void testGamesWorking() {
+        List<Integer> buttons =
+                Arrays.asList(R.id.minesweeperButton, R.id.dotsButton, R.id.tetrisButton,
+                        R.id.puzzleButton, R.id.sudokuButton,
+                        R.id.freecellButton, R.id.solitaireButton, R.id.japaneseButton,
+                        R.id.slidingPuzzleButton, R.id.square2048Button, R.id.labyrinthButton);
+        for (Integer buttonId : buttons) {
+            clickButton(buttonId);
+            pressBack();
+        }
+    }
     private float[] getRandomCoordinates(View view) {
         final int[] xy = new int[2];
         view.getLocationOnScreen(xy);

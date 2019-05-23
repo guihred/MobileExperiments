@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.NumberPicker;
@@ -61,11 +60,7 @@ public class DotsActivity extends BaseActivity {
     @Override
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater
-                inflater = getMenuInflater();
-
-        inflater.inflate(R.menu.menu_records, menu);
-        return true;
+        return expandMenu(menu,R.string.config);
     }
 
 

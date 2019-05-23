@@ -51,15 +51,6 @@ public class SolitaireCard {
                 top + getCardWidth() / 4F, paint);
     }
 
-    RectF getBoundsF() {
-        if (boundsF == null) {
-            boundsF = new RectF();
-        }
-
-        boundsF.set(layoutX, layoutY, layoutX + getCardWidth(),
-                layoutY + getCardWidth());
-        return boundsF;
-    }
 
     static int getCardWidth() {
         return cardWidth * 4 / 5;
@@ -115,6 +106,15 @@ public class SolitaireCard {
         bounds.set(layoutX, layoutY, layoutX + width,
                 layoutY + width);
         return bounds;
+    }
+    RectF getBoundsF() {
+        if (boundsF == null) {
+            boundsF = new RectF();
+        }
+
+        boundsF.set(layoutX, layoutY, layoutX + getCardWidth(),
+                layoutY + getCardWidth());
+        return boundsF;
     }
 
     void relocate(float layoutX, float layoutY) {
