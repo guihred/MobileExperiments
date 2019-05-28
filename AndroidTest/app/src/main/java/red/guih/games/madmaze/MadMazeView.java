@@ -101,7 +101,7 @@ public class MadMazeView extends BaseView implements SensorEventListener {
 
     private void showDialogWinning() {
         displaying = true;
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.game_over);
 

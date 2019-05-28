@@ -37,6 +37,7 @@ public class JapaneseActivity extends BaseActivity {
         setChapter(getUserPreference(R.string.chapter, JapaneseView.chapter));
         JapaneseView.setNightMode(getUserPreference(R.string.night_mode, 0) == 1);
         setContentView(R.layout.activity_japanese);
+        JapaneseView japaneseView = findViewById(R.id.japaneseView);
         ActionBar toolbar = getSupportActionBar();
         if (toolbar != null) {
             toolbar.setTitle(R.string.japanese);
@@ -49,8 +50,7 @@ public class JapaneseActivity extends BaseActivity {
         FloatingActionButton romajiButton = findViewById(R.id.showRomajiButton);
         romajiButton.setOnClickListener(e -> {
             JapaneseView.setShowRomaji(!JapaneseView.showRomaji);
-            JapaneseView viewById = findViewById(R.id.japaneseView);
-            viewById.postInvalidate();
+            japaneseView.postInvalidate();
         });
     }
 
@@ -60,7 +60,7 @@ public class JapaneseActivity extends BaseActivity {
 
     @SuppressLint("DefaultLocale")
     private void showConfig() {
-        final Dialog dialog = new Dialog(this);
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.japanese_config_dialog);
         dialog.setTitle(R.string.config);
         NumberPicker seekBar = dialog.findViewById(R.id.number);

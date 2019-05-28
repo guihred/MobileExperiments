@@ -1,6 +1,7 @@
 package red.guih.games.japanese;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,6 +15,7 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,14 +92,20 @@ public class JapaneseView extends BaseView {
             points = getUserPreferenceFloat(R.string.punctuation, 0);
             currentLesson = getUserPreference(R.string.lesson, 0);
             configureCurrentLesson();
+        } else {
+            Log.e("JAPANESE VIEW", "NO LESSONS");
         }
-        Log.e("JAPANESE VIEW", "NO LESSONS");
         String nao = getUserPreference(R.string.executed, "NAO");
         if ("NAO".equals(nao)) {
             new Thread(() -> {
+                Activity context = (Activity) getContext();
+                View progressBar = context.findViewById(R.id.progressBar);
+                progressBar.setVisibility(View.VISIBLE);
                 Log.e("DATABASE", "INITIALIZING DATABASE");
                 DatabaseMigration.createDatabase(this.getContext().getApplicationContext(), db);
                 addUserPreference(R.string.executed, "SIM");
+                progressBar.setVisibility(View.INVISIBLE);
+                migrateLessons();
             }).start();
         }
 
@@ -342,7 +350,7 @@ public class JapaneseView extends BaseView {
 
     private void showDialogWinning() {
 
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog =  getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.game_over);
 

@@ -143,12 +143,14 @@ public class ExampleInstrumentedTest {
         onView(withId(R.id.sliding_puzzle_view))
                 .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
     }
+
     @Test
     public void testFreecell() {
         clickButton(R.id.freecellButton);
         onView(withId(R.id.freecell_view))
                 .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
     }
+
     @Test
     public void testSolitaire() {
         clickButton(R.id.solitaireButton);
@@ -156,10 +158,30 @@ public class ExampleInstrumentedTest {
                 .perform(randomSwipe(), randomSwipe(), randomSwipe(), randomSwipe());
     }
 
+    @Test
+    public void testJapanese() {
+        clickButton(R.id.japaneseButton);
+        for (float i = 0.01F; i < 1; i += 0.2) {
+            for (float j = 0.01F; j < 1; j += 0.2) {
+                if (isVisible(R.id.japaneseView)) {
+                    onView(withId(R.id.japaneseView))
+                            .perform(touch(i, j));
+                    Log.i("TEST", "TOUCHING (" + i + "," + j + ")");
+                }
+            }
+        }
+    }
+
     private GeneralSwipeAction randomSwipe() {
         return new GeneralSwipeAction(Swipe.FAST, this::getRandomCoordinates,
                 this::getRandomCoordinates, Press.PINPOINT);
     }
+
+    private GeneralSwipeAction touch(float x, float y) {
+        return new GeneralSwipeAction(Swipe.FAST, view -> getCoordinates(view, x, y),
+                view -> getCoordinates(view, x, y), Press.PINPOINT);
+    }
+
     @Test
     public void testGamesWorking() {
         List<Integer> buttons =
@@ -172,6 +194,7 @@ public class ExampleInstrumentedTest {
             pressBack();
         }
     }
+
     private float[] getRandomCoordinates(View view) {
         final int[] xy = new int[2];
         view.getLocationOnScreen(xy);
@@ -183,6 +206,15 @@ public class ExampleInstrumentedTest {
         int mazeHeight = view.getHeight() / squareSize;
         float v = mazeHeight / 2F;
         float y = getPosition(xy[1], view.getHeight() * (float) Math.random(), mazeHeight, v);
+        return new float[]{x, y};
+    }
+
+    private float[] getCoordinates(View view, float propX, float propY) {
+        final int[] xy = new int[2];
+        view.getLocationOnScreen(xy);
+        int width = view.getWidth();
+        float x = xy[0] + width * propX;
+        float y = xy[1] + view.getHeight() * propY;
         return new float[]{x, y};
     }
 }

@@ -322,7 +322,7 @@ public class MinesweeperView extends BaseView {
 
     private void showDialogLose() {
         invalidate();
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.you_lose);
 
@@ -344,7 +344,7 @@ public class MinesweeperView extends BaseView {
 
     private void showDialogWinning() {
         invalidate();
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.game_over);
 

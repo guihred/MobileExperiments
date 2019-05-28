@@ -30,6 +30,7 @@ public abstract class BaseView extends View {
     protected UserRecordDatabase db = BaseActivity
             .getInstance(this.getContext().getApplicationContext());
     boolean suitable;
+    private Dialog dialog;
 
     public BaseView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -162,28 +163,37 @@ public abstract class BaseView extends View {
     }
 
     public void showRecords(int difficulty, String gameName, Runnable onclick) {
-        final Dialog dialog = new Dialog(this.getContext());
+        final Dialog dialog1 = getDialog();
         List<UserRecord> all = new ArrayList<>();
-        dialog.setContentView(R.layout.records_dialog);
-        ListView recordListView = dialog.findViewById(R.id.recordList);
+        dialog1.setContentView(R.layout.records_dialog);
+        ListView recordListView = dialog1.findViewById(R.id.recordList);
 
-        TextView title = dialog.findViewById(R.id.recordTitle);
+        TextView title = dialog1.findViewById(R.id.recordTitle);
         title.setText(R.string.you_beaten_the_record);
         ArrayAdapter<UserRecord> adapter = new ArrayAdapter<>(this.getContext(),
                 android.R.layout.simple_list_item_1, all);
 
         new Thread(() -> retrieveRecords(recordListView, adapter, difficulty, gameName)).start();
         recordListView.setAdapter(adapter);
-        dialog.setTitle(R.string.records);
+        dialog1.setTitle(R.string.records);
         // set the custom minesweeper_dialog components - text, image and button
-        Button dialogButton = dialog.findViewById(R.id.buttonOK);
+        Button dialogButton = dialog1.findViewById(R.id.buttonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
             onclick.run();
-            dialog.dismiss();
+            dialog1.dismiss();
         });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        dialog1.setCanceledOnTouchOutside(false);
+        dialog1.show();
+    }
+
+    protected Dialog getDialog() {
+        if (dialog == null) {
+            Context context = this.getContext();
+            dialog = (context instanceof BaseActivity) ? ((BaseActivity) context).getDialog() :
+                    new Dialog(context);
+        }
+        return dialog;
     }
 
     public void retrieveRecords(ListView recordListView, ArrayAdapter<UserRecord> adapter,
@@ -206,32 +216,32 @@ public abstract class BaseView extends View {
         recordListView.refreshDrawableState();
     }
 
+    protected List<UserRecord> getAll(int difficulty, String gameName) {
+        return db.userDao().getAll(difficulty, gameName);
+    }
+
     protected void showDialogWinning(Runnable run) {
         String string = getResources().getString(R.string.game_over);
         showDialogWinning(string, run);
     }
 
     protected void showDialogWinning(String str, Runnable run) {
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.you_win);
+        final Dialog dialog1 = getDialog();
+        dialog1.setContentView(R.layout.minesweeper_dialog);
+        dialog1.setTitle(R.string.you_win);
         // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
+        TextView text = dialog1.findViewById(R.id.textDialog);
         text.setText(str);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
+        Button dialogButton = dialog1.findViewById(R.id.dialogButtonOK);
         // if button is clicked, close the custom minesweeper_dialog
         dialogButton.setOnClickListener(v -> {
             run.run();
             invalidate();
-            dialog.dismiss();
+            dialog1.dismiss();
         });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        dialog1.setCanceledOnTouchOutside(false);
+        dialog1.show();
         invalidate();
-    }
-
-    protected List<UserRecord> getAll(int difficulty, String gameName) {
-        return db.userDao().getAll(difficulty, gameName);
     }
 
 }

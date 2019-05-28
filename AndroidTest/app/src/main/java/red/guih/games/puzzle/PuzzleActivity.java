@@ -98,7 +98,7 @@ public class PuzzleActivity extends BaseActivity {
     }
 
     private void showConfig() {
-        final Dialog dialog = new Dialog(this);
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.puzzle_config_dialog);
         dialog.setTitle(R.string.config);
         // set the custom minesweeper_dialog components - text, image and button

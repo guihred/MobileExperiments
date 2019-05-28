@@ -235,7 +235,7 @@ public class Square2048View extends BaseView {
 
     private void showDialogLose() {
         invalidate();
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(R.string.you_lose);
 
@@ -266,7 +266,7 @@ public class Square2048View extends BaseView {
             return;
         }
 
-        showDialogWinning(format,this::reset);
+        showDialogWinning(format, this::reset);
     }
 
     enum Direction {

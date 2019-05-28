@@ -231,7 +231,7 @@ public class PacmanView extends BaseView {
 
     private void showDialog() {
 
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_dialog);
         dialog.setTitle(balls.isEmpty() ? R.string.you_win : R.string.you_lose);
         // set the custom minesweeper_dialog components - text, image and button

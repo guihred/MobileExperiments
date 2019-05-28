@@ -221,7 +221,7 @@ public class DotsDrawingView extends BaseView {
             return;
         }
 
-        final Dialog dialog = new Dialog(getContext());
+        final Dialog dialog = getDialog();
         dialog.setContentView(R.layout.dots_dialog);
         dialog.setTitle(R.string.game_over);
         String string = getResources().getString(R.string.you_win);

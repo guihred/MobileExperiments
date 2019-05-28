@@ -48,7 +48,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public void showRecords(int difficulty, String gameName) {
-        dialog = new Dialog(this);
+        dialog = getDialog();
         List<UserRecord> all = new ArrayList<>();
         dialog.setContentView(R.layout.records_dialog);
         ListView recordListView = dialog.findViewById(R.id.recordList);
@@ -64,6 +64,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         dialogButton.setOnClickListener(v -> dialog.dismiss());
         dialog.setCanceledOnTouchOutside(false);
         dialog.show();
+    }
+
+    public Dialog getDialog() {
+        if (dialog == null) {
+            dialog = new Dialog(this);
+        }
+        return dialog;
     }
 
     protected boolean expandMenu(Menu menu, int reset) {

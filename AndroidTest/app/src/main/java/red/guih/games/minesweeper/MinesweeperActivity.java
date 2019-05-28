@@ -16,8 +16,6 @@ import red.guih.games.db.UserRecord;
 public class MinesweeperActivity extends BaseActivity {
 
 
-    private Dialog dialog;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,15 +33,6 @@ public class MinesweeperActivity extends BaseActivity {
         int numberPref = getUserPreference(R.string.size, MinesweeperView.numberOfBombs);
         int numberOfBombs = numberPref / MinesweeperView.BOMBS_STEP - 1;
         MinesweeperView.setNumberOfBombs(numberOfBombs);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (dialog != null) {
-            dialog.dismiss();
-            dialog = null;
-        }
     }
 
     @Override
@@ -68,7 +57,7 @@ public class MinesweeperActivity extends BaseActivity {
     }
 
     public void showConfig() {
-        dialog = new Dialog(this);
+        Dialog dialog = getDialog();
         dialog.setContentView(R.layout.minesweeper_config_dialog);
         dialog.setTitle(R.string.config);
         // set the custom minesweeper_dialog components - text, image and button

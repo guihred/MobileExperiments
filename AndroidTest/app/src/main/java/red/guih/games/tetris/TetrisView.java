@@ -1,17 +1,15 @@
 package red.guih.games.tetris;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -116,21 +114,16 @@ public class TetrisView extends BaseView {
     }
 
     private void showYouLoseDialog() {
-        final Dialog dialog = new Dialog(getContext());
-        dialog.setContentView(R.layout.minesweeper_dialog);
-        dialog.setTitle(R.string.you_lose);
-        // set the custom minesweeper_dialog components - text, image and button
-        TextView text = dialog.findViewById(R.id.textDialog);
-        text.setText(R.string.you_lose);
-        Button dialogButton = dialog.findViewById(R.id.dialogButtonOK);
-        // if button is clicked, close the custom minesweeper_dialog
-        dialogButton.setOnClickListener((View v) -> {
-            TetrisView.this.reset();
-            dialog.dismiss();
-            invalidate();
-        });
-        dialog.setCanceledOnTouchOutside(false);
-        dialog.show();
+        // Start dialog builder
+        AlertDialog.Builder alert = new AlertDialog.Builder(this.getContext())
+                .setTitle(R.string.you_lose)
+                .setMessage(R.string.you_lose)
+                .setNeutralButton("OK", (DialogInterface a, int b) -> {
+                    TetrisView.this.reset();
+                    a.dismiss();
+                    invalidate();
+                });
+        alert.show();
     }
 
     @Override
