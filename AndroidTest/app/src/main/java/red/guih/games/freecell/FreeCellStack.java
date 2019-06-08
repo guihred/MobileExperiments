@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-class FreeCellStack {
+import red.guih.games.StackOfCards;
+
+class FreeCellStack extends StackOfCards {
     final StackType type;
     private final int n;
     private final List<FreeCellCard> cards = new ArrayList<>();
     private final Paint paint = new Paint();
-    private int layoutX;
-    private int layoutY;
     private float maxHeight;
     private RectF boundsF;
 
@@ -35,28 +35,11 @@ class FreeCellStack {
     }
 
 
-
     FreeCellCard getLastCards() {
         if (cards.isEmpty()) {
             return null;
         }
         return cards.get(cards.size() - 1);
-    }
-
-    public int getLayoutX() {
-        return layoutX;
-    }
-
-    public void setLayoutX(int layoutX) {
-        this.layoutX = layoutX;
-    }
-
-    public int getLayoutY() {
-        return layoutY;
-    }
-
-    public void setLayoutY(int layoutY) {
-        this.layoutY = layoutY;
     }
 
     void removeLastCards() {
@@ -162,6 +145,7 @@ class FreeCellStack {
     void setMaxHeight(int maxHeight) {
         this.maxHeight = maxHeight;
     }
+
     RectF getBoundsF() {
 
         if (boundsF == null) {

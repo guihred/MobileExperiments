@@ -42,7 +42,7 @@ public class SudokuActivity extends BaseActivity {
                 view.invalidate();
                 return true;
             case R.id.reset:
-                view.reset();
+                new Thread(view::reset).start();
                 view.invalidate();
                 return true;
             case R.id.blank:

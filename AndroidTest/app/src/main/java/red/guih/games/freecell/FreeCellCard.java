@@ -7,18 +7,15 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 
-public class FreeCellCard {
+import red.guih.games.Card;
 
+public class FreeCellCard extends Card {
 
-    private static int cardWidth;
     private final FreeCellNumber number;
     private final FreeCellSuit suit;
     private final Drawable drawable;
     private final Paint paint = new Paint();
     private boolean autoMoved;
-    private boolean shown;
-    private float layoutX;
-    private float layoutY;
     private RectF bounds;
     private RectF boundsF;
 
@@ -54,21 +51,7 @@ public class FreeCellCard {
     }
 
 
-    static int getCardWidth() {
-        return cardWidth * 4 / 5;
-    }
 
-    static void setCardWidth(int cardWidth) {
-        FreeCellCard.cardWidth = cardWidth;
-    }
-
-    public float getLayoutX() {
-        return layoutX;
-    }
-
-    public void setLayoutX(float layoutX) {
-        this.layoutX = layoutX;
-    }
 
     @Override
     public String toString() {
@@ -81,22 +64,6 @@ public class FreeCellCard {
 
     FreeCellSuit getSuit() {
         return suit;
-    }
-
-    boolean isShown() {
-        return shown;
-    }
-
-    void setShown() {
-        shown = true;
-    }
-
-    public float getLayoutY() {
-        return layoutY;
-    }
-
-    public void setLayoutY(float layoutY) {
-        this.layoutY = layoutY;
     }
 
     public RectF getBounds() {

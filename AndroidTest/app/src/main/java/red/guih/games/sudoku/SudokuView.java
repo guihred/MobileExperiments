@@ -358,7 +358,7 @@ public class SudokuView extends BaseView {
         pressedSquare = null;
 
         if (isFullyFilled()) {
-            showDialogWinning(this::reset);
+            showDialogWinning(() -> new Thread(this::reset).start());
         }
 
     }

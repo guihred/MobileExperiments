@@ -96,7 +96,7 @@ public class FreeCellView extends BaseView {
         List<FreeCellCard> allCards = getAllCards();
         for (int i = 0; i < allCards.size(); i++) {
             FreeCellCard card = allCards.get(i);
-            card.setShown();
+            card.setShown(true);
             simpleStacks[i % 8].addCardsVertically(card);
         }
         returnButton = new Rect(getWidth() - FreeCellCard.getCardWidth(),
@@ -364,7 +364,7 @@ public class FreeCellView extends BaseView {
 
         cardStackList.remove(targetStack);
         cardStackList.add(targetStack);
-        solitaireCard.setShown();
+        solitaireCard.setShown(true);
         originStack.removeLastCards();
         float x = (float) -targetStack.getLayoutX() + originStack.getLayoutX();
         float y = (float) -targetStack.getLayoutY() + originStack.getLayoutY() +
@@ -392,7 +392,7 @@ public class FreeCellView extends BaseView {
             FreeCellCard solitaireCard, boolean first, int cards) {
         cardStackList.remove(targetStack);
         cardStackList.add(targetStack);
-        solitaireCard.setShown();
+        solitaireCard.setShown(true);
         originStack.removeLastCards();
         originStack.adjust();
         float x = (float) -targetStack.getLayoutX() + originStack.getLayoutX();

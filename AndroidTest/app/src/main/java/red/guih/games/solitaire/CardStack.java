@@ -11,13 +11,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-class CardStack {
+import red.guih.games.StackOfCards;
+
+class CardStack extends StackOfCards {
     final StackType type;
     private final int n;
     private final List<SolitaireCard> cards = new ArrayList<>();
     private final Paint paint = new Paint();
-    private int layoutX;
-    private int layoutY;
+
     private RectF boundsF;
 
     CardStack(StackType type, int n) {
@@ -71,21 +72,6 @@ class CardStack {
         return cards.get(cards.size() - 1);
     }
 
-    public int getLayoutX() {
-        return layoutX;
-    }
-
-    public void setLayoutX(int layoutX) {
-        this.layoutX = layoutX;
-    }
-
-    public int getLayoutY() {
-        return layoutY;
-    }
-
-    public void setLayoutY(int layoutY) {
-        this.layoutY = layoutY;
-    }
 
     void addCards(Collection<SolitaireCard> cards) {
         addCards(cards.toArray(new SolitaireCard[0]));
